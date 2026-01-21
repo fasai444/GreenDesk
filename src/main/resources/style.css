@@ -1,0 +1,103 @@
+/* Fond général */
+body {
+    background-color: #f8f9fa;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Grille de la forêt */
+.forest-grid {
+    display: grid;
+    gap: 4px;
+    background-color: #5d4037; /* Couleur Terre sombre */
+    padding: 10px;
+    border-radius: 8px;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+    border: 4px solid #3e2723;
+    display: inline-grid; /* Pour s'adapter au contenu */
+}
+
+/* Cellule individuelle */
+.forest-cell {
+    width: 50px;
+    height: 50px;
+    background-color: #a1887f; /* Terre claire */
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 20px;
+    color: rgba(255,255,255,0.2); /* Icône fantôme si vide */
+}
+
+.forest-cell:hover {
+    background-color: #bcaaa4;
+    transform: scale(1.1);
+    z-index: 10;
+    box-shadow: 0 0 10px rgba(0,0,0,0.2);
+}
+
+/* Cellule occupée par une plante */
+.forest-cell.occupied {
+    background-color: #81c784; /* Vert par défaut */
+    color: white; /* Icône visible */
+    border: 2px solid transparent;
+}
+
+/* États visuels des plantes */
+.forest-cell.occupied.status-HEALTHY {
+    background-color: #2e7d32; /* Vert forêt */
+    border-color: #1b5e20;
+}
+
+.forest-cell.occupied.status-STRESSED {
+    background-color: #fbc02d; /* Jaune/Orange */
+    border-color: #f57f17;
+    animation: pulse 2s infinite;
+}
+
+.forest-cell.occupied.status-DISEASED {
+    background-color: #c62828; /* Rouge */
+    border-color: #b71c1c;
+}
+
+.forest-cell.occupied.status-DORMANT {
+    background-color: #78909c; /* Gris bleu */
+    filter: grayscale(80%);
+}
+
+/* Petite animation pour les plantes stressées */
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(0.95); opacity: 0.8; }
+    100% { transform: scale(1); }
+}
+
+/* Style des cartes */
+.card {
+    border: none;
+    border-radius: 10px;
+}
+
+/* --- NOUVEAU STYLE DASHBOARD --- */
+
+.stat-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border: 1px solid rgba(0,0,0,0.05);
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.08) !important;
+}
+
+/* Badges modernes (fond transparent) */
+.bg-opacity-10 {
+    --bs-bg-opacity: 0.1;
+}
+
+/* Navbar active link style */
+.navbar-nav .nav-link.active {
+    border-bottom: 2px solid white;
+}
