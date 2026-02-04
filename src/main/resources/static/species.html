@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>GreenDesk - Espèces</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="style.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-light">
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-success shadow-sm mb-4">
+    <div class="container">
+        <a class="navbar-brand fw-bold" href="dashboard.html"><i class="fas fa-leaf"></i> GreenDesk</a>
+        <div class="collapse navbar-collapse">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item"><a class="nav-link" href="dashboard.html">Overview</a></li>
+                <li class="nav-item"><a class="nav-link" href="index.html">🌲 Simulateur</a></li>
+                <li class="nav-item"><a class="nav-link active fw-bold" href="species.html">🧬 Espèces (Admin)</a></li>
+                <li class="nav-item"><a class="nav-link" href="effects.html">✨ Effets</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>🧬 Catalogue des Espèces</h2>
+        <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#createSpeciesModal">
+            <i class="fas fa-plus"></i> Nouvelle Espèce
+        </button>
+    </div>
+
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-0">
+            <table class="table table-hover mb-0 align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Nom</th>
+                        <th>Besoin Eau (mL)</th>
+                        <th>Besoin Lum (Lux)</th>
+                        <th>Temp. Idéale (°C)</th>
+                        <th>Croissance</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="speciesTableBody">
+                    </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="createSpeciesModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title">Créer une nouvelle espèce</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label>Nom de l'espèce</label>
+                    <input type="text" id="spName" class="form-control" placeholder="ex: Cactus">
+                </div>
+                <div class="row g-2">
+                    <div class="col-6"><label>Eau (Optimal)</label><input type="number" id="spWater" class="form-control" value="200"></div>
+                    <div class="col-6"><label>Temp (°C)</label><input type="number" id="spTemp" class="form-control" value="22"></div>
+                    <div class="col-6"><label>Lumière (Lux)</label><input type="number" id="spLux" class="form-control" value="1500"></div>
+                    <div class="col-6"><label>Humidité (%)</label><input type="number" id="spHum" class="form-control" value="60"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" onclick="createSpecies()">Enregistrer</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="species.js"></script>
+</body>
+</html>
