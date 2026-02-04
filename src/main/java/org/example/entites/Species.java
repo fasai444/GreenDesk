@@ -2,10 +2,8 @@ package org.example.entites;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
-
-import jakarta.validation.constraints.NotBlank;
 import org.springframework.data.mongodb.core.index.Indexed;
-
+import jakarta.validation.constraints.NotBlank;
 
 @Document(collection ="species")
 public class Species {
@@ -13,30 +11,33 @@ public class Species {
     private String id;
 
     @Indexed(unique = true)
-    @NotBlank (message = "on doit avoir le nom de l'espece")
+    @NotBlank(message = "on doit avoir le nom de l'espece")
     private String name;
 
     private double optimalWaterNeeds;
     private double optimalTemperature;
     private double optimalHumidity;
     private double optimalLuxNeeds;
-    private double baseGrowthRate; // cm par cycle (par ex. par heure ou par jour)
+    private double baseGrowthRate; // cm par cycle
     private double seedProductionRate;
 
-    //--------------CONSTRCUTEURS--------------
+    //--------------CONSTRUCTEURS--------------
 
-    //Constructeur complet : à utiliser lorsqu'on connait exactement une espece de plante et tous les attributs
+    // Constructeur vide (Modifié en Public pour que Spring/DataInitializer puisse l'utiliser librement)
+    public Species() {}
+
+    // Constructeur complet
     public Species(String name, double optimalWaterNeeds, double optimalTemperature, double optimalHumidity, double optimalLuxNeeds, double baseGrowthRate, double seedProductionRate) {
         this.name = name;
-        this.optimalWaterNeeds = optimalWaterNeeds; //en mL
-        this.optimalTemperature = optimalTemperature; //en °C
-        this.optimalHumidity = optimalHumidity; //en %
-        this.optimalLuxNeeds = optimalLuxNeeds; //en lux
+        this.optimalWaterNeeds = optimalWaterNeeds;
+        this.optimalTemperature = optimalTemperature;
+        this.optimalHumidity = optimalHumidity;
+        this.optimalLuxNeeds = optimalLuxNeeds;
         this.baseGrowthRate = baseGrowthRate;
-        this.seedProductionRate = seedProductionRate; //entre 0-1
+        this.seedProductionRate = seedProductionRate;
     }
 
-    //Constrcuteur à utiliser pour faire des tests, tout est généré aléatoirement à part le nom
+    // Constructeur aléatoire pour tests
     public Species(String name){
         this.name = name;
         this.optimalWaterNeeds = 100 + Math.random()*400;
@@ -46,66 +47,89 @@ public class Species {
         this.baseGrowthRate = 0.1 + Math.random() * 0.9;
         this.seedProductionRate = 0.1 + Math.random()*0.9;
     }
-    protected Species() {}
 
+    //--------------LOGIQUE METIER (VOTRE CODE)--------------
 
     public boolean isOptimalWaterNeeds(double waterLevel) {
-        return Math.abs(optimalWaterNeeds - waterLevel) <= 15; //±15 de tolérance en mL
+        return Math.abs(optimalWaterNeeds - waterLevel) <= 15;
     }
 
     public boolean isOptimalTemperature(double temperature) {
-        return Math.abs(optimalTemperature - temperature) <= 4; //±4°C de tolérance
+        return Math.abs(optimalTemperature - temperature) <= 4;
     }
 
     public boolean isOptimalHumidity(double humidity) {
-        return Math.abs(optimalHumidity - humidity) <= 10;//±10% de tolérance
+        return Math.abs(optimalHumidity - humidity) <= 10;
     }
 
     public double tempStressFactor(double temperature) {
         double diff = Math.abs(temperature - optimalTemperature);
-        double tolerance = 4; // ± tolérance définie dans Species
-        if (diff <= tolerance) return 0.0; // pas de stress dans la plage tolérée
-
-        // Stress normalisé : au-delà de la tolérance, on utilise le ratio de l’écart par rapport à l’optimal
+        double tolerance = 4;
+        if (diff <= tolerance) return 0.0;
         return Math.min(1.0, (diff - tolerance) / optimalTemperature);
     }
 
     public double humidityStressFactor(double humidity) {
         double diff = Math.abs(humidity - optimalHumidity);
-        double tolerance = 10; // ± tolérance définie dans Species
-        if (diff <= tolerance) return 0.0; // pas de stress
-
+        double tolerance = 10;
+        if (diff <= tolerance) return 0.0;
         return Math.min(1.0, (diff - tolerance) / optimalHumidity);
     }
 
-
     public double lightStressFactor(double lux){
-        return Math.max(0, (optimalLuxNeeds - lux)/optimalLuxNeeds);//entre 0-1 pour le stress en raison d'un manque de lumière le cas échéant
+        return Math.max(0, (optimalLuxNeeds - lux)/optimalLuxNeeds);
     }
 
-    //--------------Getters et Setters--------------
-    public String getId(){
-        return id;
+    //--------------GETTERS (EXISTANTS)--------------
+    
+    public String getId() { return id; }
+    public String getName() { return name; }
+    public double getOptimalWaterNeeds() { return optimalWaterNeeds; }
+    public double getOptimalTemperature() { return optimalTemperature; }
+    public double getOptimalHumidity() { return optimalHumidity; }
+    public double getOptimalLuxNeeds() { return optimalLuxNeeds; }
+    public double getSeedProductionRate() { return seedProductionRate; }
+    public double getBaseGrowthRate() { return baseGrowthRate; }
+
+    //--------------SETTERS (AJOUTÉS POUR CORRIGER L'ERREUR)--------------
+    
+    // Ces méthodes manquaient et sont nécessaires pour le DataInitializer
+    
+    public void setId(String id) {
+        this.id = id;
     }
-    public String getName(){
-        return name;
+
+    public void setName(String name) {
+        this.name = name;
     }
-    public double getOptimalWaterNeeds(){
-        return optimalWaterNeeds;
+
+    public void setOptimalWaterNeeds(double optimalWaterNeeds) {
+        this.optimalWaterNeeds = optimalWaterNeeds;
     }
-    public double getOptimalTemperature(){
-        return optimalTemperature;
+
+    public void setOptimalTemperature(double optimalTemperature) {
+        this.optimalTemperature = optimalTemperature;
     }
-    public double getOptimalHumidity(){
-        return optimalHumidity;
+
+    public void setOptimalHumidity(double optimalHumidity) {
+        this.optimalHumidity = optimalHumidity;
     }
-    public double getOptimalLuxNeeds(){
-        return optimalLuxNeeds;
+
+    public void setOptimalLuxNeeds(double optimalLuxNeeds) {
+        this.optimalLuxNeeds = optimalLuxNeeds;
     }
-    public double getSeedProductionRate(){
-        return seedProductionRate;
+
+    public void setBaseGrowthRate(double baseGrowthRate) {
+        this.baseGrowthRate = baseGrowthRate;
     }
-    public double getBaseGrowthRate() {
-        return baseGrowthRate;
+
+    public void setSeedProductionRate(double seedProductionRate) {
+        this.seedProductionRate = seedProductionRate;
+    }
+
+    // Ajout utile pour le débogage (System.out.println)
+    @Override
+    public String toString() {
+        return "Species{name='" + name + "', temp=" + optimalTemperature + "}";
     }
 }
