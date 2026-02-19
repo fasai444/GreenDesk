@@ -70,7 +70,7 @@ public class Plant {
         // Initialiser variationSeed avec une valeur aléatoire
         this.variationSeed = (int) (Math.random() * 1000000);
     }
-    protected Plant() {}
+    public Plant() {}
 
 
     // Méthode pour calculer le stress initial
@@ -132,8 +132,14 @@ public class Plant {
     public String getName() {
         return name;
     }
+    public void setName(String name){
+        this.name=name;
+    }
     public Species getSpecies() {
         return species;
+    }
+    public void setSpecies(Species species) {
+        this.species = species;
     }
     public double getWaterLevel() {
         return waterLevel;
