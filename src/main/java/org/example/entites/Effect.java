@@ -30,6 +30,7 @@ public class Effect {
     private double waterModifier;
     private double growthRateModifier;  // Modificateur du taux de croissance
     private double stressReduction;     // Réduction du stress
+    private boolean isCustom = false;
     
     public Effect(String name, String description, int durationHours) {
         this.name = name;
@@ -153,5 +154,12 @@ public class Effect {
     
     public void setStressReduction(double stressReduction) {
         this.stressReduction = stressReduction;
+    }
+
+    public boolean getIsCustom() {
+        return isCustom;
+    }
+    public void setCustom(boolean custom) {
+        isCustom = custom;
     }
 }

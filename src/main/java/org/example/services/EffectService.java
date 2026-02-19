@@ -39,12 +39,25 @@ public class EffectService {
             effectRepository.saveAll(predefinedEffects);
         }
     }
-    
+
     /**
-     * Récupère le catalogue de tous les effets disponibles.
+     * Récupère le catalogue de tous les effets.
+     * @param isCustom (Optionnel) : si true, renvoie seulement les customs. Si null, renvoie tout.
      */
-    public List<Effect> getAllEffects() {
+    public List<Effect> getAllEffects(Boolean isCustom) {
+        if (isCustom != null) {
+            // Nécessite la méthode findByIsCustom dans EffectRepository
+            return effectRepository.findByIsCustom(isCustom);
+        }
         return effectRepository.findAll();
+    }
+
+    /**
+     * Crée un effet personnalisé (L3-F1).
+     */
+    public Effect createCustomEffect(Effect effect) {
+        effect.setCustom(true); // On force le flag "Custom"
+        return effectRepository.save(effect);
     }
     
     /**
