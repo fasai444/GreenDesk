@@ -515,8 +515,67 @@ Voir [DOCKER.md](DOCKER.md) pour:
 ## Roadmap
 
 ### Livraison 3 (L3) - A venir
-- **L3-F1**: Interactions entre plantes
-- **L3-F2**: Systeme de stimulus
+I. FEATURE L3-F1 : GESTION DES EFFETS PERSONNALISÉS
+L'objectif de cette fonctionnalité est d'offrir à l'utilisateur une flexibilité totale dans le soin apporté à ses plantes en lui permettant de créer ses propres "recettes" d'effets.
+
+Création d'Effets Custom : Implémentation d'un système permettant de définir des modificateurs de température, d'eau et de stress index uniques.
+
+Persistance Différenciée : Utilisation d'un attribut isCustom (boolean) pour séparer les effets natifs du simulateur des créations de l'utilisateur.
+
+Filtrage API : Mise à jour des endpoints de consultation pour permettre l'affichage exclusif des effets personnalisés dans le dashboard utilisateur.
+
+
+II. FEATURE L3-F2 : STIMULUS, CLONAGE ET COMPARAISON
+Cette fonctionnalité constitue l'outil d'analyse environnementale du projet. Elle permet de simuler des scénarios climatiques et de comparer les réactions physiologiques des plantes.
+
+1. Stimulus de Masse par Forêt
+Au lieu de cibler chaque plante individuellement, le système peut désormais appliquer un événement (ex: HEATWAVE, RAIN) à l'ensemble des plantes rattachées à un forestId spécifique.
+
+Logique : Le stimulus génère automatiquement un effet temporaire appliqué à chaque membre de la forêt ciblée.
+
+2. Protocole de Clonage Scientifique
+Pour garantir une comparaison rigoureuse, une fonction de clonage a été développée.
+
+Réplication Totale : Copie exacte des attributs (taille, niveaux, état).
+
+Génétique (Seed) : Le variationSeed est également copié, assurant que l'originale et le clone réagissent de manière identique si les conditions sont égales.
+
+3. Rapport d'État Détaillé (/status)
+Un nouvel endpoint de diagnostic a été ajouté pour expliquer la divergence entre les plantes. Il affiche :
+
+Le Stress Index calculé.
+
+Les données en temps réel des Capteurs (Eau, Température, Humidité, Lux).
+
+Le contexte environnemental (ID de la forêt).
+
+III. ARCHITECTURE TECHNIQUE ET API
+Voici les points d'entrée (endpoints) ajoutés pour cette livraison :
+
+POST : /api/effects
+
+Description : Enregistre un nouvel effet personnalisé créé par l'utilisateur.
+
+POST : /api/stimuli
+
+Description : Déclenche un événement climatique (ex: canicule ou pluie) sur une forêt entière.
+
+POST : /api/plants/{id}/clone
+
+Description : Duplique une plante spécifique vers une forêt de test pour servir de témoin.
+
+GET : /plants/{id}/status
+
+Description : Affiche le rapport de diagnostic complet (stress, capteurs, état de santé).
+
+IV. PROTOCOLE DE VALIDATION (SCÉNARIO)
+Préparation : Créer une plante dans la Forêt Alpha.
+
+Clonage : Dupliquer cette plante dans la Forêt Beta.
+
+Simulation : Envoyer un stimulus HEATWAVE sur la Forêt Alpha.
+
+Comparaison : Consulter le /status des deux plantes. La plante "Alpha" doit présenter un stress thermique élevé, validant ainsi l'impact localisé du stimulus et l'efficacité du système de comparaison.
 
 ## Contribution
 
@@ -537,46 +596,7 @@ Pour toute question ou suggestion, veuillez ouvrir une issue sur le depot GitHub
 
 ---
 
-Livraison 3 : Features L3-F1 & L3-F2
-Cette livraison finalise les outils de personnalisation et de simulation avancée du système GreenDesk.
 
-🟢 Feature L3-F1 : Gestion des Effets Personnalisés (Custom Effects)
-L'objectif était de permettre à l'utilisateur de définir ses propres "traitements" (engrais, types d'arrosage, soins spécifiques) et de les enregistrer.
-
-Modèle de données : Ajout d'un flag isCustom dans l'entité Effect pour distinguer les effets système des effets utilisateur.
-
-CRUD Effects : Implémentation du POST /api/effects pour sauvegarder de nouveaux effets personnalisés en base MongoDB.
-
-Filtrage : Mise à jour de l'API de récupération pour permettre de lister séparément les effets de base et les effets créés par l'utilisateur.
-
-🔵 Feature L3-F2 : Stimulus Forestier, Clonage et Comparaison
-Cette feature est l'outil "scientifique" du simulateur, permettant d'étudier l'impact de l'environnement sur les plantes.
-
-Stimulus de masse : Création d'un service capable d'appliquer un événement climatique (ex: HEATWAVE, RAIN) à toutes les plantes d'une forêt simultanément via un seul ID de forêt.
-
-Système de Clonage : Implémentation d'une fonction de clonage parfaite (clonePlantToForest). Elle copie non seulement les statistiques, mais aussi le variationSeed, garantissant que deux plantes clonées réagissent de la même façon si elles subissent le même environnement.
-
-Rapport d'État Détaillé : Ajout d'un endpoint /status fournissant une vue complète des capteurs (eau, température, lumière) et du stressIndex pour expliquer visuellement pourquoi deux plantes clonées divergent après un stimulus.
-
-🛠 Modifications techniques majeures
-Nouveaux Services : StimulusService pour la gestion des événements globaux.
-
-Nouveaux Repositories : StimulusRepository et EffectRepository.
-
-Amélioration Repository : Ajout de findByForestId dans PlantRepository.
-
-Sécurité Type : Correction des warnings de sécurité null (Objects.requireNonNull) sur les IDs et les entités.
-
-✅ Scénario de Test pour Validation
-Créer un effet custom "Engrais Bio" (isCustom: true).
-
-Créer une plante "A" dans la Forêt 1.
-
-Cloner la plante "A" vers la Forêt 2 (Plante "A-Clone").
-
-Appliquer un stimulus HEATWAVE sur la Forêt 1 uniquement.
-
-Comparer les deux plantes via /status : la Plante A doit afficher un stress thermique élevé alors que le clone reste stable.
 
 **Derniere mise a jour**: Janvier 2026
 **Status**: Production ready avec Docker
