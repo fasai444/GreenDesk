@@ -12,7 +12,8 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api") // Gardé /api pour être cohérent avec vos autres contrôleurs
+@CrossOrigin(origins = "*") // Permet au frontend de communiquer avec l'API
 public class EffectController {
     
     @Autowired
@@ -20,20 +21,35 @@ public class EffectController {
     
     /**
      * GET /api/effects
-     * Récupère le catalogue de tous les effets disponibles.
+     * Récupère le catalogue de tous les effets disponibles (L2-F2).
+     * Supporte le filtre ?custom=true pour la L3-F1.
      */
-    @GetMapping("/effects")
-    public ResponseEntity<List<Effect>> getAllEffects() {
+    @GetMapping("/effects") // Ajout du path spécifique ici
+    public ResponseEntity<List<Effect>> getAllEffects(@RequestParam(required = false) Boolean custom) {
+        
         // Initialiser le catalogue s'il n'existe pas
         effectService.initializeEffectsCatalog();
         
-        List<Effect> effects = effectService.getAllEffects();
+        // Appel au service avec le paramètre de filtrage 
+        List<Effect> effects = effectService.getAllEffects(custom);
+        
         return ResponseEntity.ok(effects);
+    }
+
+    /**
+     * POST /api/effects
+     * Créer un effet personnalisé (L3-F1). [cite: 133]
+     */
+    @PostMapping("/effects")
+    public ResponseEntity<Effect> createCustomEffect(@RequestBody Effect effect) {
+        // Appelle la nouvelle méthode du service pour forcer isCustom=true [cite: 131]
+        Effect createdEffect = effectService.createCustomEffect(effect);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdEffect);
     }
     
     /**
      * POST /api/plants/{plantId}/effects/{effectId}
-     * Applique un effet à une plante.
+     * Applique un effet à une plante (L2-F2). [cite: 102]
      */
     @PostMapping("/plants/{plantId}/effects/{effectId}")
     public ResponseEntity<?> applyEffectToPlant(
@@ -50,7 +66,7 @@ public class EffectController {
     
     /**
      * GET /api/plants/{plantId}/effects
-     * Récupère tous les effets d'une plante (actifs et inactifs).
+     * Récupère tous les effets d'une plante (L2-F2). [cite: 103]
      */
     @GetMapping("/plants/{plantId}/effects")
     public ResponseEntity<List<PlantEffect>> getPlantEffects(@PathVariable String plantId) {
@@ -70,7 +86,7 @@ public class EffectController {
     
     /**
      * DELETE /api/plants/effects/{plantEffectId}
-     * Retire (désactive) un effet d'une plante.
+     * Retire (désactive) un effet d'une plante (L2-F2). [cite: 95]
      */
     @DeleteMapping("/plants/effects/{plantEffectId}")
     public ResponseEntity<?> removeEffectFromPlant(@PathVariable String plantEffectId) {

@@ -6,7 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -70,7 +72,48 @@ public class PlantController {
         }
     }
 
-    // ================== AJOUTS ==================
+    // ================== AJOUTS LIVRAISON 3 (L3-F2) ==================
+
+    /**
+     * GET /plants/{id}/status
+     * Rapport détaillé pour comparer l'impact des stimulus sur les clones.
+     */
+    @GetMapping("/{id}/status")
+    public ResponseEntity<?> getDetailedStatus(@PathVariable String id) {
+        try {
+            // On récupère l'Optional et on extrait la plante
+            Optional<Plant> optPlant = plantServices.getPlantById(id);
+            
+            if (optPlant.isEmpty()) {
+                return ResponseEntity.notFound().build();
+            }
+
+            Plant plant = optPlant.get();
+
+            // Construction du rapport de comparaison
+            Map<String, Object> report = new HashMap<>();
+            report.put("id", plant.getId());
+            report.put("name", plant.getName());
+            report.put("forestId", plant.getForestId());
+            report.put("state", plant.getPlantState());
+            report.put("stressIndex", plant.getStressIndex());
+            report.put("heightCm", plant.getHeightCm());
+
+            // Détails des capteurs pour expliquer la divergence
+            report.put("sensors", Map.of(
+                "waterLevel", plant.getWaterLevel(),
+                "temperature", plant.getTemperature(),
+                "humidity", plant.getHumidity(),
+                "lux", plant.getLux()
+            ));
+
+            return ResponseEntity.ok(report);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    // ================== AUTRES MÉTHODES ==================
 
     // --- UPDATE plante (eau, température, humidité, lux) ---
     @PutMapping("/{id}")
