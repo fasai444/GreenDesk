@@ -515,68 +515,87 @@ Voir [DOCKER.md](DOCKER.md) pour:
 ## Roadmap
 
 ### Livraison 3 (L3) - A venir
-I. FEATURE L3-F1 : GESTION DES EFFETS PERSONNALISÉS
+## I. FEATURE L3-F1 : GESTION DES EFFETS PERSONNALISÉS
 
 L'objectif de cette fonctionnalité est d'offrir à l'utilisateur une flexibilité totale dans le soin apporté à ses plantes en lui permettant de créer ses propres "recettes" d'effets.
 
-Création d'Effets Custom : Implémentation d'un système permettant de définir des modificateurs de température, d'eau et de stress index uniques.
+**Création d'Effets Custom :** Implémentation d'un système permettant de définir des modificateurs de température, d'eau et de stress index uniques.
 
-Persistance Différenciée : Utilisation d'un attribut isCustom (boolean) pour séparer les effets natifs du simulateur des créations de l'utilisateur.
+**Persistance Différenciée :** Utilisation d'un attribut isCustom (boolean) pour séparer les effets natifs du simulateur des créations de l'utilisateur.
 
-Filtrage API : Mise à jour des endpoints de consultation pour permettre l'affichage exclusif des effets personnalisés dans le dashboard utilisateur.
+**Filtrage API :** Mise à jour des endpoints de consultation pour permettre l'affichage exclusif des effets personnalisés dans le dashboard utilisateur.
 
 
-II. FEATURE L3-F2 : STIMULUS, CLONAGE ET COMPARAISON
+## II. FEATURE L3-F2 : STIMULUS, CLONAGE ET COMPARAISON
+
 Cette fonctionnalité constitue l'outil d'analyse environnementale du projet. Elle permet de simuler des scénarios climatiques et de comparer les réactions physiologiques des plantes.
 
-1. Stimulus de Masse par Forêt
+# 1. Stimulus de Masse par Forêt
 Au lieu de cibler chaque plante individuellement, le système peut désormais appliquer un événement (ex: HEATWAVE, RAIN) à l'ensemble des plantes rattachées à un forestId spécifique.
 
-Logique : Le stimulus génère automatiquement un effet temporaire appliqué à chaque membre de la forêt ciblée.
+**Logique :** Le stimulus génère automatiquement un effet temporaire appliqué à chaque membre de la forêt ciblée.
 
-2. Protocole de Clonage Scientifique
+**Lancer une canicule sur une forêt :**
+
+```Bash
+#curl -X POST http://localhost:8080/api/stimuli \
+-H "Content-Type: application/json" \
+-d '{
+  "type": "HEATWAVE",
+  "forestId": "ID_FORET_ALPHA",
+  "intensity": 45.0,
+  "durationHours": 12
+}'
+```
+# 2. Protocole de Clonage Scientifique
 Pour garantir une comparaison rigoureuse, une fonction de clonage a été développée.
 
-Réplication Totale : Copie exacte des attributs (taille, niveaux, état).
+**Réplication Totale :** Copie exacte des attributs (taille, niveaux, état).
 
-Génétique (Seed) : Le variationSeed est également copié, assurant que l'originale et le clone réagissent de manière identique si les conditions sont égales.
+**Génétique (Seed) :** Le variationSeed est également copié, assurant que l'originale et le clone réagissent de manière identique si les conditions sont égales.
 
-3. Rapport d'État Détaillé (/status)
-Un nouvel endpoint de diagnostic a été ajouté pour expliquer la divergence entre les plantes. Il affiche :
+**Cloner une plante (Témoin) :**
 
-Le Stress Index calculé.
+```Bash
+curl -X POST "http://localhost:8080/api/plants/ID_PLANTE/clone?targetForestId=ID_FORET_BETA&x=2&y=2"
+```
+# 3. Rapport d'État Détaillé (/status)
+Un nouvel endpoint de diagnostic affiche le Stress Index calculé, les données en temps réel des Capteurs (Eau, Température, Humidité, Lux) et le contexte environnemental.
 
-Les données en temps réel des Capteurs (Eau, Température, Humidité, Lux).
+**Consulter le diagnostic :**
 
-Le contexte environnemental (ID de la forêt).
+```Bash
+curl http://localhost:8080/api/plants/ID_PLANTE/status
+```
+## III. ARCHITECTURE TECHNIQUE ET API
 
-III. ARCHITECTURE TECHNIQUE ET API
 Voici les points d'entrée (endpoints) ajoutés pour cette livraison :
 
-POST : /api/effects
+**POST :** `/api/effects`
 
-Description : Enregistre un nouvel effet personnalisé créé par l'utilisateur.
+**Description :** Enregistre un nouvel effet personnalisé créé par l'utilisateur.
 
-POST : /api/stimuli
+**POST :** `/api/stimuli`
 
-Description : Déclenche un événement climatique (ex: canicule ou pluie) sur une forêt entière.
+**Description :** Déclenche un événement climatique (ex: canicule ou pluie) sur une forêt entière.
 
-POST : /api/plants/{id}/clone
+**POST :** `/api/plants/{id}/clone`
 
-Description : Duplique une plante spécifique vers une forêt de test pour servir de témoin.
+**Description :** Duplique une plante spécifique vers une forêt de test pour servir de témoin.
 
-GET : /plants/{id}/status
+**GET :** `/plants/{id}/status`
 
-Description : Affiche le rapport de diagnostic complet (stress, capteurs, état de santé).
+**Description :** Affiche le rapport de diagnostic complet (stress, capteurs, état de santé).
 
-IV. PROTOCOLE DE VALIDATION (SCÉNARIO)
-Préparation : Créer une plante dans la Forêt Alpha.
+## IV. PROTOCOLE DE VALIDATION (SCÉNARIO)
 
-Clonage : Dupliquer cette plante dans la Forêt Beta.
+**Préparation :** Créer une plante dans la Forêt Alpha.
 
-Simulation : Envoyer un stimulus HEATWAVE sur la Forêt Alpha.
+**Clonage :** Dupliquer cette plante dans la Forêt Beta.
 
-Comparaison : Consulter le /status des deux plantes. La plante "Alpha" doit présenter un stress thermique élevé, validant ainsi l'impact localisé du stimulus et l'efficacité du système de comparaison.
+**Simulation :** Envoyer un stimulus HEATWAVE sur la Forêt Alpha.
+
+**Comparaison :** Consulter le /status des deux plantes. La plante "Alpha" doit présenter un stress thermique élevé, validant ainsi l'impact localisé du stimulus et l'efficacité du système de comparaison.
 
 ## Contribution
 
