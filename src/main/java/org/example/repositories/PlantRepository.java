@@ -91,4 +91,13 @@ public interface PlantRepository extends MongoRepository<Plant, String> {
      * Compter le nombre de plantes par espèce
      */
     long countBySpeciesName(String speciesName);
+
+
+    // --- 🚨 AJOUT POUR L3-F2 (Stimulus par forêt) ---
+
+    /**
+     * Trouve toutes les plantes d'une forêt spécifique. [cite: 76, 85]
+     * Nécessaire pour appliquer un stimulus à toute la forêt et comparer les états. [cite: 144, 164]
+     */
+    List<Plant> findByForestId(String forestId);
 }
