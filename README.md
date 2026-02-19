@@ -516,6 +516,7 @@ Voir [DOCKER.md](DOCKER.md) pour:
 
 ### Livraison 3 (L3) - A venir
 I. FEATURE L3-F1 : GESTION DES EFFETS PERSONNALISÉS
+
 L'objectif de cette fonctionnalité est d'offrir à l'utilisateur une flexibilité totale dans le soin apporté à ses plantes en lui permettant de créer ses propres "recettes" d'effets.
 
 Création d'Effets Custom : Implémentation d'un système permettant de définir des modificateurs de température, d'eau et de stress index uniques.
