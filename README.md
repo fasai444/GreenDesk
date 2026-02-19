@@ -537,5 +537,46 @@ Pour toute question ou suggestion, veuillez ouvrir une issue sur le depot GitHub
 
 ---
 
+Livraison 3 : Features L3-F1 & L3-F2
+Cette livraison finalise les outils de personnalisation et de simulation avancée du système GreenDesk.
+
+🟢 Feature L3-F1 : Gestion des Effets Personnalisés (Custom Effects)
+L'objectif était de permettre à l'utilisateur de définir ses propres "traitements" (engrais, types d'arrosage, soins spécifiques) et de les enregistrer.
+
+Modèle de données : Ajout d'un flag isCustom dans l'entité Effect pour distinguer les effets système des effets utilisateur.
+
+CRUD Effects : Implémentation du POST /api/effects pour sauvegarder de nouveaux effets personnalisés en base MongoDB.
+
+Filtrage : Mise à jour de l'API de récupération pour permettre de lister séparément les effets de base et les effets créés par l'utilisateur.
+
+🔵 Feature L3-F2 : Stimulus Forestier, Clonage et Comparaison
+Cette feature est l'outil "scientifique" du simulateur, permettant d'étudier l'impact de l'environnement sur les plantes.
+
+Stimulus de masse : Création d'un service capable d'appliquer un événement climatique (ex: HEATWAVE, RAIN) à toutes les plantes d'une forêt simultanément via un seul ID de forêt.
+
+Système de Clonage : Implémentation d'une fonction de clonage parfaite (clonePlantToForest). Elle copie non seulement les statistiques, mais aussi le variationSeed, garantissant que deux plantes clonées réagissent de la même façon si elles subissent le même environnement.
+
+Rapport d'État Détaillé : Ajout d'un endpoint /status fournissant une vue complète des capteurs (eau, température, lumière) et du stressIndex pour expliquer visuellement pourquoi deux plantes clonées divergent après un stimulus.
+
+🛠 Modifications techniques majeures
+Nouveaux Services : StimulusService pour la gestion des événements globaux.
+
+Nouveaux Repositories : StimulusRepository et EffectRepository.
+
+Amélioration Repository : Ajout de findByForestId dans PlantRepository.
+
+Sécurité Type : Correction des warnings de sécurité null (Objects.requireNonNull) sur les IDs et les entités.
+
+✅ Scénario de Test pour Validation
+Créer un effet custom "Engrais Bio" (isCustom: true).
+
+Créer une plante "A" dans la Forêt 1.
+
+Cloner la plante "A" vers la Forêt 2 (Plante "A-Clone").
+
+Appliquer un stimulus HEATWAVE sur la Forêt 1 uniquement.
+
+Comparer les deux plantes via /status : la Plante A doit afficher un stress thermique élevé alors que le clone reste stable.
+
 **Derniere mise a jour**: Janvier 2026
 **Status**: Production ready avec Docker
