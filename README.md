@@ -514,7 +514,7 @@ Voir [DOCKER.md](DOCKER.md) pour:
 
 ## Roadmap
 
-### Livraison 3 (L3) - A venir
+# Livraison 3 (L3) - Features L3-F1 & L3-F2
 ## I. FEATURE L3-F1 : GESTION DES EFFETS PERSONNALISÉS
 
 L'objectif de cette fonctionnalité est d'offrir à l'utilisateur une flexibilité totale dans le soin apporté à ses plantes en lui permettant de créer ses propres "recettes" d'effets.
@@ -530,7 +530,7 @@ L'objectif de cette fonctionnalité est d'offrir à l'utilisateur une flexibilit
 
 Cette fonctionnalité constitue l'outil d'analyse environnementale du projet. Elle permet de simuler des scénarios climatiques et de comparer les réactions physiologiques des plantes.
 
-# 1. Stimulus de Masse par Forêt
+### 1. Stimulus de Masse par Forêt
 Au lieu de cibler chaque plante individuellement, le système peut désormais appliquer un événement (ex: HEATWAVE, RAIN) à l'ensemble des plantes rattachées à un forestId spécifique.
 
 **Logique :** Le stimulus génère automatiquement un effet temporaire appliqué à chaque membre de la forêt ciblée.
@@ -547,7 +547,7 @@ Au lieu de cibler chaque plante individuellement, le système peut désormais ap
   "durationHours": 12
 }'
 ```
-# 2. Protocole de Clonage Scientifique
+### 2. Protocole de Clonage Scientifique
 Pour garantir une comparaison rigoureuse, une fonction de clonage a été développée.
 
 **Réplication Totale :** Copie exacte des attributs (taille, niveaux, état).
@@ -559,7 +559,7 @@ Pour garantir une comparaison rigoureuse, une fonction de clonage a été dével
 ```Bash
 curl -X POST "http://localhost:8080/api/plants/ID_PLANTE/clone?targetForestId=ID_FORET_BETA&x=2&y=2"
 ```
-# 3. Rapport d'État Détaillé (/status)
+### 3. Rapport d'État Détaillé (/status)
 Un nouvel endpoint de diagnostic affiche le Stress Index calculé, les données en temps réel des Capteurs (Eau, Température, Humidité, Lux) et le contexte environnemental.
 
 **Consulter le diagnostic :**
