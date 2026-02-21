@@ -101,3 +101,42 @@ body {
 .navbar-nav .nav-link.active {
     border-bottom: 2px solid white;
 }
+
+/* Gradients de headers */
+.bg-gradient-primary {
+    background: linear-gradient(45deg, #4e73df 0%, #224abe 100%);
+}
+.bg-gradient-warning {
+    background: linear-gradient(45deg, #f6c23e 0%, #f4b619 100%);
+}
+
+/* Style des cartes */
+.card {
+    transition: transform 0.2s ease-in-out;
+    border-radius: 12px;
+}
+.card:hover {
+    transform: translateY(-5px);
+}
+
+.plant-card {
+    background: #f8f9fc;
+}
+
+/* Boutons */
+.btn {
+    border-radius: 8px;
+    font-weight: 600;
+}
+
+/* Force la visibilité du texte dans le menu déroulant */
+#forestSelect {
+    color: #333 !important;      /* Texte gris foncé */
+    background-color: #fff !important; /* Fond blanc */
+}
+
+#forestSelect option {
+    color: #000 !important;      /* Force le texte des options en noir */
+    background-color: #fff !important;
+    padding: 10px;
+}

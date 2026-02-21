@@ -16,7 +16,7 @@
         <div class="collapse navbar-collapse">
             <ul class="navbar-nav ms-auto">
     <li class="nav-item"><a class="nav-link active fw-bold" href="dashboard.html">Overview</a></li>
-    <li class="nav-item"><a class="nav-link" href="index.html">🌲 Simulateur</a></li>
+    <li class="nav-item"><a class="nav-link" href="simulateur.html">🌲 Simulateur</a></li>
     <li class="nav-item"><a class="nav-link" href="species.html">🧬 Espèces (Admin)</a></li>
     <li class="nav-item"><a class="nav-link" href="effects.html">✨ Effets</a></li>
 </ul>
@@ -28,7 +28,7 @@
     
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
-            <h2 class="fw-bold text-dark">Dashboard</h2>
+            <h2 class="fw-bold text-dark">Good Luck</h2>
             <p class="text-muted">Vue d'ensemble de vos écosystèmes</p>
         </div>
         <button class="btn btn-outline-secondary" onclick="loadDashboardData()"><i class="fas fa-sync-alt"></i> Refresh Data</button>
@@ -93,6 +93,90 @@
                 <p class="text-muted small">Aperçu des environnements</p>
                 <div id="forestStatusList" class="d-flex flex-column gap-3">
                      </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="container mt-5">
+    <div class="row">
+        
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-lg border-0 h-100">
+                <div class="card-header bg-gradient-primary text-dark">
+                    <h5 class="mb-0"><i class="fas fa-flask me-2"></i>Laboratoire d'Effets </h5>
+                </div>
+                <div class="card-body">
+                    <form id="createEffectForm">
+                        <div class="mb-3">
+                            <label class="form-label">Nom de l'effet</label>
+                            <input type="text" id="effectName" class="form-control" placeholder="ex: Engrais Booster">
+                        </div>
+                        <div class="row">
+                            <div class="col-6 mb-3">
+                                <label class="form-label">Durée (h)</label>
+                                <input type="number" id="effectDuration" class="form-control" value="24">
+                            </div>
+                            <div class="col-6 mb-3">
+                                <label class="form-label">Temp +/-</label>
+                                <input type="number" id="effectTemp" class="form-control" placeholder="0">
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100 mt-2">
+                            <i class="fas fa-plus-circle me-1"></i> Créer l'effet
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-lg border-0 h-100">
+                <div class="card-header bg-gradient-warning text-dark">
+                    <h5 class="mb-0"><i class="fas fa-bolt me-2"></i>Console de Stimulus </h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label class="form-label">Sélectionner la Forêt</label>
+                        <select id="forestSelect" class="form-select">
+                            <option value="">Chargement des forêts...</option>
+                        </select>
+                    </div>
+                    <div class="d-grid gap-2">
+                        <button onclick="sendStimulus('HEATWAVE')" class="btn btn-outline-danger btn-sm">
+                            <i class="fas fa-sun me-1"></i> Lancer une Canicule
+                        </button>
+                        <button onclick="sendStimulus('RAIN')" class="btn btn-outline-info btn-sm">
+                            <i class="fas fa-cloud-showers-heavy me-1"></i> Déclencher la Pluie
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-12">
+            <h3 class="mb-4">Gestion des Plantes</h3>
+            <div id="plantsGrid" class="row">
+                <div class="col-md-4">
+                    <div class="card plant-card shadow-sm border-start border-4 border-success">
+                        <div class="card-body">
+                            <h5 class="card-title">Tomate Royale</h5>
+                            <p class="text-muted small">ID: #4589</p>
+                            <div class="d-flex justify-content-between">
+                                <button onclick="clonePlant('4589')" class="btn btn-sm btn-outline-secondary">
+                                    <i class="fas fa-copy me-1"></i>Cloner
+                                </button>
+                                <button onclick="showStatus('4589')" class="btn btn-sm btn-info text-white">
+                                    <i class="fas fa-chart-line me-1"></i>Diagnostic
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
