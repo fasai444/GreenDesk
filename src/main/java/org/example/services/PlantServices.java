@@ -1,10 +1,10 @@
 package org.example.services;
 
-import org.example.entites.plant.Plant;
-import org.example.entites.species.Species;
-import org.example.entites.plant.PlantState;
-import org.example.entites.environment.EnvironmentData;
 import org.example.entites.Intervention;
+import org.example.entites.environment.EnvironmentData;
+import org.example.entites.plant.Plant;
+import org.example.entites.plant.PlantState;
+import org.example.entites.species.Species;
 import org.example.repositories.PlantRepository;
 import org.example.repositories.SpeciesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,9 +22,8 @@ public class PlantServices {
     @Autowired
     private SpeciesRepository speciesRepository;
 
-    // ❌ ON A SUPPRIMÉ EffectService ICI POUR EVITER L'ERREUR
-
-    // --- CREATION ---
+    @Autowired(required = false)
+    private EffectService effectService;
 
     public Plant createPlant(String name, String speciesId,
                              double water, double temp, double humidity, double lux) throws Exception {
@@ -43,8 +42,6 @@ public class PlantServices {
         return plantRepository.save(plant);
     }
 
-    // --- GESTION ---
-
     public void deletePlantById(String plantId) {
         plantRepository.deleteById(plantId);
     }
@@ -61,16 +58,25 @@ public class PlantServices {
         return Optional.ofNullable(plantRepository.findById(id).orElse(null));
     }
 
-    // --- LOGIQUE D'EVOLUTION (SIMPLIFIÉE POUR QUE CA MARCHE) ---
-
     public void evolvePlant(Plant plant, EnvironmentData env) {
-        // 1. Valeurs environnementales
         double currentTemp = env.getTemperature();
         double currentHumidity = env.getHumidity();
         double currentLux = env.getLux();
         double currentWater = plant.getWaterLevel();
 
-        // 2. Calcul du stress
+        double growthRateMultiplier = 1.0;
+        double stressReduction = 0.0;
+
+        if (effectService != null) {
+            EffectService.EffectModifiers modifiers = effectService.calculateTotalModifiers(plant.getId());
+            currentTemp += modifiers.temperature;
+            currentHumidity += modifiers.humidity;
+            currentLux += modifiers.lux;
+            currentWater += modifiers.water;
+            growthRateMultiplier += modifiers.growthRate;
+            stressReduction += modifiers.stressReduction;
+        }
+
         double waterStress = Math.abs(currentWater - plant.getSpecies().getOptimalWaterNeeds())
                 / plant.getSpecies().getOptimalWaterNeeds();
         double tempStress = Math.abs(currentTemp - plant.getSpecies().getOptimalTemperature()) / 20.0;
@@ -79,27 +85,20 @@ public class PlantServices {
                 / plant.getSpecies().getOptimalLuxNeeds();
 
         double totalStress = (waterStress + tempStress + humidityStress + luxStress) / 4.0;
+        totalStress = Math.max(0.0, totalStress - stressReduction);
 
-        // 3. Mise à jour stress index
         double newStress = plant.getStressIndex() + totalStress * 0.2;
         plant.setStressIndex(Math.min(1.0, Math.max(0.0, newStress)));
 
-        // 4. Mise à jour état
         updatePlantState(plant);
 
-        // 5. Croissance — désormais toujours > 0, réduite si stress
-        double stressFactor = 1.0 - plant.getStressIndex(); // plus stressé = moins croissance
-        double growth = plant.getSpecies().getBaseGrowthRate() * stressFactor;
-
-        // On garantit un minimum de croissance, même très stressé
+        double stressFactor = 1.0 - plant.getStressIndex();
+        double growth = plant.getSpecies().getBaseGrowthRate() * stressFactor * growthRateMultiplier;
         growth = Math.max(growth, plant.getSpecies().getBaseGrowthRate() * 0.05);
 
         plant.setHeightCm(plant.getHeightCm() + growth);
-
-        // 6. Sécheresse naturelle
         plant.setWaterLevel(Math.max(0, plant.getWaterLevel() - 2.0));
 
-        // 7. Sauvegarde
         plantRepository.save(plant);
     }
 
@@ -112,7 +111,7 @@ public class PlantServices {
     }
 
     public void applyIntervention(Plant plant, Intervention action) {
-        switch(action.getType()) {
+        switch (action.getType()) {
             case WATER:
                 plant.setWaterLevel(plant.getWaterLevel() + action.getValue());
                 break;
@@ -127,14 +126,11 @@ public class PlantServices {
         plantRepository.save(plant);
     }
 
-    // --- METHODES INDISPENSABLES POUR LE DASHBOARD ---
-
     public Plant savePlant(Plant plant) {
         return plantRepository.save(plant);
     }
 
     public List<Plant> getRecentPlants() {
-        // C'est cette méthode qui affiche la tomate sur le Dashboard !
         return plantRepository.findTop10ByOrderByIdDesc();
     }
 }
