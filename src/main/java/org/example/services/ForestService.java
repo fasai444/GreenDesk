@@ -8,6 +8,7 @@ import org.example.repositories.PlantRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -162,28 +163,31 @@ public class ForestService {
      * Retire une plante d'une forêt.
      */
     public Forest removePlantFromForest(String forestId, int x, int y) throws Exception {
-        Forest forest = forestRepository.findById(forestId)
-                .orElseThrow(() -> new Exception("Forêt introuvable : " + forestId));
-        
-        ForestCell cell = forest.getCellAt(x, y);
-        if (cell == null) {
-            throw new Exception("Aucune plante à la position (" + x + "," + y + ")");
-        }
-        
-        // Récupérer la plante et nettoyer ses informations de forêt
-        Optional<Plant> plantOpt = plantRepository.findById(cell.getPlantId());
-        if (plantOpt.isPresent()) {
-            Plant plant = plantOpt.get();
-            plant.setForestId(null);
-            plant.setX(null);
-            plant.setY(null);
-            plantRepository.save(plant);
-        }
-        
-        // Retirer la cellule de la forêt
-        forest.removePlantAt(x, y);
-        return forestRepository.save(forest);
+    Forest forest = forestRepository.findById(forestId)
+            .orElseThrow(() -> new Exception("Forêt introuvable : " + forestId));
+    
+    // CORRECTION : On déballe l'Optional avec .orElse(null)
+    ForestCell cell = forest.getCellAt(x, y).orElse(null); 
+    
+    if (cell == null) {
+        throw new Exception("Aucune plante à la position (" + x + "," + y + ")");
     }
+    
+    // Récupérer la plante et nettoyer ses informations
+    Optional<Plant> plantOpt = plantRepository.findById(cell.getPlantId());
+    if (plantOpt.isPresent()) {
+        Plant plant = plantOpt.get();
+        plant.setForestId(null);
+        plant.setX(null);
+        plant.setY(null);
+        plantRepository.save(plant);
+    }
+    
+    // CORRECTION : Si removePlantAt n'existe pas, on filtre la liste des cellules directement
+    forest.getCells().removeIf(c -> c.getX() == x && c.getY() == y);
+    
+    return forestRepository.save(forest);
+}
     
     /**
      * Supprime une forêt.
