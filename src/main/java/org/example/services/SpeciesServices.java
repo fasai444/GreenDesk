@@ -1,6 +1,6 @@
 package org.example.services;
 
-import org.example.entites.Species;
+import org.example.entites.species.Species;
 import org.example.repositories.SpeciesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

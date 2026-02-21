@@ -1,7 +1,7 @@
 package org.example.services;
 
-import org.example.entites.Effect;
-import org.example.entites.PlantEffect;
+import org.example.entites.effect.Effect;
+import org.example.entites.plant.PlantEffect;
 import org.example.repositories.EffectRepository;
 import org.example.repositories.PlantEffectRepository;
 import org.example.repositories.PlantRepository;
@@ -42,13 +42,8 @@ public class EffectService {
 
     /**
      * Récupère le catalogue de tous les effets.
-     * @param isCustom (Optionnel) : si true, renvoie seulement les customs. Si null, renvoie tout.
      */
-    public List<Effect> getAllEffects(Boolean isCustom) {
-        if (isCustom != null) {
-            // Nécessite la méthode findByIsCustom dans EffectRepository
-            return effectRepository.findByIsCustom(isCustom);
-        }
+    public List<Effect> getAllEffects() {
         return effectRepository.findAll();
     }
 

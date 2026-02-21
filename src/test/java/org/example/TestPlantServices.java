@@ -1,9 +1,9 @@
 package org.example;
 
-import org.example.entites.EnvironmentData;
-import org.example.entites.Plant;
-import org.example.entites.PlantState;
-import org.example.entites.Species;
+import org.example.entites.environment.EnvironmentData;
+import org.example.entites.plant.Plant;
+import org.example.entites.plant.PlantState;
+import org.example.entites.species.Species;
 import org.example.entites.Intervention;
 import org.example.services.PlantServices;
 import org.example.services.SpeciesServices;
@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @ActiveProfiles("test")
-class TestPlantServicesTest {
+class TestPlantServices {
 
     private static final LocalDateTime TEST_TIME =
             LocalDateTime.of(2025, 1, 1, 12, 0);

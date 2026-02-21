@@ -1,14 +1,13 @@
-package org.example.controllers;
+package org.example.controllers.forest;
 
-import org.example.entites.Forest;
-import org.example.entites.Plant;
+import org.example.entites.forest.Forest;
+import org.example.entites.plant.Plant;
 import org.example.services.ForestService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 

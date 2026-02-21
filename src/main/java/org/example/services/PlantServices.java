@@ -1,9 +1,9 @@
 package org.example.services;
 
-import org.example.entites.Plant;
-import org.example.entites.Species;
-import org.example.entites.PlantState;
-import org.example.entites.EnvironmentData;
+import org.example.entites.plant.Plant;
+import org.example.entites.species.Species;
+import org.example.entites.plant.PlantState;
+import org.example.entites.environment.EnvironmentData;
 import org.example.entites.Intervention;
 import org.example.repositories.PlantRepository;
 import org.example.repositories.SpeciesRepository;
@@ -64,43 +64,42 @@ public class PlantServices {
     // --- LOGIQUE D'EVOLUTION (SIMPLIFIÉE POUR QUE CA MARCHE) ---
 
     public void evolvePlant(Plant plant, EnvironmentData env) {
-        // Ici, on fait des calculs simples sans EffectService
-        
-        // 1. On récupère les valeurs de l'environnement directement
+        // 1. Valeurs environnementales
         double currentTemp = env.getTemperature();
         double currentHumidity = env.getHumidity();
         double currentLux = env.getLux();
         double currentWater = plant.getWaterLevel();
 
-        // 2. Calcul du stress (Logique simplifiée)
+        // 2. Calcul du stress
         double waterStress = Math.abs(currentWater - plant.getSpecies().getOptimalWaterNeeds())
                 / plant.getSpecies().getOptimalWaterNeeds();
-        
-        // On utilise les méthodes de l'espèce si elles existent, sinon calcul simple
-        double tempStress = 0.0;
-        if (Math.abs(currentTemp - plant.getSpecies().getOptimalTemperature()) > 5) {
-            tempStress = 0.2; // Stress arbitraire si température mauvaise
-        }
+        double tempStress = Math.abs(currentTemp - plant.getSpecies().getOptimalTemperature()) / 20.0;
+        double humidityStress = Math.abs(currentHumidity - plant.getSpecies().getOptimalHumidity()) / 50.0;
+        double luxStress = Math.abs(currentLux - plant.getSpecies().getOptimalLuxNeeds())
+                / plant.getSpecies().getOptimalLuxNeeds();
 
-        // 3. Stress Total
-        double totalStress = (waterStress + tempStress) / 2.0;
+        double totalStress = (waterStress + tempStress + humidityStress + luxStress) / 4.0;
 
-        // 4. Mise à jour de l'index de stress
-        double newStress = plant.getStressIndex() + (totalStress * 0.05);
+        // 3. Mise à jour stress index
+        double newStress = plant.getStressIndex() + totalStress * 0.2;
         plant.setStressIndex(Math.min(1.0, Math.max(0.0, newStress)));
 
-        // 5. Mise à jour de l'état (Healthy, Stressed...)
+        // 4. Mise à jour état
         updatePlantState(plant);
 
-        // 6. Croissance (Si la plante va bien, elle grandit)
-        if (plant.getPlantState() == PlantState.HEALTHY) {
-            plant.setHeightCm(plant.getHeightCm() + plant.getSpecies().getBaseGrowthRate());
-        }
+        // 5. Croissance — désormais toujours > 0, réduite si stress
+        double stressFactor = 1.0 - plant.getStressIndex(); // plus stressé = moins croissance
+        double growth = plant.getSpecies().getBaseGrowthRate() * stressFactor;
 
-        // 7. Sécheresse naturelle (la plante boit un peu d'eau à chaque tour)
+        // On garantit un minimum de croissance, même très stressé
+        growth = Math.max(growth, plant.getSpecies().getBaseGrowthRate() * 0.05);
+
+        plant.setHeightCm(plant.getHeightCm() + growth);
+
+        // 6. Sécheresse naturelle
         plant.setWaterLevel(Math.max(0, plant.getWaterLevel() - 2.0));
 
-        // Sauvegarde
+        // 7. Sauvegarde
         plantRepository.save(plant);
     }
 

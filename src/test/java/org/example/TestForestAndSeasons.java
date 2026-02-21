@@ -2,12 +2,12 @@ package org.example;
 
 import java.util.List;
 
-import org.example.entites.Forest;
-import org.example.entites.Plant;
-import org.example.entites.Season;
-import org.example.entites.SeasonCycle;
-import org.example.entites.SeasonType;
-import org.example.entites.Species;
+import org.example.entites.forest.Forest;
+import org.example.entites.plant.Plant;
+import org.example.entites.environment.Season;
+import org.example.entites.environment.SeasonCycle;
+import org.example.entites.environment.SeasonType;
+import org.example.entites.species.Species;
 import org.example.repositories.ForestRepository;
 import org.example.repositories.PlantRepository;
 import org.example.repositories.SeasonCycleRepository;

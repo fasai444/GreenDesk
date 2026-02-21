@@ -1,7 +1,7 @@
 package org.example.services;
 
-import org.example.entites.EnvironmentData;
-//import org.example.entites.Plant;
+import org.example.entites.environment.EnvironmentData;
+//import org.example.entites.plant.Plant;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 

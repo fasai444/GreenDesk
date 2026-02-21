@@ -1,8 +1,8 @@
 package org.example.services;
 
-import org.example.entites.Forest;
-import org.example.entites.Forest.ForestCell;
-import org.example.entites.Plant;
+import org.example.entites.forest.Forest;
+import org.example.entites.forest.Forest.ForestCell;
+import org.example.entites.plant.Plant;
 import org.example.repositories.ForestRepository;
 import org.example.repositories.PlantRepository;
 import org.springframework.beans.factory.annotation.Autowired;

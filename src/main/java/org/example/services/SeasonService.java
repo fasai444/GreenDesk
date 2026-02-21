@@ -1,8 +1,7 @@
 package org.example.services;
 
-import org.example.entites.Season;
-import org.example.entites.SeasonCycle;
-import org.example.entites.SeasonType;
+import org.example.entites.environment.Season;
+import org.example.entites.environment.SeasonCycle;
 import org.example.repositories.SeasonCycleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -10,7 +9,6 @@ import org.springframework.stereotype.Service;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class SeasonService {

@@ -1,7 +1,7 @@
 package org.example.services;
 
-import org.example.entites.Effect;
-import org.example.entites.Plant;
+import org.example.entites.effect.Effect;
+import org.example.entites.plant.Plant;
 import org.example.entites.Stimulus;
 import org.example.repositories.EffectRepository;
 import org.example.repositories.PlantRepository;

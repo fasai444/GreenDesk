@@ -1,4 +1,4 @@
-package org.example.entites;
+package org.example.entites.environment;
 
 public enum SeasonType {
     WINTER,

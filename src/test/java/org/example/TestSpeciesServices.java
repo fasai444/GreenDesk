@@ -1,13 +1,7 @@
 package org.example;
 
-import org.example.entites.EnvironmentData;
-import org.example.entites.Plant;
-import org.example.entites.PlantState;
-import org.example.entites.Species;
-import org.example.services.PlantServices;
+import org.example.entites.species.Species;
 import org.example.services.SpeciesServices;
-import org.example.services.Simulation;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

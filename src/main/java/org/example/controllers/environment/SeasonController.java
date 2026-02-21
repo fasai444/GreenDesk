@@ -1,15 +1,12 @@
-package org.example.controllers;
+package org.example.controllers.environment;
 
-import org.example.entites.Season;
-import org.example.entites.SeasonCycle;
+import org.example.entites.environment.Season;
 import org.example.services.SeasonService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/seasons")

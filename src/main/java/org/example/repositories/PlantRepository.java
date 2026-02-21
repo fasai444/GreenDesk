@@ -1,7 +1,7 @@
 package org.example.repositories;
 
-import org.example.entites.Plant;
-import org.example.entites.PlantState;
+import org.example.entites.plant.Plant;
+import org.example.entites.plant.PlantState;
 import org.springframework.data.mongodb.repository.MongoRepository;
 //import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Repository;

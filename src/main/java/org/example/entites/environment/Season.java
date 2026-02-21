@@ -1,4 +1,4 @@
-package org.example.entites;
+package org.example.entites.environment;
 
 /**
  * Classe représentant une saison avec ses caractéristiques environnementales.

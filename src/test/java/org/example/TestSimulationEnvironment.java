@@ -1,6 +1,9 @@
 package org.example;
 
-import org.example.entites.*;
+import org.example.entites.environment.EnvironmentData;
+import org.example.entites.plant.Plant;
+import org.example.entites.plant.PlantState;
+import org.example.entites.species.Species;
 import org.example.services.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

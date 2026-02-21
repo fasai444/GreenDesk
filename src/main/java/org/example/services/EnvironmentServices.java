@@ -1,6 +1,7 @@
 package org.example.services;
 
-import org.example.entites.*;
+import org.example.entites.environment.EnvironmentData;
+import org.example.entites.plant.Plant;
 import org.springframework.stereotype.Service;
 
 @Service

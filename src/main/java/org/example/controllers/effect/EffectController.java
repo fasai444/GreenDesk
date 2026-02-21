@@ -1,7 +1,7 @@
-package org.example.controllers;
+package org.example.controllers.effect;
 
-import org.example.entites.Effect;
-import org.example.entites.PlantEffect;
+import org.example.entites.effect.Effect;
+import org.example.entites.plant.PlantEffect;
 import org.example.services.EffectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -31,7 +31,7 @@ public class EffectController {
         effectService.initializeEffectsCatalog();
         
         // Appel au service avec le paramètre de filtrage 
-        List<Effect> effects = effectService.getAllEffects(custom);
+        List<Effect> effects = effectService.getAllEffects();
         
         return ResponseEntity.ok(effects);
     }

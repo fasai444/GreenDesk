@@ -1,8 +1,8 @@
 package org.example;
 
-import org.example.entites.Plant;
-import org.example.entites.PlantState;
-import org.example.entites.Species;
+import org.example.entites.plant.Plant;
+import org.example.entites.plant.PlantState;
+import org.example.entites.species.Species;
 
 public class Test {
     public static void main(String[] args) {

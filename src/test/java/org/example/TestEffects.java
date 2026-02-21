@@ -3,12 +3,12 @@ package org.example;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import org.example.entites.Effect;
-import org.example.entites.EnvironmentData;
-import org.example.entites.Plant;
-import org.example.entites.PlantEffect;
-import org.example.entites.PlantState;
-import org.example.entites.Species;
+import org.example.entites.effect.Effect;
+import org.example.entites.environment.EnvironmentData;
+import org.example.entites.plant.Plant;
+import org.example.entites.plant.PlantEffect;
+import org.example.entites.plant.PlantState;
+import org.example.entites.species.Species;
 import org.example.repositories.EffectRepository;
 import org.example.repositories.PlantEffectRepository;
 import org.example.repositories.PlantRepository;
