@@ -139,9 +139,9 @@
                 <div class="card-body">
                     <div class="mb-3">
                         <label class="form-label">Sélectionner la Forêt</label>
-                        <select id="forestSelect" class="form-select">
-                            <option value="">Chargement des forêts...</option>
-                        </select>
+                        <select id="forestSelect" class="form-select" onchange="loadForestsForSelect()">
+                                    <option value="" selected disabled>-- Choisir --</option>
+                                </select>
                     </div>
                     <div class="d-grid gap-2">
                         <button onclick="sendStimulus('HEATWAVE')" class="btn btn-outline-danger btn-sm">
