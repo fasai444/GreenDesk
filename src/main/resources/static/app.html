@@ -180,6 +180,85 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<script src="app.js"></script>
+<script src="../../../../../../projet2202/GreenDesk-master/src/main/resources/static/app.js"></script>
+<!-- ===================== -->
+<!-- L4-A Monitoring (NEW) -->
+<!-- ===================== -->
+<section id="l4-monitoring" class="l4-card">
+  <div class="l4-header">
+    <div>
+      <h2>Plant Monitoring</h2>
+      <p class="l4-subtitle">Add sensor readings, view history, and manage alerts.</p>
+    </div>
+    <div class="l4-actions">
+      <button id="l4RefreshBtn" class="l4-btn l4-btn-outline">Refresh</button>
+    </div>
+  </div>
+
+  <div class="l4-grid">
+    <!-- LEFT: Select Plant + Add Reading -->
+    <div class="l4-panel">
+      <h3>Choose a plant</h3>
+
+      <div class="l4-row">
+        <div class="l4-field">
+          <label for="plantSelect">Plant</label>
+          <select id="plantSelect" class="l4-input">
+            <option value="">Loading plants...</option>
+          </select>
+          <small class="l4-hint">Tip: If you selected a forest above, you can filter plants by forest later.</small>
+        </div>
+      </div>
+
+      <!-- Hidden: keep for compatibility with old code -->
+      <input id="plantIdInput" type="hidden" />
+
+      <hr class="l4-divider" />
+
+      <h3>Add sensor reading</h3>
+      <div class="l4-row l4-row-4">
+        <div class="l4-field">
+          <label for="tempInput">Temp (°C)</label>
+          <input id="tempInput" type="number" step="0.1" class="l4-input" placeholder="24" />
+        </div>
+        <div class="l4-field">
+          <label for="humInput">Humidity (%)</label>
+          <input id="humInput" type="number" step="0.1" class="l4-input" placeholder="60" />
+        </div>
+        <div class="l4-field">
+          <label for="luxInput">Lux</label>
+          <input id="luxInput" type="number" step="1" class="l4-input" placeholder="2000" />
+        </div>
+        <div class="l4-field">
+          <label for="rainInput">Rainfall</label>
+          <input id="rainInput" type="number" step="0.1" class="l4-input" placeholder="0" />
+        </div>
+      </div>
+
+      <div class="l4-row l4-row-between">
+        <div id="monitoringError" class="l4-error"></div>
+        <button id="sendReadingBtn" class="l4-btn l4-btn-primary">Send reading</button>
+      </div>
+    </div>
+
+    <!-- RIGHT: Alerts + Readings -->
+    <div class="l4-panel">
+      <div class="l4-two-cols">
+        <div>
+          <h3>Active alerts</h3>
+          <ul id="alertsList" class="l4-list"></ul>
+        </div>
+        <div>
+          <h3>Last readings</h3>
+          <ul id="readingsList" class="l4-list"></ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<script src="../../../../../../projet2202/GreenDesk-master/src/main/resources/static/app.js"></script>
+<script src="../../../../../../projet2202/GreenDesk-master/src/main/resources/static/monitoring.js"></script>
 </body>
 </html>

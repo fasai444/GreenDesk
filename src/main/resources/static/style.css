@@ -140,3 +140,160 @@ body {
     background-color: #fff !important;
     padding: 10px;
 }
+/* ===================== */
+/* L4 – Monitoring styles */
+/* ===================== */
+.l4-card {
+  margin-top: 22px;
+  padding: 18px;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  background: #fff;
+}
+
+.l4-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.l4-header h2 {
+  margin: 0;
+  font-size: 26px;
+}
+
+.l4-subtitle {
+  margin: 6px 0 0;
+  color: #6b7280;
+}
+
+.l4-grid {
+  display: grid;
+  grid-template-columns: 1.05fr 1fr;
+  gap: 14px;
+  margin-top: 14px;
+}
+
+.l4-panel {
+  border: 1px solid #eef2f7;
+  border-radius: 12px;
+  padding: 14px;
+  background: #fafafa;
+}
+
+.l4-row {
+  display: flex;
+  gap: 12px;
+  align-items: flex-end;
+  margin-top: 10px;
+  flex-wrap: wrap;
+}
+
+.l4-row-4 {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(140px, 1fr));
+  gap: 10px;
+}
+
+.l4-row-between {
+  justify-content: space-between;
+  align-items: center;
+}
+
+.l4-field {
+  flex: 1;
+  min-width: 220px;
+}
+
+.l4-field label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.l4-input {
+  width: 100%;
+  padding: 10px 10px;
+  border: 1px solid #d1d5db;
+  border-radius: 10px;
+  outline: none;
+}
+
+.l4-input:focus {
+  border-color: #22c55e;
+  box-shadow: 0 0 0 3px rgba(34,197,94,0.15);
+}
+
+.l4-hint {
+  color: #6b7280;
+  display: block;
+  margin-top: 6px;
+}
+
+.l4-divider {
+  border: none;
+  border-top: 1px solid #e5e7eb;
+  margin: 14px 0;
+}
+
+.l4-two-cols {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.l4-list {
+  list-style: none;
+  padding-left: 0;
+  margin: 8px 0 0;
+}
+
+.l4-list li {
+  background: #fff;
+  border: 1px solid #eef2f7;
+  border-radius: 10px;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+.l4-error {
+  color: #b00020;
+  min-height: 18px;
+}
+
+.l4-btn {
+  padding: 10px 12px;
+  border-radius: 10px;
+  cursor: pointer;
+  border: 1px solid transparent;
+}
+
+.l4-btn-primary {
+  background: #16a34a;
+  color: #fff;
+}
+
+.l4-btn-primary:hover {
+  background: #15803d;
+}
+
+.l4-btn-outline {
+  background: transparent;
+  border-color: #d1d5db;
+}
+
+.l4-btn-outline:hover {
+  background: #f3f4f6;
+}
+
+.l4-actions {
+  display: flex;
+  gap: 8px;
+}
+
+@media (max-width: 1000px) {
+  .l4-grid { grid-template-columns: 1fr; }
+  .l4-row-4 { grid-template-columns: repeat(2, minmax(140px, 1fr)); }
+  .l4-two-cols { grid-template-columns: 1fr; }
+}
