@@ -297,3 +297,120 @@ body {
   .l4-row-4 { grid-template-columns: repeat(2, minmax(140px, 1fr)); }
   .l4-two-cols { grid-template-columns: 1fr; }
 }
+
+
+
+/* ------- pour la page disease ----- */
+body.lab {
+    background: radial-gradient(circle at top, #0a0f1f, #02040a);
+    color: #e0e0e0;
+    font-family: "Segoe UI", system-ui, sans-serif;
+    text-align: center;
+}
+
+.subtitle {
+    opacity: 0.7;
+    margin-bottom: 10px;
+}
+
+.toolbar {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin: 15px 0;
+}
+
+.btn {
+    background: linear-gradient(135deg, #00ffc8, #00aaff);
+    border: none;
+    border-radius: 8px;
+    padding: 8px 14px;
+    cursor: pointer;
+    font-weight: bold;
+    color: #001;
+    box-shadow: 0 0 10px rgba(0,255,200,0.4);
+}
+
+.btn.ghost {
+    background: transparent;
+    color: #00ffc8;
+    border: 1px solid #00ffc8;
+}
+
+.legend {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 10px;
+}
+
+.dot {
+    width: 12px;
+    height: 12px;
+    display: inline-block;
+    border-radius: 50%;
+    margin-right: 5px;
+}
+
+.dot.healthy { background: #2ecc71; }
+.dot.diseased { background: #ff4d4d; }
+.dot.empty { background: #7f8c8d; }
+
+.grid {
+    display: grid;
+    gap: 6px;
+    justify-content: center;
+    margin: 20px auto;
+}
+
+.cell {
+    width: 42px;
+    height: 42px;
+    border-radius: 8px;
+    border: 1px solid rgba(255,255,255,0.15);
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.cell:hover {
+    transform: scale(1.15);
+    box-shadow: 0 0 12px rgba(0,255,200,0.7);
+}
+
+.cell.healthy {
+    background: linear-gradient(135deg, #2ecc71, #27ae60);
+}
+
+.cell.diseased {
+    background: linear-gradient(135deg, #ff4d4d, #c0392b);
+    box-shadow: 0 0 12px rgba(255,0,0,0.6);
+}
+
+.cell.empty {
+    background: #2c3e50;
+    opacity: 0.6;
+}
+
+.pulse {
+    animation: pulse 1.2s infinite alternate;
+}
+
+@keyframes pulse {
+    from { box-shadow: 0 0 6px rgba(255,0,0,0.4); }
+    to   { box-shadow: 0 0 16px rgba(255,0,0,0.9); }
+}
+
+.panel {
+    margin: 20px auto;
+    max-width: 400px;
+    background: rgba(0,0,0,0.5);
+    border: 1px solid rgba(0,255,200,0.3);
+    border-radius: 10px;
+    padding: 10px;
+    box-shadow: 0 0 20px rgba(0,255,200,0.2);
+}
+
+.panel pre {
+    color: #00ffcc;
+    text-align: left;
+}
