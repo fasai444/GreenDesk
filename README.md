@@ -2,13 +2,15 @@
 
 [![Docs CI](https://img.shields.io/badge/Docs%20CI-GitHub%20Actions-blue?logo=github)](https://github.com/MisasoaRobison/GreenDesk/actions)
 
-Documentation en ligne : https://MisasoaRobison.github.io/GreenDesk/
+**Documentation en ligne** : https://misasoarobison.github.io/GreenDesk/GreenDesk-Doc/site/
+**Readme en ligne** : https://misasoarobison.github.io/GreenDesk
 
 ## Description
 
-GreenDesk est une application Spring Boot + MongoDB pour la gestion et simulation de plantes et d'especes vegetales. L'application permet de gerer des especes vegetales, des plantes, d'evaluer leur etat (stress, sante) et d'exposer ces informations via une API REST.
+**GreenDesk** est une application **Spring Boot** + **MongoDB** pour la gestion et simulation de plantes et d'especes vegetales. L'application permet de gerer des especes vegetales, des plantes, d'evaluer leur etat **(stress, sante)** et d'exposer ces informations via une **API REST**.
 
 ## Version
+
 **v2.0** - Livraison 2 (L2) implementee
 
 ## Technologies
