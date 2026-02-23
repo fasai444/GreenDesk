@@ -1,0 +1,20 @@
+/* Small tweaks for mermaid diagrams inside MkDocs */
+.mermaid {
+  max-width: 100%;
+  overflow: auto;
+  background: transparent;
+}
+.mermaid svg {
+  width: 100% !important;
+  height: auto !important;
+}
+/* Improve code block spacing for diagrams */
+.highlight .mermaid {
+  padding: 8px;
+}
+/* Ensure dark mode compatibility */
+@media (prefers-color-scheme: dark) {
+  .md-content .mermaid svg {
+    filter: contrast(1.05) brightness(0.95);
+  }
+}

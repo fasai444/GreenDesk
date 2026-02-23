@@ -1,0 +1,1725 @@
+
+<!doctype html>
+<html lang="fr" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Documentation complète pour GreenDesk - Plateforme de gestion et simulation de plantes">
+      
+      
+        <meta name="author" content="GreenDesk Team">
+      
+      
+        <link rel="canonical" href="https://greendesk.example.com/contributing/">
+      
+      
+        <link rel="prev" href="../docker/">
+      
+      
+        <link rel="next" href="../faq/">
+      
+      
+      <link rel="icon" href="../assets/favicon.ico">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.3">
+    
+    
+      
+        <title>Contribution - GreenDesk Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.50c56a3b.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="green" data-md-color-accent="light-green">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#guide-de-contribution" class="md-skip">
+          Aller au contenu
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="En-tête">
+    <a href=".." title="GreenDesk Documentation" class="md-header__button md-logo" aria-label="GreenDesk Documentation" data-md-component="logo">
+      
+  <img src="../assets/logo.svg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            GreenDesk Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Contribution
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="green" data-md-color-accent="light-green"  aria-label="Mode clair"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Mode clair" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="green" data-md-color-accent="light-green"  aria-label="Mode sombre"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Mode sombre" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12c0-2.42-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var media,input,key,value,palette=__md_get("__palette");if(palette&&palette.color){"(prefers-color-scheme)"===palette.color.media&&(media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']"),palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent"));for([key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Rechercher" placeholder="Rechercher" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Recherche">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Effacer" aria-label="Effacer" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initialisation de la recherche
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="Onglets" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href=".." class="md-tabs__link">
+        
+  
+    
+  
+  Accueil
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../getting-started/" class="md-tabs__link">
+        
+  
+    
+  
+  Guide de démarrage
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../installation/" class="md-tabs__link">
+        
+  
+    
+  
+  Installation
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../usage/concepts/" class="md-tabs__link">
+          
+  
+  Guide d'utilisation
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../api/overview/" class="md-tabs__link">
+          
+  
+  API
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../architecture/" class="md-tabs__link">
+        
+  
+    
+  
+  Architecture
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../testing/" class="md-tabs__link">
+        
+  
+    
+  
+  Tests
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../docker/" class="md-tabs__link">
+        
+  
+    
+  
+  Docker
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+    
+  
+  
+    <li class="md-tabs__item md-tabs__item--active">
+      <a href="./" class="md-tabs__link">
+        
+  
+    
+  
+  Contribution
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../faq/" class="md-tabs__link">
+        
+  
+    
+  
+  FAQ
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+  
+
+<nav class="md-nav md-nav--primary md-nav--lifted md-nav--integrated" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="GreenDesk Documentation" class="md-nav__button md-logo" aria-label="GreenDesk Documentation" data-md-component="logo">
+      
+  <img src="../assets/logo.svg" alt="logo">
+
+    </a>
+    GreenDesk Documentation
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Accueil
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../getting-started/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Guide de démarrage
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../installation/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Installation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Guide d'utilisation
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            Guide d'utilisation
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../usage/concepts/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Concepts fondamentaux
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../usage/species/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Gestion des espèces
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../usage/plants/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Gestion des plantes
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../usage/forests/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Gestion des forêts
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../usage/effects/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Systèmes d'effets
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    API
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            API
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/overview/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Vue d'ensemble
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/endpoints/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Endpoints
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/examples/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Exemples
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../architecture/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Architecture
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../testing/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Tests
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docker/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Docker
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Contribution
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    Contribution
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table des matières">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table des matières
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#avant-de-commencer" class="md-nav__link">
+    <span class="md-ellipsis">
+      Avant de commencer
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#installation-pour-developpement" class="md-nav__link">
+    <span class="md-ellipsis">
+      Installation pour développement
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Installation pour développement">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-fork-et-clone" class="md-nav__link">
+    <span class="md-ellipsis">
+      1. Fork et clone
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-creer-branche-feature" class="md-nav__link">
+    <span class="md-ellipsis">
+      2. Créer branche feature
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-configurer-lenvironnement" class="md-nav__link">
+    <span class="md-ellipsis">
+      3. Configurer l'environnement
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#developpement" class="md-nav__link">
+    <span class="md-ellipsis">
+      Développement
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Développement">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#structure-du-code" class="md-nav__link">
+    <span class="md-ellipsis">
+      Structure du code
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#conventions-de-code" class="md-nav__link">
+    <span class="md-ellipsis">
+      Conventions de code
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Conventions de code">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#noms" class="md-nav__link">
+    <span class="md-ellipsis">
+      Noms
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#format" class="md-nav__link">
+    <span class="md-ellipsis">
+      Format
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#annotations-spring" class="md-nav__link">
+    <span class="md-ellipsis">
+      Annotations Spring
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ecrire-des-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      Écrire des tests
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lancer-les-tests-localement" class="md-nav__link">
+    <span class="md-ellipsis">
+      Lancer les tests localement
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#avant-de-committer" class="md-nav__link">
+    <span class="md-ellipsis">
+      Avant de committer
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Avant de committer">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#checklist" class="md-nav__link">
+    <span class="md-ellipsis">
+      ✅ Checklist
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#format-des-commits" class="md-nav__link">
+    <span class="md-ellipsis">
+      Format des commits
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#soumettre-une-pull-request" class="md-nav__link">
+    <span class="md-ellipsis">
+      Soumettre une Pull Request
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Soumettre une Pull Request">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-push-votre-branche" class="md-nav__link">
+    <span class="md-ellipsis">
+      1. Push votre branche
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-creer-la-pr" class="md-nav__link">
+    <span class="md-ellipsis">
+      2. Créer la PR
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#template-pr" class="md-nav__link">
+    <span class="md-ellipsis">
+      Template PR
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-repondre-aux-commentaires" class="md-nav__link">
+    <span class="md-ellipsis">
+      3. Répondre aux commentaires
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#types-de-contributions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Types de contributions
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Types de contributions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#features" class="md-nav__link">
+    <span class="md-ellipsis">
+      🎯 Features
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bug-fixes" class="md-nav__link">
+    <span class="md-ellipsis">
+      🔨 Bug fixes
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      📖 Documentation
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#refactoring" class="md-nav__link">
+    <span class="md-ellipsis">
+      🧹 Refactoring
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#etiquettes-et-problemes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Étiquettes et problèmes
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Étiquettes et problèmes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#trouver-bugs-a-corriger" class="md-nav__link">
+    <span class="md-ellipsis">
+      Trouver bugs à corriger
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#creer-une-issue" class="md-nav__link">
+    <span class="md-ellipsis">
+      Créer une issue
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#code-review" class="md-nav__link">
+    <span class="md-ellipsis">
+      Code review
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Code review">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#etre-reviewer" class="md-nav__link">
+    <span class="md-ellipsis">
+      Être reviewer
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#style-de-review" class="md-nav__link">
+    <span class="md-ellipsis">
+      Style de review
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bonus-contributions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Bonus contributions
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Bonus contributions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#idees-issues-populaires" class="md-nav__link">
+    <span class="md-ellipsis">
+      Idées issues populaires
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#documentation_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Documentation
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#regles-importantes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Règles importantes
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Règles importantes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#comportement" class="md-nav__link">
+    <span class="md-ellipsis">
+      Comportement
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#licensing" class="md-nav__link">
+    <span class="md-ellipsis">
+      Licensing
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#questions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Questions ?
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#processus-de-review-et-merge" class="md-nav__link">
+    <span class="md-ellipsis">
+      Processus de review et merge
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#after-merge" class="md-nav__link">
+    <span class="md-ellipsis">
+      After merge
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../faq/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    FAQ
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+<h1 id="guide-de-contribution">Guide de contribution<a class="headerlink" href="#guide-de-contribution" title="Permanent link">&para;</a></h1>
+<p>Merci de vouloir contribuer à GreenDesk ! Guide pour contribuer au projet.</p>
+<h2 id="avant-de-commencer">Avant de commencer<a class="headerlink" href="#avant-de-commencer" title="Permanent link">&para;</a></h2>
+<ul>
+<li>✅ Familiarisez-vous avec le <a href="../getting-started/">Guide de démarrage</a></li>
+<li>✅ Lisez l'<a href="../architecture/">Architecture</a></li>
+<li>✅ Consultez le <a href="../testing/">Guide des tests</a></li>
+<li>✅ Vérifiez les <a href="https://github.com/yourteam/greendesk/issues">Problèmes ouverts</a></li>
+</ul>
+<h2 id="installation-pour-developpement">Installation pour développement<a class="headerlink" href="#installation-pour-developpement" title="Permanent link">&para;</a></h2>
+<h3 id="1-fork-et-clone">1. Fork et clone<a class="headerlink" href="#1-fork-et-clone" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># Forker sur GitHub</span>
+<span class="c1"># Puis cloner votre fork</span>
+
+git<span class="w"> </span>clone<span class="w"> </span>https://github.com/votre-pseudo/greendesk.git
+<span class="nb">cd</span><span class="w"> </span>greendesk
+
+<span class="c1"># Ajouter upstream</span>
+git<span class="w"> </span>remote<span class="w"> </span>add<span class="w"> </span>upstream<span class="w"> </span>https://github.com/originalteam/greendesk.git
+</code></pre></div>
+<h3 id="2-creer-branche-feature">2. Créer branche feature<a class="headerlink" href="#2-creer-branche-feature" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># Mise à jour depuis upstream</span>
+git<span class="w"> </span>fetch<span class="w"> </span>upstream
+git<span class="w"> </span>rebase<span class="w"> </span>upstream/main
+
+<span class="c1"># Créer branche</span>
+git<span class="w"> </span>checkout<span class="w"> </span>-b<span class="w"> </span>feature/mon-feature
+<span class="c1"># ou</span>
+git<span class="w"> </span>checkout<span class="w"> </span>-b<span class="w"> </span>fix/mon-bug
+</code></pre></div>
+<h3 id="3-configurer-lenvironnement">3. Configurer l'environnement<a class="headerlink" href="#3-configurer-lenvironnement" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># Configurer Python env</span>
+configure_python_environment
+
+<span class="c1"># Ou simplement :</span>
+./gradlew<span class="w"> </span>build
+</code></pre></div>
+<h2 id="developpement">Développement<a class="headerlink" href="#developpement" title="Permanent link">&para;</a></h2>
+<h3 id="structure-du-code">Structure du code<a class="headerlink" href="#structure-du-code" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>src/main/java/org/example/
+├── controllers/      # Endpoints REST
+├── services/        # Logique métier
+├── repositories/    # Accès données
+├── entities/        # Models
+└── GreenDesk.java  # Main application
+</code></pre></div>
+<h3 id="conventions-de-code">Conventions de code<a class="headerlink" href="#conventions-de-code" title="Permanent link">&para;</a></h3>
+<h4 id="noms">Noms<a class="headerlink" href="#noms" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="c1">// ✅ Classes : PascalCase</span>
+<span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">SpeciesService</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">}</span>
+
+<span class="c1">// ✅ Méthodes : camelCase</span>
+<span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">createSpecies</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">}</span>
+
+<span class="c1">// ✅ Constantes : UPPER_SNAKE</span>
+<span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">DEFAULT_SPECIES</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Rose&quot;</span><span class="p">;</span>
+</code></pre></div>
+<h4 id="format">Format<a class="headerlink" href="#format" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="c1">// ✅ Utiliser Lombok</span>
+<span class="nd">@Data</span>
+<span class="nd">@NoArgsConstructor</span>
+<span class="nd">@AllArgsConstructor</span>
+<span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">Species</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">}</span>
+
+<span class="c1">// ✅ Valider entrées</span>
+<span class="nd">@NotBlank</span><span class="p">(</span><span class="n">message</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Name is required&quot;</span><span class="p">)</span>
+<span class="kd">private</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">name</span><span class="p">;</span>
+
+<span class="c1">// ✅ Logs appropriés</span>
+<span class="n">logger</span><span class="p">.</span><span class="na">info</span><span class="p">(</span><span class="s">&quot;Creating species: {}&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">name</span><span class="p">);</span>
+</code></pre></div>
+<h4 id="annotations-spring">Annotations Spring<a class="headerlink" href="#annotations-spring" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="c1">// ✅ Utiliser @Autowired ou constructeur</span>
+<span class="nd">@Service</span>
+<span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">SpeciesService</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">SpeciesRepository</span><span class="w"> </span><span class="n">repository</span><span class="p">;</span>
+
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="nf">SpeciesService</span><span class="p">(</span><span class="n">SpeciesRepository</span><span class="w"> </span><span class="n">repository</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">this</span><span class="p">.</span><span class="na">repository</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">repository</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="c1">// ✅ Mapper les endpoints</span>
+<span class="nd">@GetMapping</span><span class="p">(</span><span class="s">&quot;/{name}&quot;</span><span class="p">)</span>
+<span class="kd">public</span><span class="w"> </span><span class="n">ResponseEntity</span><span class="o">&lt;</span><span class="n">Species</span><span class="o">&gt;</span><span class="w"> </span><span class="nf">getByName</span><span class="p">(</span><span class="nd">@PathVariable</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">name</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">speciesRepository</span><span class="p">.</span><span class="na">findByName</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="na">map</span><span class="p">(</span><span class="n">ResponseEntity</span><span class="p">::</span><span class="n">ok</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="na">orElse</span><span class="p">(</span><span class="n">ResponseEntity</span><span class="p">.</span><span class="na">notFound</span><span class="p">().</span><span class="na">build</span><span class="p">());</span>
+<span class="p">}</span>
+</code></pre></div>
+<h3 id="ecrire-des-tests">Écrire des tests<a class="headerlink" href="#ecrire-des-tests" title="Permanent link">&para;</a></h3>
+<p>Tout code nouveau doit avoir des tests !</p>
+<div class="highlight"><pre><span></span><code><span class="nd">@SpringBootTest</span>
+<span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">MyNewFeatureTest</span><span class="w"> </span><span class="p">{</span>
+
+<span class="w">    </span><span class="nd">@Autowired</span>
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">MyNewFeatureService</span><span class="w"> </span><span class="n">service</span><span class="p">;</span>
+
+<span class="w">    </span><span class="nd">@Test</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">shouldDoSomething</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="c1">// Arrange</span>
+<span class="w">        </span><span class="n">MyEntity</span><span class="w"> </span><span class="n">entity</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">MyEntity</span><span class="p">(...);</span>
+
+<span class="w">        </span><span class="c1">// Act</span>
+<span class="w">        </span><span class="n">MyResult</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">service</span><span class="p">.</span><span class="na">doSomething</span><span class="p">(</span><span class="n">entity</span><span class="p">);</span>
+
+<span class="w">        </span><span class="c1">// Assert</span>
+<span class="w">        </span><span class="n">assertNotNull</span><span class="p">(</span><span class="n">result</span><span class="p">);</span>
+<span class="w">        </span><span class="n">assertEquals</span><span class="p">(</span><span class="n">expected</span><span class="p">,</span><span class="w"> </span><span class="n">result</span><span class="p">.</span><span class="na">getValue</span><span class="p">());</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="nd">@Test</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">shouldThrowErrorOnInvalidInput</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="c1">// Arrange</span>
+<span class="w">        </span><span class="n">MyEntity</span><span class="w"> </span><span class="n">invalid</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">MyEntity</span><span class="p">(</span><span class="kc">null</span><span class="p">);</span>
+
+<span class="w">        </span><span class="c1">// Act &amp; Assert</span>
+<span class="w">        </span><span class="n">assertThrows</span><span class="p">(</span><span class="n">IllegalArgumentException</span><span class="p">.</span><span class="na">class</span><span class="p">,</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="n">service</span><span class="p">.</span><span class="na">doSomething</span><span class="p">(</span><span class="n">invalid</span><span class="p">);</span>
+<span class="w">        </span><span class="p">});</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<h3 id="lancer-les-tests-localement">Lancer les tests localement<a class="headerlink" href="#lancer-les-tests-localement" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># Tous les tests</span>
+./gradlew<span class="w"> </span><span class="nb">test</span>
+
+<span class="c1"># Tests spécifiques</span>
+./gradlew<span class="w"> </span><span class="nb">test</span><span class="w"> </span>--tests<span class="w"> </span>MyNewFeatureTest
+
+<span class="c1"># Avec rapport coverage</span>
+./gradlew<span class="w"> </span><span class="nb">test</span><span class="w"> </span>jacocoTestReport
+open<span class="w"> </span>build/reports/jacoco/test/html/index.html
+</code></pre></div>
+<h2 id="avant-de-committer">Avant de committer<a class="headerlink" href="#avant-de-committer" title="Permanent link">&para;</a></h2>
+<h3 id="checklist">✅ Checklist<a class="headerlink" href="#checklist" title="Permanent link">&para;</a></h3>
+<ul class="task-list">
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Code compiles sans erreurs</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Tests passent : <code>./gradlew test</code></li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Coverage acceptable (&gt; 80% pour nouvelles classes)</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Code suit conventions du projet</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Messages de commit clairs et descriptifs</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Pas de code inutilisé ou commented</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Documentation à jour si besoin</li>
+</ul>
+<h3 id="format-des-commits">Format des commits<a class="headerlink" href="#format-des-commits" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>add<span class="w"> </span>.
+
+<span class="c1"># Format : type: description</span>
+<span class="c1"># Types : feat, fix, docs, style, refactor, test, chore</span>
+
+git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s2">&quot;feat: Add new species effect system&quot;</span>
+git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s2">&quot;fix: Correct plant health calculation&quot;</span>
+git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s2">&quot;docs: Update API documentation&quot;</span>
+</code></pre></div>
+<h2 id="soumettre-une-pull-request">Soumettre une Pull Request<a class="headerlink" href="#soumettre-une-pull-request" title="Permanent link">&para;</a></h2>
+<h3 id="1-push-votre-branche">1. Push votre branche<a class="headerlink" href="#1-push-votre-branche" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>push<span class="w"> </span>origin<span class="w"> </span>feature/mon-feature
+</code></pre></div>
+<h3 id="2-creer-la-pr">2. Créer la PR<a class="headerlink" href="#2-creer-la-pr" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Allez sur GitHub</li>
+<li>Cliquez "New Pull Request"</li>
+<li>Sélectionnez votre branche</li>
+<li>Remplissez le template</li>
+</ul>
+<h3 id="template-pr">Template PR<a class="headerlink" href="#template-pr" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="gu">## Description</span>
+Explication claire de vos changements.
+
+<span class="gu">## Type de changement</span>
+<span class="k">- [ ]</span> Bug fix
+<span class="k">- [ ]</span> Nouvelle feature
+<span class="k">- [ ]</span> Breaking change
+<span class="k">- [ ]</span> Documentation update
+
+<span class="gu">## Comment tester ?</span>
+<span class="k">1.</span> Créer une espèce
+<span class="k">2.</span> Créer une plante
+<span class="k">3.</span> Vérifier que l&#39;effet s&#39;applique correctement
+
+<span class="gu">## Checklist</span>
+<span class="k">- [ ]</span> Tests ajoutés/modifiés
+<span class="k">- [ ]</span> Documentation mise à jour
+<span class="k">- [ ]</span> Pas de breaking changes
+<span class="k">- [ ]</span> Tests passent : <span class="sb">`./gradlew test`</span>
+</code></pre></div>
+<h3 id="3-repondre-aux-commentaires">3. Répondre aux commentaires<a class="headerlink" href="#3-repondre-aux-commentaires" title="Permanent link">&para;</a></h3>
+<p>Les reviewers peuvent demander des modifications. Répondez constructivement :</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Apporter les changements demandés</span>
+<span class="c1"># Committer à la même branche</span>
+git<span class="w"> </span>add<span class="w"> </span>.
+git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s2">&quot;Address review comments&quot;</span>
+git<span class="w"> </span>push<span class="w"> </span>origin<span class="w"> </span>feature/mon-feature
+
+<span class="c1"># La PR se met à jour automatiquement</span>
+</code></pre></div>
+<h2 id="types-de-contributions">Types de contributions<a class="headerlink" href="#types-de-contributions" title="Permanent link">&para;</a></h2>
+<h3 id="features">🎯 Features<a class="headerlink" href="#features" title="Permanent link">&para;</a></h3>
+<p>Nouvelles fonctionnalités :</p>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>checkout<span class="w"> </span>-b<span class="w"> </span>feature/new-effect-type
+
+<span class="c1"># Implémenter nouvelle feature</span>
+<span class="c1"># Tester</span>
+<span class="c1"># PR</span>
+
+<span class="c1"># Format commit : feat: Add [description]</span>
+</code></pre></div>
+<h3 id="bug-fixes">🔨 Bug fixes<a class="headerlink" href="#bug-fixes" title="Permanent link">&para;</a></h3>
+<p>Corriger bugs :</p>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>checkout<span class="w"> </span>-b<span class="w"> </span>fix/plant-health-bug
+
+<span class="c1"># Fixer le bug</span>
+<span class="c1"># Ajouter test qui reproduit bug</span>
+<span class="c1"># Vérifier test passe après fix</span>
+
+<span class="c1"># Format commit : fix: [description]</span>
+</code></pre></div>
+<h3 id="documentation">📖 Documentation<a class="headerlink" href="#documentation" title="Permanent link">&para;</a></h3>
+<p>Améliorer documentation :</p>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>checkout<span class="w"> </span>-b<span class="w"> </span>docs/update-api-doc
+
+<span class="c1"># Mettre à jour .md files</span>
+<span class="c1"># Pas besoin de tests</span>
+
+<span class="c1"># Format commit : docs: [description]</span>
+</code></pre></div>
+<h3 id="refactoring">🧹 Refactoring<a class="headerlink" href="#refactoring" title="Permanent link">&para;</a></h3>
+<p>Améliorer code existant :</p>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>checkout<span class="w"> </span>-b<span class="w"> </span>refactor/improve-service-layer
+
+<span class="c1"># Refactoriser le code</span>
+<span class="c1"># S&#39;assurer tests passent</span>
+<span class="c1"># Pas de changement comportement</span>
+
+<span class="c1"># Format commit : refactor: [description]</span>
+</code></pre></div>
+<h2 id="etiquettes-et-problemes">Étiquettes et problèmes<a class="headerlink" href="#etiquettes-et-problemes" title="Permanent link">&para;</a></h2>
+<h3 id="trouver-bugs-a-corriger">Trouver bugs à corriger<a class="headerlink" href="#trouver-bugs-a-corriger" title="Permanent link">&para;</a></h3>
+<p>Au lieu de créer nouvelles features, commencez par :</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Voir issues existantes</span>
+<span class="c1"># Chercher labels : help-wanted, good-first-issue</span>
+
+<span class="c1"># Commenter sur l&#39;issue</span>
+<span class="c1"># Proposer votre aide</span>
+</code></pre></div>
+<h3 id="creer-une-issue">Créer une issue<a class="headerlink" href="#creer-une-issue" title="Permanent link">&para;</a></h3>
+<p>Si vous trouvez un bug ou avez une idée :</p>
+<div class="highlight"><pre><span></span><code><span class="gu">## Description du bug</span>
+Décrire le comportement inattendu.
+
+<span class="gu">## Étapes pour reproduire</span>
+<span class="k">1.</span> Créer une espèce...
+<span class="k">2.</span> Créer une plante...
+<span class="k">3.</span> Vérifier l&#39;état...
+
+<span class="gu">## Comportement attendu</span>
+Décrire ce qui devrait se passer.
+
+<span class="gu">## Logs d&#39;erreur</span>
+Coller les stacktraces.
+
+<span class="gu">## Environnement</span>
+<span class="k">-</span><span class="w"> </span>OS: Windows/Mac/Linux
+<span class="k">-</span><span class="w"> </span>Java version: 21
+<span class="k">-</span><span class="w"> </span>MongoDB: 6.0
+</code></pre></div>
+<h2 id="code-review">Code review<a class="headerlink" href="#code-review" title="Permanent link">&para;</a></h2>
+<h3 id="etre-reviewer">Être reviewer<a class="headerlink" href="#etre-reviewer" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Consultez les PRs ouvertes</li>
+<li>Lisez attentivement le code</li>
+<li>Testez localement si possible</li>
+<li>Laissez des commentaires constructifs</li>
+</ul>
+<h3 id="style-de-review">Style de review<a class="headerlink" href="#style-de-review" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>// ❌ Ne pas faire
+This code is bad.
+
+// ✅ À faire
+Consider using a more descriptive variable name here, as `x` doesn&#39;t 
+indicate what value it represents. Something like `plantHealthFactor` 
+would be clearer.
+
+Voir convention [ici](lien).
+</code></pre></div>
+<h2 id="bonus-contributions">Bonus contributions<a class="headerlink" href="#bonus-contributions" title="Permanent link">&para;</a></h2>
+<h3 id="idees-issues-populaires">Idées issues populaires<a class="headerlink" href="#idees-issues-populaires" title="Permanent link">&para;</a></h3>
+<ul>
+<li>🎨 Interface web améliorée</li>
+<li>📊 Meilleure visualisation données</li>
+<li>🔐 Système d'authentification</li>
+<li>⚡ Optimisations performance</li>
+<li>📱 API mobile</li>
+<li>🌐 Support multilingue</li>
+</ul>
+<h3 id="documentation_1">Documentation<a class="headerlink" href="#documentation_1" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Ajouter tutoriels</li>
+<li>Améliorer exemples</li>
+<li>Traduire en autres langues</li>
+<li>Créer vidéos tutoriels</li>
+</ul>
+<h2 id="regles-importantes">Règles importantes<a class="headerlink" href="#regles-importantes" title="Permanent link">&para;</a></h2>
+<h3 id="comportement">Comportement<a class="headerlink" href="#comportement" title="Permanent link">&para;</a></h3>
+<ul>
+<li>✅ Être respectueux et constructif</li>
+<li>✅ Accepter les critiques</li>
+<li>✅ Aider autres contributeurs</li>
+<li>✅ Attribuer crédits</li>
+</ul>
+<h3 id="licensing">Licensing<a class="headerlink" href="#licensing" title="Permanent link">&para;</a></h3>
+<p>Tout code contribué doit être compatible avec la licence du projet.</p>
+<h2 id="questions">Questions ?<a class="headerlink" href="#questions" title="Permanent link">&para;</a></h2>
+<ul>
+<li>📧 Email : contact@greendesk.dev</li>
+<li>💬 Discord : [Lien]</li>
+<li>🐛 Issues : Poser des questions en créant une issue avec label <code>question</code></li>
+</ul>
+<h2 id="processus-de-review-et-merge">Processus de review et merge<a class="headerlink" href="#processus-de-review-et-merge" title="Permanent link">&para;</a></h2>
+<ol>
+<li><strong>Créer PR</strong> - Suivre template</li>
+<li><strong>Tests CI</strong> - Vérifier que tests passent</li>
+<li><strong>Code review</strong> - Attendez review d'au moins 2 mainteneurs</li>
+<li><strong>Approbation</strong> - PR approuvée</li>
+<li><strong>Merge</strong> - Fusionner dans main</li>
+</ol>
+<h2 id="after-merge">After merge<a class="headerlink" href="#after-merge" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><span class="c1"># Sync local repo</span>
+git<span class="w"> </span>checkout<span class="w"> </span>main
+git<span class="w"> </span>fetch<span class="w"> </span>upstream
+git<span class="w"> </span>rebase<span class="w"> </span>upstream/main
+git<span class="w"> </span>push<span class="w"> </span>origin<span class="w"> </span>main
+
+<span class="c1"># Supprimer branche locale</span>
+git<span class="w"> </span>branch<span class="w"> </span>-d<span class="w"> </span>feature/mon-feature
+</code></pre></div>
+<hr />
+<p><strong>Merci de contribuer !</strong> 🌱</p>
+<p>Votre contribution rend GreenDesk meilleur pour tous. Bienvenue dans l'équipe !</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var tab,labels=set.querySelector(".tabbed-labels");for(tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.tabs.sticky", "navigation.sections", "navigation.expand", "toc.integrate", "search.suggest", "search.highlight", "content.tabs.link", "content.code.copy"], "search": "../assets/javascripts/workers/search.f886a092.min.js", "translations": {"clipboard.copied": "Copi\u00e9 dans le presse-papier", "clipboard.copy": "Copier dans le presse-papier", "search.result.more.one": "1 de plus sur cette page", "search.result.more.other": "# de plus sur cette page", "search.result.none": "Aucun document trouv\u00e9", "search.result.one": "1 document trouv\u00e9", "search.result.other": "# documents trouv\u00e9s", "search.result.placeholder": "Taper pour d\u00e9marrer la recherche", "search.result.term.missing": "Non trouv\u00e9", "select.version": "S\u00e9lectionner la version"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.d7c377c4.min.js"></script>
+      
+        <script src="../assets/js/mermaid-bundle.js"></script>
+      
+        <script src="../assets/js/mermaid-init.js"></script>
+      
+    
+  </body>
+</html>

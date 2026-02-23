@@ -41,3 +41,18 @@ bin/
 
 ### Mac OS ###
 .DS_Store
+venv
+.venv
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.egg-info/
+dist/
+build/
+*.egg
+*.log
+*.bak
+*.swp
+*.swo
+*.tmp               
