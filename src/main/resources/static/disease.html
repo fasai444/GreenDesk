@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>🦠 GreenDesk Lab — Propagation des maladies</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="lab">
+
+<h1>🧪 GreenDesk Lab – Simulation de propagation des maladies</h1>
+<p class="subtitle">Clique sur une case pour inspecter la plante</p>
+
+<div class="toolbar">
+    <button class="btn" onclick="tick()">▶ Tick</button>
+    <input type="number" id="nbTicks" value="5" min="1">
+    <button class="btn" onclick="simulate()">⏩ Simuler</button>
+    <button class="btn ghost" onclick="loadGrid()">🔄 Refresh</button>
+</div>
+
+<div class="legend">
+    <span class="dot healthy"></span> Sain
+    <span class="dot diseased"></span> Malade
+    <span class="dot empty"></span> Vide
+</div>
+
+<div id="grid" class="grid"></div>
+
+<div class="panel">
+    <h3>📍 Détails de la cellule</h3>
+    <pre id="cellDetails">Clique sur une cellule…</pre>
+</div>
+
+<script src="ecosystem.js"></script>
+</body>
+</html>
