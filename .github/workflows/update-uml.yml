@@ -1,0 +1,46 @@
+name: Update UML Diagram
+
+on:
+  push:
+    branches:
+      - main
+      - master
+    paths:
+      - 'src/main/java/**'
+      - 'build.gradle'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  generate-uml:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: gradle
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Generate UML if task exists
+        run: |
+          if ./gradlew tasks --all | grep -q "buildClassDiagram"; then
+            ./gradlew buildClassDiagram --no-daemon
+          else
+            echo "Task buildClassDiagram not found, skipping UML generation."
+          fi
+
+      - name: Commit UML changes
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "docs: update UML diagram automatically"
+          file_pattern: "**/*.puml"
