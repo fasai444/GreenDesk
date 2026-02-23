@@ -1196,7 +1196,7 @@
 <h3 id="etape-3-consulter-letat">Étape 3 : Consulter l'état<a class="headerlink" href="#etape-3-consulter-letat" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code>curl<span class="w"> </span>http://localhost:8080/api/plants/507f1f77bcf86cd799439012
 </code></pre></div>
-<p><strong>Réponse</strong> : Plante HEALTHY ✅</p>
+<p><strong>Réponse</strong> : Plante: HEALTHY</p>
 <hr />
 <h2 id="scenario-2-systeme-complet-avec-foret">Scénario 2 : Système complet avec forêt<a class="headerlink" href="#scenario-2-systeme-complet-avec-foret" title="Permanent link">&para;</a></h2>
 <p>Créer une forêt et y placer plusieurs plantes avec gestion des saisons.</p>
@@ -1316,7 +1316,7 @@ curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </spa
 <span class="c1"># Consultez l&#39;état</span>
 curl<span class="w"> </span>http://localhost:8080/api/plants/<span class="nv">$PLANT_ID</span>
 </code></pre></div>
-<p><strong>Observation</strong> : Status = STRESSED 🟡</p>
+<p><strong>Observation</strong> : Status = STRESSED</p>
 <h3 id="diagnostic-des-problemes">Diagnostic des problèmes<a class="headerlink" href="#diagnostic-des-problemes" title="Permanent link">&para;</a></h3>
 <ul>
 <li>Eau : 300ml (optimal 500ml) → <strong>Besoin eau</strong></li>
@@ -1470,15 +1470,15 @@ curl<span class="w"> </span>http://localhost:8080/api/plants/<span class="nv">$R
         <span class="n">health</span> <span class="o">=</span> <span class="n">status</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;health&quot;</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">health</span> <span class="o">&lt;</span> <span class="mi">50</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;🚨 Plante malade ! Health: </span><span class="si">{</span><span class="n">health</span><span class="si">}</span><span class="s2">%&quot;</span><span class="p">)</span>
+          <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Plante malade. Health: </span><span class="si">{</span><span class="n">health</span><span class="si">}</span><span class="s2">%&quot;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">add_effect</span><span class="p">(</span><span class="n">plant_id</span><span class="p">,</span> <span class="s2">&quot;FERTILIZER&quot;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">add_effect</span><span class="p">(</span><span class="n">plant_id</span><span class="p">,</span> <span class="s2">&quot;EXTRA_WATERING&quot;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">add_effect</span><span class="p">(</span><span class="n">plant_id</span><span class="p">,</span> <span class="s2">&quot;HEATING&quot;</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">health</span> <span class="o">&lt;</span> <span class="mi">80</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;⚠️  Plante stressée. Health: </span><span class="si">{</span><span class="n">health</span><span class="si">}</span><span class="s2">%&quot;</span><span class="p">)</span>
+          <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Plante stressée. Health: </span><span class="si">{</span><span class="n">health</span><span class="si">}</span><span class="s2">%&quot;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">add_effect</span><span class="p">(</span><span class="n">plant_id</span><span class="p">,</span> <span class="s2">&quot;FERTILIZER&quot;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;✅ Plante en bonne santé. Health: </span><span class="si">{</span><span class="n">health</span><span class="si">}</span><span class="s2">%&quot;</span><span class="p">)</span>
+          <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Plante en bonne santé. Health: </span><span class="si">{</span><span class="n">health</span><span class="si">}</span><span class="s2">%&quot;</span><span class="p">)</span>
 
 <span class="c1"># Utilisation</span>
 <span class="n">api</span> <span class="o">=</span> <span class="n">GreenDeskAPI</span><span class="p">(</span><span class="n">BASE_URL</span><span class="p">)</span>

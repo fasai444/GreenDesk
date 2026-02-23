@@ -968,16 +968,16 @@
           <li class="md-nav__item">
   <a href="#a-faire" class="md-nav__link">
     <span class="md-ellipsis">
-      ✅ À faire
+      À faire
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#a-ne-pas-faire" class="md-nav__link">
+  <a href="#a-eviter" class="md-nav__link">
     <span class="md-ellipsis">
-      ❌ À ne pas faire
+      À éviter
     </span>
   </a>
   
@@ -1425,7 +1425,7 @@ POST /api/forests/{forestId}/season/next
 <div class="highlight"><pre><span></span><code>curl<span class="w"> </span>http://localhost:8080/api/forests
 </code></pre></div></p>
 <h2 id="supprimer-une-foret">Supprimer une forêt<a class="headerlink" href="#supprimer-une-foret" title="Permanent link">&para;</a></h2>
-<p><strong>⚠️ Attention</strong> : Cela supprime aussi les plantes de la forêt
+<p><strong>Attention</strong> : Cela supprime aussi les plantes de la forêt
 <div class="highlight"><pre><span></span><code>DELETE<span class="w"> </span>/api/forests/<span class="o">{</span>forestId<span class="o">}</span>
 </code></pre></div></p>
 <p><strong>Exemple</strong> :
@@ -1450,9 +1450,9 @@ POST /api/forests/{forestId}/season/next
 - <strong>Résistance</strong> : ×1.05 → Plus résistante</p>
 <h3 id="diversite-ecologique">Diversité écologique<a class="headerlink" href="#diversite-ecologique" title="Permanent link">&para;</a></h3>
 <p>La variation génétique permet :
-- ✅ Même espèce, différents phénotypes
-- ✅ Simulation réaliste de la diversité
-- ✅ Comportements variés</p>
+- Même espèce, différents phénotypes
+- Simulation réaliste de la diversité
+- Comportements variés</p>
 <h2 id="scenarios-ecologiques">Scenarios écologiques<a class="headerlink" href="#scenarios-ecologiques" title="Permanent link">&para;</a></h2>
 <h3 id="scenario-1-foret-printaniere-diverse">Scénario 1 : Forêt printanière diverse<a class="headerlink" href="#scenario-1-foret-printaniere-diverse" title="Permanent link">&para;</a></h3>
 <p><strong>Création</strong> :
@@ -1540,17 +1540,17 @@ curl<span class="w"> </span>http://localhost:8080/api/forests/<span class="o">{<
 <span class="c1"># Chaque saison affecte les plantes différemment</span>
 </code></pre></div>
 <h2 id="bonnes-pratiques">Bonnes pratiques<a class="headerlink" href="#bonnes-pratiques" title="Permanent link">&para;</a></h2>
-<h3 id="a-faire">✅ À faire<a class="headerlink" href="#a-faire" title="Permanent link">&para;</a></h3>
+<h3 id="a-faire">À faire<a class="headerlink" href="#a-faire" title="Permanent link">&para;</a></h3>
 <ul>
 <li>Créer des forêts thématiques (tropicale, tempérée, désert)</li>
 <li>Monitorer les saisons et adapter</li>
 <li>Diversifier les espèces pour résilience</li>
 <li>Utiliser variations génétiques pour réalisme</li>
 </ul>
-<h3 id="a-ne-pas-faire">❌ À ne pas faire<a class="headerlink" href="#a-ne-pas-faire" title="Permanent link">&para;</a></h3>
+<h3 id="a-eviter">À éviter<a class="headerlink" href="#a-eviter" title="Permanent link">&para;</a></h3>
 <ul>
 <li>Placer 2 plantes au même endroit</li>
-<li>Ignorer les changements saisonniers</li>
+<li>Ignorer les changements saisonnières</li>
 <li>Laisser des plantes malades sans interventions</li>
 <li>Surcharger la forêt (optimum : 30-50% positions remplies)</li>
 </ul>

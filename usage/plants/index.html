@@ -1453,22 +1453,22 @@
 </thead>
 <tbody>
 <tr>
-<td>🟢 <strong>HEALTHY</strong></td>
+<td><strong>HEALTHY</strong></td>
 <td>&gt; 80%</td>
 <td>Conditions optimales</td>
 </tr>
 <tr>
-<td>🟡 <strong>STRESSED</strong></td>
+<td><strong>STRESSED</strong></td>
 <td>50-80%</td>
 <td>Conditions suboptimales</td>
 </tr>
 <tr>
-<td>🟠 <strong>DORMANT</strong></td>
+<td><strong>DORMANT</strong></td>
 <td>20-50%</td>
 <td>Croissance arrêtée</td>
 </tr>
 <tr>
-<td>🔴 <strong>DISEASED</strong></td>
+<td><strong>DISEASED</strong></td>
 <td>&lt; 20%</td>
 <td>État critique</td>
 </tr>
@@ -1550,7 +1550,7 @@
 <span class="w">  </span><span class="nt">&quot;luxIntensity&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">3000.0</span>
 <span class="p">}</span>
 </code></pre></div>
-→ Santé : 100% ✅</p>
+→ Santé : 100% (HEALTHY)</p>
 <h3 id="scenario-2-plante-stressee-trop-chaud">Scénario 2 : Plante stressée (trop chaud)<a class="headerlink" href="#scenario-2-plante-stressee-trop-chaud" title="Permanent link">&para;</a></h3>
 <p><div class="highlight"><pre><span></span><code><span class="p">{</span>
 <span class="w">  </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Rose en stress&quot;</span><span class="p">,</span>
@@ -1560,7 +1560,7 @@
 <span class="w">  </span><span class="nt">&quot;luxIntensity&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">3000.0</span>
 <span class="p">}</span>
 </code></pre></div>
-→ Santé : ~60% 🟡 Stressée</p>
+→ Santé : ~60% (STRESSED)</p>
 <p><strong>Solution</strong> : 
 - Ajouter effet <code>SHADE</code> (-30% lumière)
 - Baisser température
@@ -1574,7 +1574,7 @@
 <span class="w">  </span><span class="nt">&quot;luxIntensity&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">100.0</span><span class="w">             </span><span class="c1">// 96% trop bas</span>
 <span class="p">}</span>
 </code></pre></div>
-→ Santé : ~15% 🔴 Malade</p>
+→ Santé : ~15% (DISEASED)</p>
 <p><strong>Solutions</strong> :
 1. Augmenter eau immédiatement (+300ml)
 2. Baisser température significantly
