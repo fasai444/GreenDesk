@@ -4,10 +4,12 @@ Merci de vouloir contribuer à GreenDesk ! Guide pour contribuer au projet.
 
 ## Avant de commencer
 
-- ✅ Familiarisez-vous avec le [Guide de démarrage](getting-started.md)
-- ✅ Lisez l'[Architecture](architecture.md)
-- ✅ Consultez le [Guide des tests](testing.md)
-- ✅ Vérifiez les [Problèmes ouverts](https://github.com/yourteam/greendesk/issues)
+## Avant de commencer
+
+- Familiarisez-vous avec le [Guide de démarrage](getting-started.md)
+- Lisez l'[Architecture](architecture.md)
+- Consultez le [Guide des tests](testing.md)
+- Vérifiez les [Problèmes ouverts](https://github.com/yourteam/greendesk/issues)
 
 ## Installation pour développement
 
@@ -23,23 +25,34 @@ cd greendesk
 # Ajouter upstream
 git remote add upstream https://github.com/originalteam/greendesk.git
 ```
+// Ne pas faire
+This code is bad.
+
+// À faire
+Consider using a more descriptive variable name here, as `x` doesn't 
+indicate what value it represents. Something like `plantHealthFactor` 
+would be clearer.
 
 ### 2. Créer branche feature
 
 ```bash
-# Mise à jour depuis upstream
-git fetch upstream
-git rebase upstream/main
+### Comportement
 
+- Être respectueux et constructif
+- Accepter les critiques
+- Aider autres contributeurs
+- Attribuer crédits
 # Créer branche
 git checkout -b feature/mon-feature
 # ou
-git checkout -b fix/mon-bug
-```
+### Idées issues populaires
 
-### 3. Configurer l'environnement
-
-```bash
+- Interface web améliorée
+- Meilleure visualisation données
+- Système d'authentification
+- Optimisations performance
+- API mobile
+- Support multilingue
 # Configurer Python env
 configure_python_environment
 
@@ -65,37 +78,37 @@ src/main/java/org/example/
 #### Noms
 
 ```java
-// ✅ Classes : PascalCase
+// Classes : PascalCase
 public class SpeciesService { }
 
-// ✅ Méthodes : camelCase
+// Méthodes : camelCase
 public void createSpecies() { }
 
-// ✅ Constantes : UPPER_SNAKE
+// Constantes : UPPER_SNAKE
 public static final String DEFAULT_SPECIES = "Rose";
 ```
 
 #### Format
 
 ```java
-// ✅ Utiliser Lombok
+// Utiliser Lombok
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class Species { }
 
-// ✅ Valider entrées
+// Valider entrées
 @NotBlank(message = "Name is required")
 private String name;
 
-// ✅ Logs appropriés
+// Logs appropriés
 logger.info("Creating species: {}", name);
 ```
 
 #### Annotations Spring
 
 ```java
-// ✅ Utiliser @Autowired ou constructeur
+// Utiliser @Autowired ou constructeur
 @Service
 public class SpeciesService {
     private final SpeciesRepository repository;
@@ -104,8 +117,8 @@ public class SpeciesService {
         this.repository = repository;
     }
 }
-
-// ✅ Mapper les endpoints
+```
+// Mapper les endpoints
 @GetMapping("/{name}")
 public ResponseEntity<Species> getByName(@PathVariable String name) {
     return speciesRepository.findByName(name)
@@ -144,231 +157,125 @@ public class MyNewFeatureTest {
         MyEntity invalid = new MyEntity(null);
         
         // Act & Assert
-        assertThrows(IllegalArgumentException.class, () -> {
-            service.doSomething(invalid);
-        });
-    }
-}
-```
+        # Guide de contribution
 
-### Lancer les tests localement
+        Merci pour votre intérêt à contribuer à GreenDesk. Ce document explique les étapes recommandées pour proposer des modifications, soumettre des correctifs et contribuer de façon productive.
 
-```bash
-# Tous les tests
-./gradlew test
+        ## Avant de commencer
 
-# Tests spécifiques
-./gradlew test --tests MyNewFeatureTest
+        - Lisez le [Guide de démarrage](getting-started.md).
+        - Parcourez l'[architecture du projet](architecture.md) pour comprendre la structure.
+        - Consultez le [Guide des tests](testing.md) et les tests existants.
+        - Vérifiez les issues ouvertes et les labels pertinents sur GitHub.
 
-# Avec rapport coverage
-./gradlew test jacocoTestReport
-open build/reports/jacoco/test/html/index.html
-```
+        ## Installation et configuration locale
 
-## Avant de committer
+        1. Forkez le dépôt puis clonez votre fork :
 
-### ✅ Checklist
+        ```bash
+        git clone https://github.com/votre-pseudo/greendesk.git
+        cd greendesk
+        git remote add upstream https://github.com/originalteam/greendesk.git
+        ```
 
-- [ ] Code compiles sans erreurs
-- [ ] Tests passent : `./gradlew test`
-- [ ] Coverage acceptable (> 80% pour nouvelles classes)
-- [ ] Code suit conventions du projet
-- [ ] Messages de commit clairs et descriptifs
-- [ ] Pas de code inutilisé ou commented
-- [ ] Documentation à jour si besoin
+        2. Créez une branche pour votre travail :
 
-### Format des commits
+        ```bash
+        git fetch upstream
+        git checkout -b feature/ma-fonctionnalite
+        ```
 
-```bash
-git add .
+        3. Construisez et exécutez les tests localement :
 
-# Format : type: description
-# Types : feat, fix, docs, style, refactor, test, chore
+        ```bash
+        ./gradlew build
+        ./gradlew test
+        ```
 
-git commit -m "feat: Add new species effect system"
-git commit -m "fix: Correct plant health calculation"
-git commit -m "docs: Update API documentation"
-```
+        ## Conventions et bonnes pratiques
 
-## Soumettre une Pull Request
+        Respectez les conventions de nommage et de style du projet :
 
-### 1. Push votre branche
+        - Classes : `PascalCase`
+        - Méthodes : `camelCase`
+        - Constantes : `UPPER_SNAKE`
 
-```bash
-git push origin feature/mon-feature
-```
+        Utilisez Lombok là où il est déjà utilisé, validez les entrées et ajoutez des logs pertinents.
 
-### 2. Créer la PR
+        Exemple :
 
-- Allez sur GitHub
-- Cliquez "New Pull Request"
-- Sélectionnez votre branche
-- Remplissez le template
+        ```java
+        // Classes : PascalCase
+        public class SpeciesService { }
 
-### Template PR
+        // Méthodes : camelCase
+        public void createSpecies() { }
 
-```markdown
-## Description
-Explication claire de vos changements.
+        // Constantes : UPPER_SNAKE
+        public static final String DEFAULT_SPECIES = "Rose";
+        ```
 
-## Type de changement
-- [ ] Bug fix
-- [ ] Nouvelle feature
-- [ ] Breaking change
-- [ ] Documentation update
+        ### Tests
 
-## Comment tester ?
-1. Créer une espèce
-2. Créer une plante
-3. Vérifier que l'effet s'applique correctement
+        Tout nouveau code doit être accompagné de tests unitaires ou d'intégration selon le besoin. Exécutez `./gradlew test` et assurez-vous que les tests passent avant de créer la pull request.
 
-## Checklist
-- [ ] Tests ajoutés/modifiés
-- [ ] Documentation mise à jour
-- [ ] Pas de breaking changes
-- [ ] Tests passent : `./gradlew test`
-```
+        ## Checklist avant commit
 
-### 3. Répondre aux commentaires
+        - Le code compile sans erreurs
+        - Les tests passent (`./gradlew test`)
+        - La couverture de test est suffisante pour les nouvelles fonctionnalités
+        - Les messages de commit sont clairs et descriptifs
+        - La documentation est mise à jour si nécessaire
 
-Les reviewers peuvent demander des modifications. Répondez constructivement :
+        ## Soumettre une Pull Request
 
-```bash
-# Apporter les changements demandés
-# Committer à la même branche
-git add .
-git commit -m "Address review comments"
-git push origin feature/mon-feature
+        1. Poussez votre branche vers votre fork :
 
-# La PR se met à jour automatiquement
-```
+        ```bash
+        git push origin feature/ma-fonctionnalite
+        ```
 
-## Types de contributions
+        2. Créez une Pull Request sur GitHub en choisissant la branche cible appropriée. Remplissez le template PR en expliquant clairement les changements et comment les tester.
 
-### 🎯 Features
+        ### Modèle de description pour la PR
 
-Nouvelles fonctionnalités :
+        ```
+        ## Description
+        Résumé des modifications et motivations.
 
-```bash
-git checkout -b feature/new-effect-type
+        ## Type de changement
+        - Bug fix
+        - Nouvelle fonctionnalité
+        - Documentation
 
-# Implémenter nouvelle feature
-# Tester
-# PR
+        ## Comment tester
+        Étapes pour reproduire et valider les changements.
+        ```
 
-# Format commit : feat: Add [description]
-```
+        ## Processus de revue et fusion
 
-### 🔨 Bug fixes
+        - Attendre les retours des reviewers et adresser les commentaires.
+        - Les tests CI doivent être verts avant de fusionner.
+        - Après approbation, fusionner selon la stratégie du projet (merge/squash/rebase).
 
-Corriger bugs :
+        ## Après fusion
 
-```bash
-git checkout -b fix/plant-health-bug
+        ```bash
+        git checkout main
+        git fetch upstream
+        git rebase upstream/main
+        git push origin main
+        git branch -d feature/ma-fonctionnalite
+        ```
 
-# Fixer le bug
-# Ajouter test qui reproduit bug
-# Vérifier test passe après fix
-
-# Format commit : fix: [description]
-```
-
-### 📖 Documentation
-
-Améliorer documentation :
-
-```bash
-git checkout -b docs/update-api-doc
-
-# Mettre à jour .md files
-# Pas besoin de tests
-
-# Format commit : docs: [description]
-```
-
-### 🧹 Refactoring
-
-Améliorer code existant :
-
-```bash
-git checkout -b refactor/improve-service-layer
-
-# Refactoriser le code
-# S'assurer tests passent
-# Pas de changement comportement
-
-# Format commit : refactor: [description]
-```
-
-## Étiquettes et problèmes
-
-### Trouver bugs à corriger
-
-Au lieu de créer nouvelles features, commencez par :
-
-```bash
-# Voir issues existantes
-# Chercher labels : help-wanted, good-first-issue
-
-# Commenter sur l'issue
-# Proposer votre aide
-```
-
-### Créer une issue
-
-Si vous trouvez un bug ou avez une idée :
-
-```markdown
-## Description du bug
-Décrire le comportement inattendu.
-
-## Étapes pour reproduire
-1. Créer une espèce...
-2. Créer une plante...
-3. Vérifier l'état...
-
-## Comportement attendu
-Décrire ce qui devrait se passer.
-
-## Logs d'erreur
-Coller les stacktraces.
-
-## Environnement
-- OS: Windows/Mac/Linux
-- Java version: 21
-- MongoDB: 6.0
-```
-
-## Code review
-
-### Être reviewer
-
-- Consultez les PRs ouvertes
-- Lisez attentivement le code
-- Testez localement si possible
-- Laissez des commentaires constructifs
-
-### Style de review
-
-```
-// ❌ Ne pas faire
-This code is bad.
-
-// ✅ À faire
-Consider using a more descriptive variable name here, as `x` doesn't 
-indicate what value it represents. Something like `plantHealthFactor` 
-would be clearer.
-
-Voir convention [ici](lien).
-```
-
+        Merci pour votre contribution !
 ## Bonus contributions
 
 ### Idées issues populaires
 
 - 🎨 Interface web améliorée
-- 📊 Meilleure visualisation données
-- 🔐 Système d'authentification
+- Meilleure visualisation données
+- Système d'authentification
 - ⚡ Optimisations performance
 - 📱 API mobile
 - 🌐 Support multilingue
@@ -384,10 +291,10 @@ Voir convention [ici](lien).
 
 ### Comportement
 
-- ✅ Être respectueux et constructif
-- ✅ Accepter les critiques
-- ✅ Aider autres contributeurs
-- ✅ Attribuer crédits
+- Être respectueux et constructif
+- Accepter les critiques
+- Aider autres contributeurs
+- Attribuer crédits
 
 ### Licensing
 
@@ -397,7 +304,7 @@ Tout code contribué doit être compatible avec la licence du projet.
 
 - 📧 Email : contact@greendesk.dev
 - 💬 Discord : [Lien]
-- 🐛 Issues : Poser des questions en créant une issue avec label `question`
+- Issues : Poser des questions en créant une issue avec label `question`
 
 ## Processus de review et merge
 

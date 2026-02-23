@@ -117,10 +117,10 @@ curl -X POST "http://localhost:8080/api/forests/{forestId}/plants/{plantId}?posX
 
 ## Conseils utiles
 
-- 📖 Consultez la [FAQ](faq.md) pour les problèmes courants
-- 🔍 C'est votre première fois ? Lire [Concepts fondamentaux](usage/concepts.md)
-- 🧪 Voulez-vous contribuer ? Lisez [Tests](testing.md)
-- 🐳 Problèmes Docker ? Consultez [Docker](docker.md)
+- Consultez la [FAQ](faq.md) pour les problèmes courants
+- C'est votre première fois ? Lire [Concepts fondamentaux](usage/concepts.md)
+- Voulez-vous contribuer ? Lisez [Tests](testing.md)
+- Problèmes Docker ? Consultez [Docker](docker.md)
 
 ## Résolution des problèmes courants
 

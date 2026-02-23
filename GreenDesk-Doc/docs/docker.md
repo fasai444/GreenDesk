@@ -393,7 +393,7 @@ docker events --filter type=container
 
 ## Best practices Docker
 
-### ✅ À faire
+### À faire
 
 - Utiliser Alpine pour images plus petites
 - Limiter ressources (CPU, mémoire)
@@ -402,7 +402,7 @@ docker events --filter type=container
 - Utiliser .dockerignore
 - Versioner les images
 
-### ❌ À éviter
+### À éviter
 
 - Lancer services importants en root
 - Stocker données en layer image

@@ -8,12 +8,12 @@ L'API GreenDesk expose toutes les fonctionnalités via endpoints REST documenté
 
 ## Caractéristiques
 
-- ✅ **API REST** complète et RESTful
-- ✅ **JSON** pour requêtes et réponses
-- ✅ **Validation** automatique des données
-- ✅ **Codes HTTP** standards (200, 201, 400, 404, 409, 500)
-- ✅ **Documentation interactive** avec Swagger
-- ✅ **OpenAPI 3.0** conforme
+- **API REST** complète et RESTful
+- **JSON** pour requêtes et réponses
+- **Validation** automatique des données
+- **Codes HTTP** standards (200, 201, 400, 404, 409, 500)
+- **Documentation interactive** avec Swagger
+- **OpenAPI 3.0** conforme
 
 ## Accès à l'API
 
@@ -25,9 +25,9 @@ http://localhost:8080/swagger-ui.html
 ```
 
 Vous pouvez :
-- 📖 Lire la documentation complète
-- 🧪 Tester les endpoints directement
-- 📋 Voir les schémas JSON
+- Lire la documentation complète
+- Tester les endpoints directement
+- Voir les schémas JSON
 
 ### Documention JSON (OpenAPI)
 
@@ -88,9 +88,9 @@ curl -X POST http://localhost:8080/api/species \
 
 ## Limites de l'API
 
-- ✅ Pas de limite de requêtes (actuellement)
-- ✅ Réponses de taille raisonnable
-- ✅ Pas de pagination actuellement
+- Pas de limite de requêtes (actuellement)
+- Réponses de taille raisonnable
+- Pas de pagination actuellement
 
 ## Structure du projet
 
@@ -209,17 +209,17 @@ const species = await response.json();
 
 ## Bonnes pratiques
 
-- ✅ Toujours vérifier les codes de réponse HTTP
-- ✅ Traiter les erreurs gracieusement
-- ✅ Utiliser headers `Content-Type: application/json`
-- ✅ Valider les données avant envoi
-- ✅ Respecter les types de données (float vs int)
+- Toujours vérifier les codes de réponse HTTP
+- Traiter les erreurs gracieusement
+- Utiliser headers `Content-Type: application/json`
+- Valider les données avant envoi
+- Respecter les types de données (float vs int)
 
 ## Prochaines étapes
 
-- 📝 Consultez [Endpoints](endpoints.md) pour liste complète
-- 🔨 Voir [Exemples](examples.md) pour cas d'usage réels
-- 🏗️ En savoir plus sur [Architecture](../architecture.md)
+- Consultez [Endpoints](endpoints.md) pour liste complète
+- Voir [Exemples](examples.md) pour cas d'usage réels
+- En savoir plus sur [Architecture](../architecture.md)
 
 ---
 

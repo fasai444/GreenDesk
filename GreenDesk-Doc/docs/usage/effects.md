@@ -219,13 +219,13 @@ curl -X POST http://localhost:8080/api/plants/{plantId}/effects/EXTRA_WATERING
 ### Combinaisons à éviter
 
 ```bash
-# ❌ HEATING + SHADE uniquement
+# HEATING + SHADE uniquement (à éviter)
 # Peut être confus écologiquement
-
-# ❌ FERTILIZER seul sans eau
-# Croissance rapide mais dehydratation
-
-# ❌ EXTRA_WATERING en hiver (winter) sans vérif
+#
+# FERTILIZER seul sans eau (à éviter)
+# Croissance rapide mais déshydratation
+#
+# EXTRA_WATERING en hiver (winter) sans vérif (à éviter)
 # Risque de pourriture racines
 ```
 
@@ -261,7 +261,7 @@ curl http://localhost:8080/api/plants/{plantId}
 curl -X DELETE http://localhost:8080/api/plants/{plantId}/effects/HEATING
 ```
 
-**Résultat attendu** : Health revient > 80% → HEALTHY ✅
+**Résultat attendu** : Health revient > 80% → HEALTHY
 
 ---
 

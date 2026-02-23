@@ -189,7 +189,7 @@ DELETE /api/species/{name}
 - `204 No Content` - Suppression réussie
 - `404 Not Found` - Espèce inexistante
 
-**⚠️ Attention** : Supprime aussi toutes les plantes associées
+**Attention** : Supprime aussi toutes les plantes associées
 
 **Exemple** :
 ```bash

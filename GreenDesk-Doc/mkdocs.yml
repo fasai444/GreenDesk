@@ -35,9 +35,7 @@ theme:
     - content.code.copy
 
 markdown_extensions:
-  - pymdownx.emoji:
-      emoji_index: !!python/name:pymdownx.emoji.twemoji
-      emoji_generator: !!python/name:pymdownx.emoji.to_svg
+  # Removed pymdownx.emoji to avoid generating SVG emoji images
   - pymdownx.superfences:
       custom_fences:
         - name: mermaid
@@ -63,6 +61,7 @@ nav:
   - Accueil: index.md
   - Guide de démarrage: getting-started.md
   - Installation: installation.md
+  - Statut: status.md
   - Guide d'utilisation:
     - Concepts fondamentaux: usage/concepts.md
     - Gestion des espèces: usage/species.md

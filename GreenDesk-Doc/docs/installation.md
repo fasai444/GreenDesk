@@ -268,10 +268,10 @@ chmod +x gradlew
 
 ## Prochaines étapes
 
-1. ✅ Configuration complète
-2. 📖 Consultez [Concepts fondamentaux](usage/concepts.md)
-3. 🚀 Lancez les [exemples d'API](api/examples.md)
-4. 🧪 Exécutez les [tests](testing.md)
+1. Configuration complète
+2. Consultez [Concepts fondamentaux](usage/concepts.md)
+3. Lancez les [exemples d'API](api/examples.md)
+4. Exécutez les [tests](testing.md)
 
 ---
 

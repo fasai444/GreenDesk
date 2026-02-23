@@ -252,6 +252,23 @@
   
   
   
+    <li class="md-tabs__item">
+      <a href="../status/" class="md-tabs__link">
+        
+  
+    
+  
+  Statut
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
     
     
       <li class="md-tabs__item">
@@ -477,6 +494,26 @@
   
   
   
+    <li class="md-nav__item">
+      <a href="../status/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Statut
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
     
     
     
@@ -492,10 +529,10 @@
         
           
         
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
         
           
-          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
             
   
   <span class="md-ellipsis">
@@ -506,8 +543,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_4">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
             <span class="md-nav__icon md-icon"></span>
             Guide d'utilisation
           </label>
@@ -646,10 +683,10 @@
         
           
         
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
         
           
-          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
             
   
   <span class="md-ellipsis">
@@ -660,8 +697,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_5">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
             <span class="md-nav__icon md-icon"></span>
             API
           </label>
@@ -1427,13 +1464,13 @@ curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </spa
 <p>Consulter aussi <a href="../api/overview/">Référence API</a> dans cette documentation.</p>
 <h3 id="q-json-invalide-quand-je-cree-une-espece">Q: JSON invalide quand je crée une espèce ?<a class="headerlink" href="#q-json-invalide-quand-je-cree-une-espece" title="Permanent link">&para;</a></h3>
 <p>A: Vérifiez le format JSON :</p>
-<div class="highlight"><pre><span></span><code><span class="c1"># ❌ Mauvais - pas de quotes</span>
+<div class="highlight"><pre><span></span><code><span class="c1"># Mauvais - pas de quotes</span>
 curl<span class="w"> </span>-d<span class="w"> </span><span class="s1">&#39;{name: &quot;Rose&quot;}&#39;</span>
 
-<span class="c1"># ✅ Correct</span>
+<span class="c1"># Correct</span>
 curl<span class="w"> </span>-d<span class="w"> </span><span class="s1">&#39;{&quot;name&quot;: &quot;Rose&quot;}&#39;</span>
 
-<span class="c1"># ✅ Aussi valide avec Python</span>
+<span class="c1"># Aussi valide avec Python</span>
 requests.post<span class="o">(</span>url,<span class="w"> </span><span class="nv">json</span><span class="o">={</span><span class="s2">&quot;name&quot;</span>:<span class="w"> </span><span class="s2">&quot;Rose&quot;</span><span class="o">})</span>
 </code></pre></div>
 <h2 id="concepts-et-logique">Concepts et logique<a class="headerlink" href="#concepts-et-logique" title="Permanent link">&para;</a></h2>
@@ -1635,14 +1672,14 @@ docker-compose<span class="w"> </span>down<span class="w"> </span>-v
 <p>A: [À définir - À vérifier dans LICENSE.md]</p>
 <h3 id="q-comment-me-tenir-au-courant-des-mises-a-jour">Q: Comment me tenir au courant des mises à jour ?<a class="headerlink" href="#q-comment-me-tenir-au-courant-des-mises-a-jour" title="Permanent link">&para;</a></h3>
 <p>A: 
-- ⭐ Star le repository
-- 👁️ Watch pour notifications
-- 📧 Newsletter : [email]</p>
+- Mettre une étoile sur le dépôt (Star)
+- Activer les notifications (Watch)
+- Newsletter : [email]</p>
 <h2 id="vous-avez-une-autre-question">Vous avez une autre question ?<a class="headerlink" href="#vous-avez-une-autre-question" title="Permanent link">&para;</a></h2>
 <ul>
 <li>💬 Créer une issue avec label "question"</li>
 <li>📧 Contacter : support@greendesk.dev</li>
-<li>🐛 Lire la <a href="../">documentation complète</a></li>
+<li>Lire la <a href="../">documentation complète</a></li>
 </ul>
 <hr />
 <p><strong>Pas trouvé la réponse ?</strong> <a href="https://github.com/yourteam/greendesk/issues/new">Créer une issue</a></p>

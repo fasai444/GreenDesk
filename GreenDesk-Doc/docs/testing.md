@@ -150,48 +150,48 @@ public class TestPlantLifecycle {
 
 ### Espèces (SpeciesServiceTest)
 
-- ✅ Créer espèce avec données valides
-- ✅ Rejeter espèce sans nom
-- ✅ Rejeter valeurs négatives
-- ✅ Récupérer par nom
-- ✅ Mettre à jour espèce
-- ✅ Supprimer espèce
+- Créer espèce avec données valides
+- Rejeter espèce sans nom
+- Rejeter valeurs négatives
+- Récupérer par nom
+- Mettre à jour espèce
+- Supprimer espèce
 
 ### Plantes (PlantServiceTest)
 
-- ✅ Créer plante d'une espèce
-- ✅ Calculer santé correctement
-- ✅ Détecter stress
-- ✅ Appliquer effets
-- ✅ Retirer effets
-- ✅ Calculer croissance
+- Créer plante d'une espèce
+- Calculer santé correctement
+- Détecter stress
+- Appliquer effets
+- Retirer effets
+- Calculer croissance
 
 ### Forêts (ForestServiceTest)
 
-- ✅ Créer forêt
-- ✅ Ajouter plante à position
-- ✅ Rejeter position occupée
-- ✅ Valider variation génétique
-- ✅ Progresser saisons
-- ✅ Appliquer modificateurs saisonniers
+- Créer forêt
+- Ajouter plante à position
+- Rejeter position occupée
+- Valider variation génétique
+- Progresser saisons
+- Appliquer modificateurs saisonniers
 
 ### Effets (EffectServiceTest)
 
-- ✅ Appliquer SHADE (-30% lumière)
-- ✅ Appliquer FERTILIZER (+20% croissance)
-- ✅ Appliquer EXTRA_WATERING (+15% eau)
-- ✅ Appliquer HEATING (+3°C)
-- ✅ Combiner plusieurs effets
-- ✅ Retirer effets
+- Appliquer SHADE (-30% lumière)
+- Appliquer FERTILIZER (+20% croissance)
+- Appliquer EXTRA_WATERING (+15% eau)
+- Appliquer HEATING (+3°C)
+- Combiner plusieurs effets
+- Retirer effets
 
 ### Scénarios complets
 
-- ✅ **TestPlantLifecycle** - Cycle de vie plant
-- ✅ **TestForestAndSeasons** - Transitions saisonnières
-- ✅ **TestEcosystemServices** - Services d'écosystème
-- ✅ **TestPlantServices** - Services plante
-- ✅ **TestSensorReadingsAndAlerts** - Lectures/alertes
-- ✅ **TestEffects** - Système d'effets
+- **TestPlantLifecycle** - Cycle de vie plant
+- **TestForestAndSeasons** - Transitions saisonnières
+- **TestEcosystemServices** - Services d'écosystème
+- **TestPlantServices** - Services plante
+- **TestSensorReadingsAndAlerts** - Lectures/alertes
+- **TestEffects** - Système d'effets
 
 ## Cas de test importants
 
@@ -267,14 +267,14 @@ Repositories : 60% (peu de logique)
 
 ### Critères d'acceptation
 
-- ✅ Tous les happy paths testés
-- ✅ Les erreurs main traitées
-- ✅ Les validations vérifiées
-- ✅ Les edge cases couverts
+- Tous les happy paths testés
+- Les erreurs main traitées
+- Les validations vérifiées
+- Les edge cases couverts
 
 ## Bonnes pratiques
 
-### ✅ À faire
+### À faire
 
 ```java
 // Noms descriptifs
@@ -301,7 +301,7 @@ public void testOnlyWaterStress() {
 }
 ```
 
-### ❌ À éviter
+### À éviter
 
 ```java
 // Noms vagues
@@ -313,13 +313,13 @@ public void test1() { }
 public void testEverything() {
     assertTrue(a);
     assertTrue(b);
-    assertTrue(c);  // ❌
+    assertTrue(c);
 }
 
 // Pas d'isolation
 @Test
 public void testDependentOnOtherTest() {
-    // Dépend de résultat d'autre test ❌
+    // Dépend de résultat d'autre test
 }
 ```
 
@@ -367,16 +367,16 @@ Total : ~10 secondes
 
 ### Optimisation
 
-- ✅ Tests parallèles : `gradle.properties`
-- ✅ Exclure tests slow : `@IgnoreOn`
-- ✅ MockMvc pour éviter démarrage complet
+- Tests parallèles : `gradle.properties`
+- Exclure tests slow : `@IgnoreOn`
+- MockMvc pour éviter démarrage complet
 
 ## Futur
 
-- 📊 Augmenter coverage à 90%
-- 🔄 Tests de performance
-- 🎯 Tests d'acceptance (Selenium)
-- 📈 Benchmarks
+- Augmenter coverage à 90%
+- Tests de performance
+- Tests d'acceptance (Selenium)
+- Benchmarks
 
 ---
 

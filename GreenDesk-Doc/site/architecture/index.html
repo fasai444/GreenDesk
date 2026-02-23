@@ -254,6 +254,23 @@
   
   
   
+    <li class="md-tabs__item">
+      <a href="../status/" class="md-tabs__link">
+        
+  
+    
+  
+  Statut
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
     
     
       <li class="md-tabs__item">
@@ -479,6 +496,26 @@
   
   
   
+    <li class="md-nav__item">
+      <a href="../status/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Statut
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
     
     
     
@@ -494,10 +531,10 @@
         
           
         
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
         
           
-          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
             
   
   <span class="md-ellipsis">
@@ -508,8 +545,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_4">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
             <span class="md-nav__icon md-icon"></span>
             Guide d'utilisation
           </label>
@@ -648,10 +685,10 @@
         
           
         
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
         
           
-          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
             
   
   <span class="md-ellipsis">
@@ -662,8 +699,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_5">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
             <span class="md-nav__icon md-icon"></span>
             API
           </label>
@@ -1162,12 +1199,12 @@
 <p>Documentation de l'architecture interne et du design de GreenDesk.</p>
 <h2 id="diagramme-architecture-generale">Diagramme Architecture Générale<a class="headerlink" href="#diagramme-architecture-generale" title="Permanent link">&para;</a></h2>
 <pre class="mermaid"><code>graph TB
-    Client["🌐 Browser/Client&lt;br/&gt;HTML, JS, Swagger"]
+    Client["Browser/Client&lt;br/&gt;HTML, JS, Swagger"]
 
-    Controller["🎮 Controller Layer&lt;br/&gt;REST API Endpoints"]
-    Service["⚙️ Service Layer&lt;br/&gt;Business Logic"]
-    Repository["💾 Repository Layer&lt;br/&gt;Data Access"]
-    DB["🗄️ MongoDB&lt;br/&gt;Database"]
+    Controller["Controller Layer&lt;br/&gt;REST API Endpoints"]
+    Service["Service Layer&lt;br/&gt;Business Logic"]
+    Repository["Repository Layer&lt;br/&gt;Data Access"]
+    DB["MongoDB&lt;br/&gt;Database"]
 
     Client --&gt;|HTTP/REST| Controller
     Controller --&gt;|Calls| Service
@@ -1265,7 +1302,7 @@
     Forest --&gt; Season : "has current"</code></pre>
 <h2 id="diagramme-flux-creation-plante">Diagramme flux création plante<a class="headerlink" href="#diagramme-flux-creation-plante" title="Permanent link">&para;</a></h2>
 <pre class="mermaid"><code>sequenceDiagram
-    actor User as 👤 User
+    actor User as User
     participant API as REST API
     participant Controller as Controller
     participant Service as PlantService
@@ -1289,7 +1326,7 @@
     API--&gt;&gt;User: JSON response</code></pre>
 <h2 id="diagramme-calcul-sante">Diagramme calcul santé<a class="headerlink" href="#diagramme-calcul-sante" title="Permanent link">&para;</a></h2>
 <pre class="mermaid"><code>flowchart TD
-    A["🌱 Plant Environment"] --&gt; B["Get Species&lt;br/&gt;Optimal Values"]
+    A["Plant Environment"] --&gt; B["Get Species&lt;br/&gt;Optimal Values"]
     C["Compare Values"] &lt;-- B
     A --&gt; C
 
@@ -1307,10 +1344,10 @@
     I --&gt; J["Health = 100 - Stress×50"]
 
     J --&gt; K{Health Level?}
-    K --&gt;|&gt;80%| L["🟢 HEALTHY"]
-    K --&gt;|50-80%| M["🟡 STRESSED"]
-    K --&gt;|20-50%| N["🟠 DORMANT"]
-    K --&gt;|&lt;20%| O["🔴 DISEASED"]
+    K --&gt;|&gt;80%| L["HEALTHY"]
+    K --&gt;|50-80%| M["STRESSED"]
+    K --&gt;|20-50%| N["DORMANT"]
+    K --&gt;|&lt;20%| O["DISEASED"]
 
     style A fill:#e8f5e9
     style B fill:#e8f5e9
@@ -1717,13 +1754,13 @@ Controller ← REST Controllers
 </code></pre></div>
 <h2 id="bonnes-pratiques-appliquees">Bonnes pratiques appliquées<a class="headerlink" href="#bonnes-pratiques-appliquees" title="Permanent link">&para;</a></h2>
 <ul>
-<li>✅ Séparation des préoccupations (SoC)</li>
-<li>✅ DRY (Don't Repeat Yourself)</li>
-<li>✅ SOLID principles partially</li>
-<li>✅ Validation des données</li>
-<li>✅ Gestion des erreurs</li>
-<li>✅ Documentation API</li>
-<li>✅ Tests unitaires</li>
+<li>Séparation des préoccupations (SoC)</li>
+<li>DRY (Don't Repeat Yourself)</li>
+<li>SOLID principles partially</li>
+<li>Validation des données</li>
+<li>Gestion des erreurs</li>
+<li>Documentation API</li>
+<li>Tests unitaires</li>
 </ul>
 <h2 id="points-dextension-futur">Points d'extension futur<a class="headerlink" href="#points-dextension-futur" title="Permanent link">&para;</a></h2>
 <ul>

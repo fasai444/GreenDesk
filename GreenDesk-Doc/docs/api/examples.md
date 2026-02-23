@@ -56,7 +56,7 @@ curl -X POST http://localhost:8080/api/plants/Basilic \
 curl http://localhost:8080/api/plants/507f1f77bcf86cd799439012
 ```
 
-**Réponse** : Plante HEALTHY ✅
+**Réponse** : Plante: HEALTHY
 
 ---
 
@@ -201,7 +201,7 @@ PLANT_ID=$(curl -s -X POST http://localhost:8080/api/plants/Rosier \
 curl http://localhost:8080/api/plants/$PLANT_ID
 ```
 
-**Observation** : Status = STRESSED 🟡
+**Observation** : Status = STRESSED
 
 ### Diagnostic des problèmes
 
@@ -385,15 +385,15 @@ class GreenDeskAPI:
         health = status.get("health", 100)
         
         if health < 50:
-            print(f"🚨 Plante malade ! Health: {health}%")
+          print(f"Plante malade. Health: {health}%")
             self.add_effect(plant_id, "FERTILIZER")
             self.add_effect(plant_id, "EXTRA_WATERING")
             self.add_effect(plant_id, "HEATING")
         elif health < 80:
-            print(f"⚠️  Plante stressée. Health: {health}%")
+          print(f"Plante stressée. Health: {health}%")
             self.add_effect(plant_id, "FERTILIZER")
         else:
-            print(f"✅ Plante en bonne santé. Health: {health}%")
+          print(f"Plante en bonne santé. Health: {health}%")
 
 # Utilisation
 api = GreenDeskAPI(BASE_URL)

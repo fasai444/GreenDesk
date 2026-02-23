@@ -182,10 +182,10 @@ curl http://localhost:8080/api/plants/507f1f77bcf86cd799439012/status
 
 | Status | Plage santé | Signification |
 |--------|-------------|---------------|
-| 🟢 **HEALTHY** | > 80% | Conditions optimales |
-| 🟡 **STRESSED** | 50-80% | Conditions suboptimales |
-| 🟠 **DORMANT** | 20-50% | Croissance arrêtée |
-| 🔴 **DISEASED** | < 20% | État critique |
+| **HEALTHY** | > 80% | Conditions optimales |
+| **STRESSED** | 50-80% | Conditions suboptimales |
+| **DORMANT** | 20-50% | Croissance arrêtée |
+| **DISEASED** | < 20% | État critique |
 
 ## Appliquer des interventions
 
@@ -303,7 +303,7 @@ curl -X DELETE http://localhost:8080/api/plants/507f1f77bcf86cd799439012
   "luxIntensity": 3000.0
 }
 ```
-→ Santé : 100% ✅
+→ Santé : 100% (HEALTHY)
 
 ### Scénario 2 : Plante stressée (trop chaud)
 ```json
@@ -315,7 +315,7 @@ curl -X DELETE http://localhost:8080/api/plants/507f1f77bcf86cd799439012
   "luxIntensity": 3000.0
 }
 ```
-→ Santé : ~60% 🟡 Stressée
+→ Santé : ~60% (STRESSED)
 
 **Solution** : 
 - Ajouter effet `SHADE` (-30% lumière)
@@ -332,7 +332,7 @@ curl -X DELETE http://localhost:8080/api/plants/507f1f77bcf86cd799439012
   "luxIntensity": 100.0             // 96% trop bas
 }
 ```
-→ Santé : ~15% 🔴 Malade
+→ Santé : ~15% (DISEASED)
 
 **Solutions** :
 1. Augmenter eau immédiatement (+300ml)

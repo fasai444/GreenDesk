@@ -216,7 +216,7 @@ curl http://localhost:8080/api/forests
 
 ## Supprimer une forêt
 
-**⚠️ Attention** : Cela supprime aussi les plantes de la forêt
+**Attention** : Cela supprime aussi les plantes de la forêt
 ```bash
 DELETE /api/forests/{forestId}
 ```
@@ -254,9 +254,9 @@ Variation 1.05 :
 ### Diversité écologique
 
 La variation génétique permet :
-- ✅ Même espèce, différents phénotypes
-- ✅ Simulation réaliste de la diversité
-- ✅ Comportements variés
+- Même espèce, différents phénotypes
+- Simulation réaliste de la diversité
+- Comportements variés
 
 ## Scenarios écologiques
 
@@ -371,17 +371,17 @@ curl http://localhost:8080/api/forests/{forestId}/plants \
 
 ## Bonnes pratiques
 
-### ✅ À faire
+### À faire
 
 - Créer des forêts thématiques (tropicale, tempérée, désert)
 - Monitorer les saisons et adapter
 - Diversifier les espèces pour résilience
 - Utiliser variations génétiques pour réalisme
 
-### ❌ À ne pas faire
+### À éviter
 
 - Placer 2 plantes au même endroit
-- Ignorer les changements saisonniers
+- Ignorer les changements saisonnières
 - Laisser des plantes malades sans interventions
 - Surcharger la forêt (optimum : 30-50% positions remplies)
 

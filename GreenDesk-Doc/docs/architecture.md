@@ -6,12 +6,12 @@ Documentation de l'architecture interne et du design de GreenDesk.
 
 ```mermaid
 graph TB
-    Client["🌐 Browser/Client<br/>HTML, JS, Swagger"]
+    Client["Browser/Client<br/>HTML, JS, Swagger"]
     
-    Controller["🎮 Controller Layer<br/>REST API Endpoints"]
-    Service["⚙️ Service Layer<br/>Business Logic"]
-    Repository["💾 Repository Layer<br/>Data Access"]
-    DB["🗄️ MongoDB<br/>Database"]
+    Controller["Controller Layer<br/>REST API Endpoints"]
+    Service["Service Layer<br/>Business Logic"]
+    Repository["Repository Layer<br/>Data Access"]
+    DB["MongoDB<br/>Database"]
     
     Client -->|HTTP/REST| Controller
     Controller -->|Calls| Service
@@ -117,7 +117,7 @@ classDiagram
 
 ```mermaid
 sequenceDiagram
-    actor User as 👤 User
+    actor User as User
     participant API as REST API
     participant Controller as Controller
     participant Service as PlantService
@@ -145,7 +145,7 @@ sequenceDiagram
 
 ```mermaid
 flowchart TD
-    A["🌱 Plant Environment"] --> B["Get Species<br/>Optimal Values"]
+    A["Plant Environment"] --> B["Get Species<br/>Optimal Values"]
     C["Compare Values"] <-- B
     A --> C
     
@@ -163,10 +163,10 @@ flowchart TD
     I --> J["Health = 100 - Stress×50"]
     
     J --> K{Health Level?}
-    K -->|>80%| L["🟢 HEALTHY"]
-    K -->|50-80%| M["🟡 STRESSED"]
-    K -->|20-50%| N["🟠 DORMANT"]
-    K -->|<20%| O["🔴 DISEASED"]
+    K -->|>80%| L["HEALTHY"]
+    K -->|50-80%| M["STRESSED"]
+    K -->|20-50%| N["DORMANT"]
+    K -->|<20%| O["DISEASED"]
     
     style A fill:#e8f5e9
     style B fill:#e8f5e9
@@ -594,13 +594,13 @@ springdoc.api-docs.path=/v3/api-docs
 
 ## Bonnes pratiques appliquées
 
-- ✅ Séparation des préoccupations (SoC)
-- ✅ DRY (Don't Repeat Yourself)
-- ✅ SOLID principles partially
-- ✅ Validation des données
-- ✅ Gestion des erreurs
-- ✅ Documentation API
-- ✅ Tests unitaires
+- Séparation des préoccupations (SoC)
+- DRY (Don't Repeat Yourself)
+- SOLID principles partially
+- Validation des données
+- Gestion des erreurs
+- Documentation API
+- Tests unitaires
 
 ## Points d'extension futur
 

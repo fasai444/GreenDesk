@@ -126,13 +126,13 @@ Consulter aussi [Référence API](api/overview.md) dans cette documentation.
 A: Vérifiez le format JSON :
 
 ```bash
-# ❌ Mauvais - pas de quotes
+# Mauvais - pas de quotes
 curl -d '{name: "Rose"}'
 
-# ✅ Correct
+# Correct
 curl -d '{"name": "Rose"}'
 
-# ✅ Aussi valide avec Python
+# Aussi valide avec Python
 requests.post(url, json={"name": "Rose"})
 ```
 
@@ -393,15 +393,15 @@ A: [À définir - À vérifier dans LICENSE.md]
 ### Q: Comment me tenir au courant des mises à jour ?
 
 A: 
-- ⭐ Star le repository
-- 👁️ Watch pour notifications
-- 📧 Newsletter : [email]
+- Mettre une étoile sur le dépôt (Star)
+- Activer les notifications (Watch)
+- Newsletter : [email]
 
 ## Vous avez une autre question ?
 
 - 💬 Créer une issue avec label "question"
 - 📧 Contacter : support@greendesk.dev
-- 🐛 Lire la [documentation complète](index.md)
+- Lire la [documentation complète](index.md)
 
 ---
 

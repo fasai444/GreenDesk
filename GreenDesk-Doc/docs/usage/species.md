@@ -147,7 +147,7 @@ curl -X PUT http://localhost:8080/api/species/Rose \
 
 ## Supprimer une espèce
 
-**⚠️ Attention** : Supprimera aussi toutes les plantes associées
+**Attention** : Supprimera aussi toutes les plantes associées
 ```bash
 DELETE /api/species/{name}
 ```
@@ -205,13 +205,13 @@ curl -X DELETE http://localhost:8080/api/species/Rose
 
 ## Guide des bonnes pratiques
 
-### ✅ À faire
+### À faire
 
 - Créer des espèces avec des noms clairs et descriptifs
 - Garder les paramètres cohérents avec la réalité botanique
 - Tester les espèces avant de les utiliser en simulation
 
-### ❌ À ne pas faire
+### À éviter
 
 - Utiliser des valeurs extrêmes irréalistes
 - Créer deux espèces avec le même nom

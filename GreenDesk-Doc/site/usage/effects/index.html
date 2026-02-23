@@ -253,6 +253,23 @@
         
   
   
+  
+    <li class="md-tabs__item">
+      <a href="../../status/" class="md-tabs__link">
+        
+  
+    
+  
+  Statut
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
     
   
   
@@ -477,6 +494,26 @@
       
   
   
+  
+  
+    <li class="md-nav__item">
+      <a href="../../status/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Statut
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
     
   
   
@@ -494,10 +531,10 @@
         
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
         
           
-          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
             
   
   <span class="md-ellipsis">
@@ -508,8 +545,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
-          <label class="md-nav__title" for="__nav_4">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5">
             <span class="md-nav__icon md-icon"></span>
             Guide d'utilisation
           </label>
@@ -931,10 +968,10 @@
         
           
         
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
         
           
-          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
             
   
   <span class="md-ellipsis">
@@ -945,8 +982,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_5">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
             <span class="md-nav__icon md-icon"></span>
             API
           </label>
@@ -1286,13 +1323,13 @@ curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </spa
 <span class="c1"># - Eau +15% (bien hydratée)</span>
 </code></pre></div>
 <h3 id="combinaisons-a-eviter">Combinaisons à éviter<a class="headerlink" href="#combinaisons-a-eviter" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><span class="c1"># ❌ HEATING + SHADE uniquement</span>
+<div class="highlight"><pre><span></span><code><span class="c1"># HEATING + SHADE uniquement (à éviter)</span>
 <span class="c1"># Peut être confus écologiquement</span>
-
-<span class="c1"># ❌ FERTILIZER seul sans eau</span>
-<span class="c1"># Croissance rapide mais dehydratation</span>
-
-<span class="c1"># ❌ EXTRA_WATERING en hiver (winter) sans vérif</span>
+<span class="c1">#</span>
+<span class="c1"># FERTILIZER seul sans eau (à éviter)</span>
+<span class="c1"># Croissance rapide mais déshydratation</span>
+<span class="c1">#</span>
+<span class="c1"># EXTRA_WATERING en hiver (winter) sans vérif (à éviter)</span>
 <span class="c1"># Risque de pourriture racines</span>
 </code></pre></div>
 <h2 id="scenarios-dapplication">Scénarios d'application<a class="headerlink" href="#scenarios-dapplication" title="Permanent link">&para;</a></h2>
@@ -1321,7 +1358,7 @@ curl<span class="w"> </span>http://localhost:8080/api/plants/<span class="o">{</
 <span class="c1"># 6. Retirer progressivement quand health &gt; 80%</span>
 curl<span class="w"> </span>-X<span class="w"> </span>DELETE<span class="w"> </span>http://localhost:8080/api/plants/<span class="o">{</span>plantId<span class="o">}</span>/effects/HEATING
 </code></pre></div></p>
-<p><strong>Résultat attendu</strong> : Health revient &gt; 80% → HEALTHY ✅</p>
+<p><strong>Résultat attendu</strong> : Health revient &gt; 80% → HEALTHY</p>
 <hr />
 <h3 id="scenario-2-foret-en-transition-estivale">Scénario 2 : Forêt en transition estivale<a class="headerlink" href="#scenario-2-foret-en-transition-estivale" title="Permanent link">&para;</a></h3>
 <p><strong>Situation</strong> :

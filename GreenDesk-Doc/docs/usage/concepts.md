@@ -99,10 +99,10 @@ Une **forêt** est un écosystème 2D avec une grille spatiale.
 
 **Caractéristiques** :
 
-- ✅ Une position = une seule plante (unicité)
-- ✅ Variation génétique via `variationSeed`
-- ✅ Cycle de saisons automatique
-- ✅ Grille configurable (WxH)
+- Une position = une seule plante (unicité)
+- Variation génétique via `variationSeed`
+- Cycle de saisons automatique
+- Grille configurable (WxH)
 
 ### 4. Saison (Season)
 
@@ -183,22 +183,22 @@ stateDiagram-v2
   DISEASED --> [*]: Death
     
   note right of HEALTHY
-    ✅ All conditions optimal
+    All conditions optimal
     or near optimal
   end note
     
   note right of STRESSED
-    ⚠️ Some conditions
+    Some conditions
     suboptimal
   end note
     
   note right of DORMANT
-    🟠 Growth stopped
+    Growth stopped
     severe conditions
   end note
     
   note right of DISEASED
-    🔴 Critical state
+    Critical state
     urgent intervention
   end note
 ```
@@ -284,7 +284,7 @@ Stress_lux       = 0 / 3000 = 0.00
 StressTotal      = 0.25
 
 Santé = 100 - (0.25 × 50) = 87.5%
-→ État = HEALTHY ✅
+→ État = HEALTHY
 ```
 
 4. **Placer dans une forêt**
