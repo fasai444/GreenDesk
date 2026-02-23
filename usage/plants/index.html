@@ -647,6 +647,15 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#diagramme-de-relation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Diagramme de relation
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#creer-une-plante" class="md-nav__link">
     <span class="md-ellipsis">
       Créer une plante
@@ -657,18 +666,18 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#etapes-prealables" class="md-nav__link">
+  <a href="#prerequis" class="md-nav__link">
     <span class="md-ellipsis">
-      Étapes préalables
+      Prérequis
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#creer-une-plante-simple" class="md-nav__link">
+  <a href="#creation-via-api" class="md-nav__link">
     <span class="md-ellipsis">
-      Créer une plante simple
+      Création via API
     </span>
   </a>
   
@@ -680,23 +689,23 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#recuperer-une-plante" class="md-nav__link">
+  <a href="#suivi-et-evolution" class="md-nav__link">
     <span class="md-ellipsis">
-      Récupérer une plante
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Récupérer une plante">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#par-id" class="md-nav__link">
-    <span class="md-ellipsis">
-      Par ID
+      Suivi et évolution
     </span>
   </a>
   
 </li>
+      
+        <li class="md-nav__item">
+  <a href="#conseils" class="md-nav__link">
+    <span class="md-ellipsis">
+      Conseils
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Conseils">
+      <ul class="md-nav__list">
         
           <li class="md-nav__item">
   <a href="#lister-toutes-les-plantes" class="md-nav__link">
@@ -1300,8 +1309,10 @@
                   
 
 
+<hr />
 <h1 id="gestion-des-plantes">Gestion des plantes<a class="headerlink" href="#gestion-des-plantes" title="Permanent link">&para;</a></h1>
-<p>Les plantes sont des instances d'espèces créées avec des conditions environnementales spécifiques.</p>
+<p>Les plantes sont des instances concrètes d'espèces, chacune avec ses propres conditions environnementales, son état et son historique d'effets.</p>
+<h2 id="diagramme-de-relation">Diagramme de relation<a class="headerlink" href="#diagramme-de-relation" title="Permanent link">&para;</a></h2>
 <pre class="mermaid"><code>classDiagram
     class Species {
       +String name
@@ -1312,7 +1323,6 @@
       +double baseGrowthRate
       +double seedProductionRate
     }
-
     class Plant {
       +String id
       +String name
@@ -1323,33 +1333,31 @@
       +double health
       +applyEffect()
     }
-
     class Effect {
       +String name
       +apply(Plant)
     }
-
     Species "1" -- "*" Plant : instantiates
     Plant o-- "0..*" Effect : has</code></pre>
 <h2 id="creer-une-plante">Créer une plante<a class="headerlink" href="#creer-une-plante" title="Permanent link">&para;</a></h2>
-<h3 id="etapes-prealables">Étapes préalables<a class="headerlink" href="#etapes-prealables" title="Permanent link">&para;</a></h3>
+<h3 id="prerequis">Prérequis<a class="headerlink" href="#prerequis" title="Permanent link">&para;</a></h3>
 <ol>
-<li>Une espèce doit exister</li>
-<li>Définir les conditions initiales</li>
+<li>Une espèce doit exister (voir <a href="../species/">Gestion des espèces</a>)</li>
+<li>Définir les conditions initiales (eau, température, humidité, lumière)</li>
 </ol>
-<h3 id="creer-une-plante-simple">Créer une plante simple<a class="headerlink" href="#creer-une-plante-simple" title="Permanent link">&para;</a></h3>
+<h3 id="creation-via-api">Création via API<a class="headerlink" href="#creation-via-api" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code>POST<span class="w"> </span>/api/plants/<span class="o">{</span>speciesName<span class="o">}</span>
 </code></pre></div>
-<p><strong>Corpus</strong> :
+<p><strong>Exemple de requête :</strong>
 <div class="highlight"><pre><span></span><code><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Ma Rose&quot;</span><span class="p">,</span><span class="w">             </span><span class="c1">// Nom de cette instance</span>
-<span class="w">  </span><span class="nt">&quot;water&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">450.0</span><span class="p">,</span><span class="w">                </span><span class="c1">// Eau initiale (ml)</span>
-<span class="w">  </span><span class="nt">&quot;temperature&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">22.0</span><span class="p">,</span><span class="w">           </span><span class="c1">// Température initiale (°C)</span>
-<span class="w">  </span><span class="nt">&quot;humidity&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">55.0</span><span class="p">,</span><span class="w">              </span><span class="c1">// Humidité initiale (%)</span>
-<span class="w">  </span><span class="nt">&quot;luxIntensity&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">2900.0</span><span class="w">         </span><span class="c1">// Lumière initiale (lux)</span>
+<span class="w">  </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Ma Rose&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;water&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">450.0</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;temperature&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">22.0</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;humidity&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">55.0</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;luxIntensity&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">2900.0</span>
 <span class="p">}</span>
 </code></pre></div></p>
-<p><strong>Exemple complet</strong> :
+<p><strong>Exemple complet :</strong>
 <div class="highlight"><pre><span></span><code>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>http://localhost:8080/api/plants/Rose<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>-d<span class="w"> </span><span class="s1">&#39;{</span>
@@ -1360,7 +1368,7 @@
 <span class="s1">    &quot;luxIntensity&quot;: 3000.0</span>
 <span class="s1">  }&#39;</span>
 </code></pre></div></p>
-<p><strong>Réponse</strong> :
+<p><strong>Réponse :</strong>
 <div class="highlight"><pre><span></span><code><span class="p">{</span>
 <span class="w">  </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;507f1f77bcf86cd799439012&quot;</span><span class="p">,</span>
 <span class="w">  </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Rose du Jardin&quot;</span><span class="p">,</span>
@@ -1378,10 +1386,33 @@
 <span class="w">  </span><span class="nt">&quot;effects&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[]</span>
 <span class="p">}</span>
 </code></pre></div></p>
-<h2 id="recuperer-une-plante">Récupérer une plante<a class="headerlink" href="#recuperer-une-plante" title="Permanent link">&para;</a></h2>
-<h3 id="par-id">Par ID<a class="headerlink" href="#par-id" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code>GET<span class="w"> </span>/api/plants/<span class="o">{</span>plantId<span class="o">}</span>
-</code></pre></div>
+<h2 id="suivi-et-evolution">Suivi et évolution<a class="headerlink" href="#suivi-et-evolution" title="Permanent link">&para;</a></h2>
+<p>Chaque plante évolue selon :
+- Les effets appliqués (voir <a href="../effects/">Système d'effets</a>)
+- Les saisons et l'environnement
+- Les soins (arrosage, engrais, ombrage)</p>
+<h2 id="conseils">Conseils<a class="headerlink" href="#conseils" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Surveillez la santé et la croissance via l'API</li>
+<li>Appliquez des effets pour optimiser la croissance ou la récupération
+  "age": 0,
+  "health": 100.0,
+  "growth": 0.0,
+  "environment": {
+    "water": 500.0,
+    "temperature": 20.0,
+    "humidity": 60.0,
+    "luxIntensity": 3000.0
+  },
+  "effects": []
+}
+<div class="highlight"><pre><span></span><code>## Récupérer une plante
+
+### Par ID
+```bash
+GET /api/plants/{plantId}
+</code></pre></div></li>
+</ul>
 <p><strong>Exemple</strong> :
 <div class="highlight"><pre><span></span><code>curl<span class="w"> </span>http://localhost:8080/api/plants/507f1f77bcf86cd799439012
 </code></pre></div></p>

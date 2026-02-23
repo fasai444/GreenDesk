@@ -78,7 +78,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#guide-de-demarrage" class="md-skip">
+        <a href="#guide-de-demarrage-rapide" class="md-skip">
           Aller au contenu
         </a>
       
@@ -503,51 +503,36 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#pre-requis" class="md-nav__link">
+  <a href="#prerequis-systeme" class="md-nav__link">
     <span class="md-ellipsis">
-      Pré-requis
+      Prérequis système
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#installation-rapide" class="md-nav__link">
+  <a href="#installation-express-avec-docker-compose" class="md-nav__link">
     <span class="md-ellipsis">
-      Installation rapide
+      Installation express avec Docker Compose
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="Installation rapide">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#option-1-docker-compose-recommande" class="md-nav__link">
-    <span class="md-ellipsis">
-      Option 1 : Docker Compose (Recommandé ⭐)
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#option-2-gradle-developpement-local" class="md-nav__link">
-    <span class="md-ellipsis">
-      Option 2 : Gradle (Développement local)
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#acces-a-lapplication" class="md-nav__link">
+  <a href="#installation-locale-developpement" class="md-nav__link">
     <span class="md-ellipsis">
-      Accès à l'application
+      Installation locale (développement)
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#acces-aux-services" class="md-nav__link">
+    <span class="md-ellipsis">
+      Accès aux services
     </span>
   </a>
   
@@ -562,15 +547,6 @@
   
     <nav class="md-nav" aria-label="Premier test : Créer une espèce">
       <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#via-la-cli-curl" class="md-nav__link">
-    <span class="md-ellipsis">
-      Via la CLI (curl)
-    </span>
-  </a>
-  
-</li>
         
           <li class="md-nav__item">
   <a href="#via-swagger" class="md-nav__link">
@@ -1102,35 +1078,40 @@
                   
 
 
-<h1 id="guide-de-demarrage">Guide de démarrage<a class="headerlink" href="#guide-de-demarrage" title="Permanent link">&para;</a></h1>
-<h2 id="pre-requis">Pré-requis<a class="headerlink" href="#pre-requis" title="Permanent link">&para;</a></h2>
-<p>Avant de commencer, assurez-vous d'avoir installé :</p>
+<hr />
+<h1 id="guide-de-demarrage-rapide">Guide de démarrage rapide<a class="headerlink" href="#guide-de-demarrage-rapide" title="Permanent link">&para;</a></h1>
+<p>Cette page vous guide pas à pas pour installer, configurer et lancer GreenDesk en quelques minutes.</p>
+<h2 id="prerequis-systeme">Prérequis système<a class="headerlink" href="#prerequis-systeme" title="Permanent link">&para;</a></h2>
 <ul>
-<li><strong>Java 21</strong> ou supérieur</li>
-<li><strong>Docker</strong> et <strong>Docker Compose</strong> (recommandé)</li>
-<li><strong>Git</strong></li>
-<li><strong>Gradle 9.2.0</strong> (optionnel, gradlew fourni)</li>
+<li><strong>Java 21</strong> ou supérieur (obligatoire)</li>
+<li><strong>Docker</strong> et <strong>Docker Compose</strong> (fortement recommandé)</li>
+<li><strong>Git</strong> (gestion du code)</li>
+<li><strong>Gradle 9.2.0</strong> (optionnel, wrapper fourni)</li>
 </ul>
-<h2 id="installation-rapide">Installation rapide<a class="headerlink" href="#installation-rapide" title="Permanent link">&para;</a></h2>
-<h3 id="option-1-docker-compose-recommande">Option 1 : Docker Compose (Recommandé ⭐)<a class="headerlink" href="#option-1-docker-compose-recommande" title="Permanent link">&para;</a></h3>
-<p>La façon la plus simple de démarrer :</p>
-<div class="highlight"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>GreenDesk
+<h2 id="installation-express-avec-docker-compose">Installation express avec Docker Compose<a class="headerlink" href="#installation-express-avec-docker-compose" title="Permanent link">&para;</a></h2>
+<p>La méthode la plus simple pour lancer GreenDesk et toutes ses dépendances (MongoDB, Mongo Express) :</p>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/MisasoaRobison/GreenDesk.git
+<span class="nb">cd</span><span class="w"> </span>GreenDesk
 docker-compose<span class="w"> </span>up<span class="w"> </span>--build
 </code></pre></div>
-<p>Cela va :
-- Construire l'application
-- Lancer MongoDB
-- Lancer Mongo Express
-- Lancer GreenDesk</p>
-<h3 id="option-2-gradle-developpement-local">Option 2 : Gradle (Développement local)<a class="headerlink" href="#option-2-gradle-developpement-local" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>GreenDesk
+<p>Cette commande va :
+- Construire l'application Java
+- Démarrer MongoDB (base de données)
+- Démarrer Mongo Express (interface d'administration)
+- Démarrer GreenDesk (API REST)</p>
+<blockquote>
+<p><strong>Astuce</strong> : Pour arrêter, faites <code>docker-compose down</code>.</p>
+</blockquote>
+<h2 id="installation-locale-developpement">Installation locale (développement)<a class="headerlink" href="#installation-locale-developpement" title="Permanent link">&para;</a></h2>
+<p>Si vous souhaitez développer ou tester localement :</p>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/MisasoaRobison/GreenDesk.git
+<span class="nb">cd</span><span class="w"> </span>GreenDesk
 ./gradlew<span class="w"> </span>bootRun
 </code></pre></div>
-<p>Vous devez avoir MongoDB en local ou via Docker :</p>
+<p>MongoDB doit être accessible (en local ou via Docker) :</p>
 <div class="highlight"><pre><span></span><code>docker<span class="w"> </span>run<span class="w"> </span>-d<span class="w"> </span>-p<span class="w"> </span><span class="m">27017</span>:27017<span class="w"> </span>--name<span class="w"> </span>mongodb<span class="w"> </span>mongo:latest
 </code></pre></div>
-<h2 id="acces-a-lapplication">Accès à l'application<a class="headerlink" href="#acces-a-lapplication" title="Permanent link">&para;</a></h2>
-<p>Une fois démarrée, accédez à :</p>
+<h2 id="acces-aux-services">Accès aux services<a class="headerlink" href="#acces-aux-services" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
 <tr>
@@ -1144,11 +1125,11 @@ docker-compose<span class="w"> </span>up<span class="w"> </span>--build
 <td>http://localhost:8080</td>
 </tr>
 <tr>
-<td>Swagger/OpenAPI</td>
+<td>Documentation API</td>
 <td>http://localhost:8080/swagger-ui.html</td>
 </tr>
 <tr>
-<td>API JSON</td>
+<td>Spécification OpenAPI</td>
 <td>http://localhost:8080/v3/api-docs</td>
 </tr>
 <tr>
@@ -1158,7 +1139,7 @@ docker-compose<span class="w"> </span>up<span class="w"> </span>--build
 </tbody>
 </table>
 <h2 id="premier-test-creer-une-espece">Premier test : Créer une espèce<a class="headerlink" href="#premier-test-creer-une-espece" title="Permanent link">&para;</a></h2>
-<h3 id="via-la-cli-curl">Via la CLI (curl)<a class="headerlink" href="#via-la-cli-curl" title="Permanent link">&para;</a></h3>
+<p>Testez l'API en créant une espèce via <code>curl</code> :</p>
 <div class="highlight"><pre><span></span><code>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>http://localhost:8080/api/species<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>-d<span class="w"> </span><span class="s1">&#39;{</span>

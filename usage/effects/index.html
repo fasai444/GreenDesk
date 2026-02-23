@@ -689,6 +689,15 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#diagramme-dapplication-deffet" class="md-nav__link">
+    <span class="md-ellipsis">
+      Diagramme d'application d'effet
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#effets-disponibles" class="md-nav__link">
     <span class="md-ellipsis">
       Effets disponibles
@@ -699,31 +708,46 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#1-shade-ombrage" class="md-nav__link">
+  <a href="#shade-ombrage" class="md-nav__link">
     <span class="md-ellipsis">
-      1. SHADE (Ombrage)
+      SHADE (Ombrage)
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#2-fertilizer-engrais" class="md-nav__link">
+  <a href="#fertilizer-engrais" class="md-nav__link">
     <span class="md-ellipsis">
-      2. FERTILIZER (Engrais)
+      FERTILIZER (Engrais)
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#3-extra_watering-arrosage-supplementaire" class="md-nav__link">
+  <a href="#extra_watering-arrosage-supplementaire" class="md-nav__link">
     <span class="md-ellipsis">
-      3. EXTRA_WATERING (Arrosage supplémentaire)
+      EXTRA_WATERING (Arrosage supplémentaire)
     </span>
   </a>
   
 </li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#conseils-dutilisation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Conseils d'utilisation
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Conseils d'utilisation">
+      <ul class="md-nav__list">
         
           <li class="md-nav__item">
   <a href="#4-heating-chauffage" class="md-nav__link">
@@ -1174,8 +1198,10 @@
                   
 
 
+<hr />
 <h1 id="systeme-deffets">Système d'effets<a class="headerlink" href="#systeme-deffets" title="Permanent link">&para;</a></h1>
-<p>Les effets modifient les conditions environnementales des plantes pour simuler des interventions humaines ou des conditions naturelles.</p>
+<p>Les effets permettent de simuler des interventions (engrais, arrosage, ombrage) ou des conditions naturelles sur les plantes. Ils modifient temporairement ou durablement l'environnement ou l'état d'une plante.</p>
+<h2 id="diagramme-dapplication-deffet">Diagramme d'application d'effet<a class="headerlink" href="#diagramme-dapplication-deffet" title="Permanent link">&para;</a></h2>
 <pre class="mermaid"><code>flowchart LR
   A[GET /api/plants/{plantId}/status] --&gt; B{Analyse état}
   B --&gt;|STRESSED| C[POST /api/plants/{id}/effects/FERTILIZER]
@@ -1189,48 +1215,51 @@
   style A fill:#e0f7fa
   style G fill:#fff9c4</code></pre>
 <h2 id="effets-disponibles">Effets disponibles<a class="headerlink" href="#effets-disponibles" title="Permanent link">&para;</a></h2>
-<h3 id="1-shade-ombrage">1. SHADE (Ombrage)<a class="headerlink" href="#1-shade-ombrage" title="Permanent link">&para;</a></h3>
-<p><strong>Impact</strong> : Réduit la lumière de 30%</p>
-<p><strong>Utilisation</strong> :
-- Protéger des plantes du soleil excessif
+<h3 id="shade-ombrage">SHADE (Ombrage)<a class="headerlink" href="#shade-ombrage" title="Permanent link">&para;</a></h3>
+<p><strong>Impact :</strong> Réduit la lumière de 30 %
+<strong>Utilisation :</strong>
+- Protéger du soleil excessif
 - Réduire le stress lumineux
-- Idéal pour plantes d'ombre</p>
-<p><strong>Exemple</strong> :
+- Idéal pour plantes d'ombre
+<strong>Exemple :</strong>
 <div class="highlight"><pre><span></span><code>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>http://localhost:8080/api/plants/507f1f77bcf86cd799439012/effects/SHADE
-</code></pre></div></p>
-<p><strong>Calcul</strong> :
-<div class="highlight"><pre><span></span><code>Avant : luxIntensity = 3000 lux
-Après : luxIntensity = 3000 × 0.7 = 2100 lux
-</code></pre></div></p>
-<p><strong>Cas d'usage</strong> :
-- Plante stressée par lumière directe
-- Humidité trop basse (ombre + arrosage)
-- Été trop intense</p>
-<hr />
-<h3 id="2-fertilizer-engrais">2. FERTILIZER (Engrais)<a class="headerlink" href="#2-fertilizer-engrais" title="Permanent link">&para;</a></h3>
-<p><strong>Impact</strong> : Augmente la croissance de 20%</p>
-<p><strong>Utilisation</strong> :
+</code></pre></div>
+<strong>Calcul :</strong>
+Avant : luxIntensity = 3000 lux
+Après : luxIntensity = 3000 × 0.7 = 2100 lux</p>
+<h3 id="fertilizer-engrais">FERTILIZER (Engrais)<a class="headerlink" href="#fertilizer-engrais" title="Permanent link">&para;</a></h3>
+<p><strong>Impact :</strong> Augmente la croissance de 20 %
+<strong>Utilisation :</strong>
 - Accélérer la croissance
 - Renforcer une plante affaiblie
-- Augmenter productivité</p>
-<p><strong>Exemple</strong> :
+- Augmenter la productivité
+<strong>Exemple :</strong>
 <div class="highlight"><pre><span></span><code>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>http://localhost:8080/api/plants/507f1f77bcf86cd799439012/effects/FERTILIZER
-</code></pre></div></p>
-<p><strong>Calcul</strong> :
-<div class="highlight"><pre><span></span><code>Avant : baseGrowthRate = 2.5 %/jour
-Après : baseGrowthRate = 2.5 × 1.2 = 3.0 %/jour
-</code></pre></div></p>
-<p><strong>Cas d'usage</strong> :
-- Plante qui grandit trop lentement
-- Avant floraison
-- Récupération après stress</p>
-<hr />
-<h3 id="3-extra_watering-arrosage-supplementaire">3. EXTRA_WATERING (Arrosage supplémentaire)<a class="headerlink" href="#3-extra_watering-arrosage-supplementaire" title="Permanent link">&para;</a></h3>
-<p><strong>Impact</strong> : Augmente l'eau de 15%</p>
-<p><strong>Utilisation</strong> :
-- Compenser manque d'eau
-- Réduire stress hydrique
-- Augmenter humidité</p>
+</code></pre></div>
+<strong>Calcul :</strong>
+Avant : baseGrowthRate = 2.5 %/jour
+Après : baseGrowthRate = 2.5 × 1.2 = 3.0 %/jour</p>
+<h3 id="extra_watering-arrosage-supplementaire">EXTRA_WATERING (Arrosage supplémentaire)<a class="headerlink" href="#extra_watering-arrosage-supplementaire" title="Permanent link">&para;</a></h3>
+<p><strong>Impact :</strong> Augmente l'eau de 15 %
+<strong>Utilisation :</strong>
+- Récupérer une plante déshydratée
+- Préparer à une vague de chaleur
+- Optimiser la croissance en période sèche
+<strong>Exemple :</strong>
+<div class="highlight"><pre><span></span><code>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>http://localhost:8080/api/plants/507f1f77bcf86cd799439012/effects/EXTRA_WATERING
+</code></pre></div>
+<strong>Calcul :</strong>
+Avant : water = 400 ml
+Après : water = 400 × 1.15 = 460 ml</p>
+<h2 id="conseils-dutilisation">Conseils d'utilisation<a class="headerlink" href="#conseils-dutilisation" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Combinez plusieurs effets pour maximiser la récupération ou la croissance</li>
+<li>Surveillez l'état de la plante après chaque effet</li>
+<li>Les effets sont annulables ou cumulables selon leur type</li>
+<li>Compenser manque d'eau</li>
+<li>Réduire stress hydrique</li>
+<li>Augmenter humidité</li>
+</ul>
 <p><strong>Exemple</strong> :
 <div class="highlight"><pre><span></span><code>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>http://localhost:8080/api/plants/507f1f77bcf86cd799439012/effects/EXTRA_WATERING
 </code></pre></div></p>

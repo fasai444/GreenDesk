@@ -674,21 +674,6 @@
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Créer une forêt">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#structure-de-base" class="md-nav__link">
-    <span class="md-ellipsis">
-      Structure de base
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
 </li>
       
         <li class="md-nav__item">
@@ -698,44 +683,23 @@
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Placer une plante dans une forêt">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#ajouter-une-plante-a-une-position" class="md-nav__link">
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#lister-les-plantes-dune-foret" class="md-nav__link">
     <span class="md-ellipsis">
-      Ajouter une plante à une position
+      Lister les plantes d'une forêt
     </span>
   </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#voir-les-plantes-dune-foret" class="md-nav__link">
+  <a href="#saisons-et-evolution" class="md-nav__link">
     <span class="md-ellipsis">
-      Voir les plantes d'une forêt
+      Saisons et évolution
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="Voir les plantes d'une forêt">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#lister-toutes-les-plantes" class="md-nav__link">
-    <span class="md-ellipsis">
-      Lister toutes les plantes
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
@@ -1261,20 +1225,21 @@
                   
 
 
+<hr />
 <h1 id="gestion-des-forets">Gestion des forêts<a class="headerlink" href="#gestion-des-forets" title="Permanent link">&para;</a></h1>
-<p>Les forêts sont des écosystèmes 2D où vous pouvez placer plusieurs plantes dans une grille spatiale.</p>
+<p>Les forêts sont des écosystèmes 2D modélisés sous forme de grilles spatiales, permettant de simuler la cohabitation et l'interaction de multiples plantes.</p>
 <h2 id="creer-une-foret">Créer une forêt<a class="headerlink" href="#creer-une-foret" title="Permanent link">&para;</a></h2>
-<h3 id="structure-de-base">Structure de base<a class="headerlink" href="#structure-de-base" title="Permanent link">&para;</a></h3>
+<p>Pour créer une forêt :
 <div class="highlight"><pre><span></span><code>POST<span class="w"> </span>/api/forests
-</code></pre></div>
-<p><strong>Corpus</strong> :
+</code></pre></div></p>
+<p><strong>Exemple de requête :</strong>
 <div class="highlight"><pre><span></span><code><span class="p">{</span>
 <span class="w">  </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Forêt Enchantée&quot;</span><span class="p">,</span>
 <span class="w">  </span><span class="nt">&quot;width&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span><span class="p">,</span>
 <span class="w">  </span><span class="nt">&quot;height&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span>
 <span class="p">}</span>
 </code></pre></div></p>
-<p><strong>Exemple</strong> :
+<p><strong>Exemple complet :</strong>
 <div class="highlight"><pre><span></span><code>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>http://localhost:8080/api/forests<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>-d<span class="w"> </span><span class="s1">&#39;{</span>
@@ -1283,7 +1248,7 @@
 <span class="s1">    &quot;height&quot;: 10</span>
 <span class="s1">  }&#39;</span>
 </code></pre></div></p>
-<p><strong>Réponse</strong> :
+<p><strong>Réponse :</strong>
 <div class="highlight"><pre><span></span><code><span class="p">{</span>
 <span class="w">  </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;507f1f77bcf86cd799439014&quot;</span><span class="p">,</span>
 <span class="w">  </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Forêt Enchantée&quot;</span><span class="p">,</span>
@@ -1295,17 +1260,17 @@
 <span class="p">}</span>
 </code></pre></div></p>
 <h2 id="placer-une-plante-dans-une-foret">Placer une plante dans une forêt<a class="headerlink" href="#placer-une-plante-dans-une-foret" title="Permanent link">&para;</a></h2>
-<h3 id="ajouter-une-plante-a-une-position">Ajouter une plante à une position<a class="headerlink" href="#ajouter-une-plante-a-une-position" title="Permanent link">&para;</a></h3>
+<p>Pour ajouter une plante à une position précise :
 <div class="highlight"><pre><span></span><code>POST<span class="w"> </span>/api/forests/<span class="o">{</span>forestId<span class="o">}</span>/plants/<span class="o">{</span>plantId<span class="o">}</span>?posX<span class="o">={</span>x<span class="o">}</span><span class="p">&amp;</span><span class="nv">posY</span><span class="o">={</span>y<span class="o">}</span>
-</code></pre></div>
-<p><strong>Paramètres</strong> :
-- <code>posX</code> : Position X (0 à width-1)
-- <code>posY</code> : Position Y (0 à height-1)
-- Une position ne peut contenir qu'une plante</p>
-<p><strong>Exemple</strong> :
+</code></pre></div></p>
+<p><strong>Paramètres :</strong>
+- <code>posX</code> : Position X (0 à width-1)
+- <code>posY</code> : Position Y (0 à height-1)
+- Une position ne peut contenir qu'une seule plante</p>
+<p><strong>Exemple :</strong>
 <div class="highlight"><pre><span></span><code>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span><span class="s2">&quot;http://localhost:8080/api/forests/507f1f77bcf86cd799439014/plants/507f1f77bcf86cd799439012?posX=5&amp;posY=5&quot;</span>
 </code></pre></div></p>
-<p><strong>Réponse</strong> :
+<p><strong>Réponse :</strong>
 <div class="highlight"><pre><span></span><code><span class="p">{</span>
 <span class="w">  </span><span class="nt">&quot;plantId&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;507f1f77bcf86cd799439012&quot;</span><span class="p">,</span>
 <span class="w">  </span><span class="nt">&quot;posX&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span>
@@ -1313,32 +1278,52 @@
 <span class="w">  </span><span class="nt">&quot;variationSeed&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.95</span>
 <span class="p">}</span>
 </code></pre></div></p>
-<h2 id="voir-les-plantes-dune-foret">Voir les plantes d'une forêt<a class="headerlink" href="#voir-les-plantes-dune-foret" title="Permanent link">&para;</a></h2>
-<h3 id="lister-toutes-les-plantes">Lister toutes les plantes<a class="headerlink" href="#lister-toutes-les-plantes" title="Permanent link">&para;</a></h3>
+<h2 id="lister-les-plantes-dune-foret">Lister les plantes d'une forêt<a class="headerlink" href="#lister-les-plantes-dune-foret" title="Permanent link">&para;</a></h2>
+<p>Pour obtenir toutes les plantes d'une forêt :
 <div class="highlight"><pre><span></span><code>GET<span class="w"> </span>/api/forests/<span class="o">{</span>forestId<span class="o">}</span>/plants
-</code></pre></div>
-<p><strong>Exemple</strong> :
+</code></pre></div></p>
+<p><strong>Exemple :</strong>
 <div class="highlight"><pre><span></span><code>curl<span class="w"> </span>http://localhost:8080/api/forests/507f1f77bcf86cd799439014/plants
 </code></pre></div></p>
-<p><strong>Réponse</strong> :
+<p><strong>Réponse :</strong>
 <div class="highlight"><pre><span></span><code><span class="p">[</span>
 <span class="w">  </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;plantId&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;507f1f77bcf86cd799439012&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;507f1f77bcf86cd799439012&quot;</span><span class="p">,</span>
 <span class="w">    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Rose du Jardin&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;posX&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;posY&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;variationSeed&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.95</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;status&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;HEALTHY&quot;</span>
+<span class="w">    </span><span class="err">...</span>
 <span class="w">  </span><span class="p">},</span>
-<span class="w">  </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;plantId&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;507f1f77bcf86cd799439013&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Cactus&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;posX&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;posY&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">8</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;variationSeed&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1.02</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;status&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;STRESSED&quot;</span>
-<span class="w">  </span><span class="p">}</span>
+<span class="w">  </span><span class="err">...</span>
 <span class="p">]</span>
+</code></pre></div></p>
+<h2 id="saisons-et-evolution">Saisons et évolution<a class="headerlink" href="#saisons-et-evolution" title="Permanent link">&para;</a></h2>
+<p>Les forêts gèrent le passage des saisons, qui influent sur la croissance et la santé des plantes.</p>
+<p>Pour passer à la saison suivante :
+<div class="highlight"><pre><span></span><code>POST<span class="w"> </span>/api/forests/<span class="o">{</span>forestId<span class="o">}</span>/season/next
+</code></pre></div></p>
+<p><strong>Conseils :</strong>
+- Placez vos plantes de façon stratégique pour simuler des interactions
+- Surveillez l'évolution des saisons pour optimiser la croissance
+curl http://localhost:8080/api/forests/507f1f77bcf86cd799439014/plants
+<div class="highlight"><pre><span></span><code>**Réponse** :
+```json
+[
+  {
+    &quot;plantId&quot;: &quot;507f1f77bcf86cd799439012&quot;,
+    &quot;name&quot;: &quot;Rose du Jardin&quot;,
+    &quot;posX&quot;: 5,
+    &quot;posY&quot;: 5,
+    &quot;variationSeed&quot;: 0.95,
+    &quot;status&quot;: &quot;HEALTHY&quot;
+  },
+  {
+    &quot;plantId&quot;: &quot;507f1f77bcf86cd799439013&quot;,
+    &quot;name&quot;: &quot;Cactus&quot;,
+    &quot;posX&quot;: 2,
+    &quot;posY&quot;: 8,
+    &quot;variationSeed&quot;: 1.02,
+    &quot;status&quot;: &quot;STRESSED&quot;
+  }
+]
 </code></pre></div></p>
 <h2 id="gestion-des-saisons">Gestion des saisons<a class="headerlink" href="#gestion-des-saisons" title="Permanent link">&para;</a></h2>
 <h3 id="recuperer-la-saison-actuelle">Récupérer la saison actuelle<a class="headerlink" href="#recuperer-la-saison-actuelle" title="Permanent link">&para;</a></h3>

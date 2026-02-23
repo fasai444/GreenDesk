@@ -78,7 +78,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#installation-complete" class="md-skip">
+        <a href="#installation-complete-de-greendesk" class="md-skip">
           Aller au contenu
         </a>
       
@@ -523,28 +523,28 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#configuration-systeme" class="md-nav__link">
+  <a href="#configuration-systeme-requise" class="md-nav__link">
     <span class="md-ellipsis">
-      Configuration système
+      Configuration système requise
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Configuration système">
+    <nav class="md-nav" aria-label="Configuration système requise">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#minimale" class="md-nav__link">
+  <a href="#configuration-minimale" class="md-nav__link">
     <span class="md-ellipsis">
-      Minimale
+      Configuration minimale
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#recommandee" class="md-nav__link">
+  <a href="#configuration-recommandee" class="md-nav__link">
     <span class="md-ellipsis">
-      Recommandée
+      Configuration recommandée
     </span>
   </a>
   
@@ -568,16 +568,16 @@
           <li class="md-nav__item">
   <a href="#option-1-mongodb-atlas-cloud-recommande" class="md-nav__link">
     <span class="md-ellipsis">
-      Option 1 : MongoDB Atlas (Cloud) - Recommandé
+      Option 1 : MongoDB Atlas (Cloud, recommandé)
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#option-2-mongodb-local-docker" class="md-nav__link">
+  <a href="#option-2-mongodb-local-via-docker" class="md-nav__link">
     <span class="md-ellipsis">
-      Option 2 : MongoDB Local (Docker)
+      Option 2 : MongoDB local via Docker
     </span>
   </a>
   
@@ -586,7 +586,26 @@
           <li class="md-nav__item">
   <a href="#option-3-mongodb-local-natif" class="md-nav__link">
     <span class="md-ellipsis">
-      Option 3 : MongoDB Local (Natif)
+      Option 3 : MongoDB local natif
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Option 3 : MongoDB local natif">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#linuxmac" class="md-nav__link">
+    <span class="md-ellipsis">
+      Linux/Mac
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#windows" class="md-nav__link">
+    <span class="md-ellipsis">
+      Windows
     </span>
   </a>
   
@@ -594,6 +613,62 @@
         
       </ul>
     </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configuration-de-lapplication" class="md-nav__link">
+    <span class="md-ellipsis">
+      Configuration de l'application
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#lancement-de-lapplication" class="md-nav__link">
+    <span class="md-ellipsis">
+      Lancement de l'application
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Lancement de l'application">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#avec-docker-compose" class="md-nav__link">
+    <span class="md-ellipsis">
+      Avec Docker Compose
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#en-local-developpement" class="md-nav__link">
+    <span class="md-ellipsis">
+      En local (développement)
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#verification" class="md-nav__link">
+    <span class="md-ellipsis">
+      Vérification
+    </span>
+  </a>
   
 </li>
       
@@ -1300,54 +1375,70 @@
                   
 
 
-<h1 id="installation-complete">Installation complète<a class="headerlink" href="#installation-complete" title="Permanent link">&para;</a></h1>
-<h2 id="configuration-systeme">Configuration système<a class="headerlink" href="#configuration-systeme" title="Permanent link">&para;</a></h2>
-<h3 id="minimale">Minimale<a class="headerlink" href="#minimale" title="Permanent link">&para;</a></h3>
+<hr />
+<h1 id="installation-complete-de-greendesk">Installation complète de GreenDesk<a class="headerlink" href="#installation-complete-de-greendesk" title="Permanent link">&para;</a></h1>
+<p>Cette page détaille toutes les étapes pour installer GreenDesk et ses dépendances, sur tous les environnements (cloud, local, Docker, Windows, Linux, Mac).</p>
+<h2 id="configuration-systeme-requise">Configuration système requise<a class="headerlink" href="#configuration-systeme-requise" title="Permanent link">&para;</a></h2>
+<h3 id="configuration-minimale">Configuration minimale<a class="headerlink" href="#configuration-minimale" title="Permanent link">&para;</a></h3>
 <ul>
 <li>Java 21+</li>
-<li>4 GB RAM</li>
-<li>500 MB espace disque</li>
+<li>4 Go RAM</li>
+<li>500 Mo espace disque</li>
 </ul>
-<h3 id="recommandee">Recommandée<a class="headerlink" href="#recommandee" title="Permanent link">&para;</a></h3>
+<h3 id="configuration-recommandee">Configuration recommandée<a class="headerlink" href="#configuration-recommandee" title="Permanent link">&para;</a></h3>
 <ul>
 <li>Java 21+</li>
-<li>8 GB RAM</li>
-<li>2 GB espace disque</li>
+<li>8 Go RAM</li>
+<li>2 Go espace disque</li>
 <li>Docker &amp; Docker Compose</li>
 <li>MongoDB 6.0+</li>
 </ul>
 <h2 id="installation-de-mongodb">Installation de MongoDB<a class="headerlink" href="#installation-de-mongodb" title="Permanent link">&para;</a></h2>
-<h3 id="option-1-mongodb-atlas-cloud-recommande">Option 1 : MongoDB Atlas (Cloud) - Recommandé<a class="headerlink" href="#option-1-mongodb-atlas-cloud-recommande" title="Permanent link">&para;</a></h3>
+<h3 id="option-1-mongodb-atlas-cloud-recommande">Option 1 : MongoDB Atlas (Cloud, recommandé)<a class="headerlink" href="#option-1-mongodb-atlas-cloud-recommande" title="Permanent link">&para;</a></h3>
 <ol>
 <li>Créez un compte sur <a href="https://www.mongodb.com/cloud/atlas">MongoDB Atlas</a></li>
 <li>Créez un cluster gratuit</li>
 <li>Générez une chaîne de connexion</li>
-<li>Mise à jour du <code>application.properties</code> :</li>
+<li>Modifiez <code>application.properties</code> :
+   <div class="highlight"><pre><span></span><code><span class="na">spring.data.mongodb.uri</span><span class="o">=</span><span class="s">mongodb+srv://username:password@cluster.mongodb.net/greendesk?retryWrites=true&amp;w=majority</span>
+</code></pre></div></li>
 </ol>
-<div class="highlight"><pre><span></span><code><span class="na">spring.data.mongodb.uri</span><span class="o">=</span><span class="s">mongodb+srv://username:password@cluster.mongodb.net/greendesk?retryWrites=true&amp;w=majority</span>
-</code></pre></div>
-<h3 id="option-2-mongodb-local-docker">Option 2 : MongoDB Local (Docker)<a class="headerlink" href="#option-2-mongodb-local-docker" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code>docker<span class="w"> </span>run<span class="w"> </span>-d<span class="w"> </span><span class="se">\</span>
+<h3 id="option-2-mongodb-local-via-docker">Option 2 : MongoDB local via Docker<a class="headerlink" href="#option-2-mongodb-local-via-docker" title="Permanent link">&para;</a></h3>
+<p><div class="highlight"><pre><span></span><code>docker<span class="w"> </span>run<span class="w"> </span>-d<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>-p<span class="w"> </span><span class="m">27017</span>:27017<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>-e<span class="w"> </span><span class="nv">MONGO_INITDB_ROOT_USERNAME</span><span class="o">=</span>admin<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>-e<span class="w"> </span><span class="nv">MONGO_INITDB_ROOT_PASSWORD</span><span class="o">=</span>password<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--name<span class="w"> </span>mongodb<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>mongo:6.0
 </code></pre></div>
-<p>Configuration dans <code>application.properties</code> :</p>
+Dans <code>application.properties</code> :
 <div class="highlight"><pre><span></span><code><span class="na">spring.data.mongodb.uri</span><span class="o">=</span><span class="s">mongodb://admin:password@localhost:27017/greendesk?authSource=admin</span>
-</code></pre></div>
-<h3 id="option-3-mongodb-local-natif">Option 3 : MongoDB Local (Natif)<a class="headerlink" href="#option-3-mongodb-local-natif" title="Permanent link">&para;</a></h3>
-<p><strong>Linux/Mac</strong> :</p>
+</code></pre></div></p>
+<h3 id="option-3-mongodb-local-natif">Option 3 : MongoDB local natif<a class="headerlink" href="#option-3-mongodb-local-natif" title="Permanent link">&para;</a></h3>
+<h4 id="linuxmac">Linux/Mac<a class="headerlink" href="#linuxmac" title="Permanent link">&para;</a></h4>
 <div class="highlight"><pre><span></span><code>brew<span class="w"> </span>install<span class="w"> </span>mongodb-community
 brew<span class="w"> </span>services<span class="w"> </span>start<span class="w"> </span>mongodb-community
 </code></pre></div>
-<p><strong>Windows</strong> :</p>
+<h4 id="windows">Windows<a class="headerlink" href="#windows" title="Permanent link">&para;</a></h4>
 <ol>
-<li>Téléchargez depuis <a href="https://www.mongodb.com/try/download/community">mongodb.com</a></li>
+<li>Téléchargez l'installeur sur <a href="https://www.mongodb.com/try/download/community">mongodb.com</a></li>
 <li>Exécutez l'installateur</li>
 <li>Lancez le service MongoDB</li>
 </ol>
+<h2 id="configuration-de-lapplication">Configuration de l'application<a class="headerlink" href="#configuration-de-lapplication" title="Permanent link">&para;</a></h2>
+<p>Dans <code>src/main/resources/application.properties</code> :
+<div class="highlight"><pre><span></span><code><span class="na">spring.data.mongodb.uri</span><span class="o">=</span><span class="s">&lt;votre_uri_mongodb&gt;</span>
+<span class="na">server.port</span><span class="o">=</span><span class="s">8080</span>
+</code></pre></div></p>
+<h2 id="lancement-de-lapplication">Lancement de l'application<a class="headerlink" href="#lancement-de-lapplication" title="Permanent link">&para;</a></h2>
+<h3 id="avec-docker-compose">Avec Docker Compose<a class="headerlink" href="#avec-docker-compose" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>docker-compose<span class="w"> </span>up<span class="w"> </span>--build
+</code></pre></div>
+<h3 id="en-local-developpement">En local (développement)<a class="headerlink" href="#en-local-developpement" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>./gradlew<span class="w"> </span>bootRun
+</code></pre></div>
+<h2 id="verification">Vérification<a class="headerlink" href="#verification" title="Permanent link">&para;</a></h2>
+<p>Accédez à <a href="http://localhost:8080/swagger-ui.html">http://localhost:8080/swagger-ui.html</a> pour vérifier que l'API est opérationnelle.</p>
 <p>Configuration dans <code>application.properties</code> :</p>
 <div class="highlight"><pre><span></span><code><span class="na">spring.data.mongodb.uri</span><span class="o">=</span><span class="s">mongodb://localhost:27017/greendesk</span>
 </code></pre></div>

@@ -683,81 +683,6 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#cycle-de-vie-dune-plante" class="md-nav__link">
-    <span class="md-ellipsis">
-      Cycle de vie d'une plante
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#formules-de-calcul" class="md-nav__link">
-    <span class="md-ellipsis">
-      Formules de calcul
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Formules de calcul">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#sante" class="md-nav__link">
-    <span class="md-ellipsis">
-      Santé
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#croissance-mmjour" class="md-nav__link">
-    <span class="md-ellipsis">
-      Croissance (mm/jour)
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#etat" class="md-nav__link">
-    <span class="md-ellipsis">
-      État
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#exemple-complet" class="md-nav__link">
-    <span class="md-ellipsis">
-      Exemple complet
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Exemple complet">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#creer-une-simulation" class="md-nav__link">
-    <span class="md-ellipsis">
-      Créer une simulation
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#concepts-avances" class="md-nav__link">
     <span class="md-ellipsis">
       Concepts avancés
@@ -1281,134 +1206,169 @@
 </code></pre></div>
 <h2 id="etats-dune-plante">États d'une plante<a class="headerlink" href="#etats-dune-plante" title="Permanent link">&para;</a></h2>
 <p>L'état d'une plante (<code>status</code>) est calculé automatiquement :</p>
-<pre class="mermaid"><code>stateDiagram-v2
-  [*] --&gt; HEALTHY: Health &gt; 80%
+<p><pre class="mermaid"><code>stateDiagram-v2
+  ---
+  # Concepts fondamentaux de GreenDesk
 
-  HEALTHY --&gt; STRESSED: Stress increases\nHealth 50-80%
-  STRESSED --&gt; HEALTHY: Conditions improve\nHealth &gt; 80%
-  STRESSED --&gt; DORMANT: Severe stress\nHealth 20-50%
-  DORMANT --&gt; STRESSED: Partial recovery\nHealth 50-80%
-  DORMANT --&gt; DISEASED: Critical state\nHealth &lt; 20%
-  DISEASED --&gt; DORMANT: Treatment applied\nHealth 20-50%
-  STRESSED --&gt; DISEASED: Critical stress\nHealth &lt; 20%
-  DISEASED --&gt; [*]: Death
+  Cette page présente les concepts clés pour comprendre et exploiter toute la puissance de GreenDesk.
 
-  note right of HEALTHY
-    All conditions optimal
-    or near optimal
-  end note
+  ## Vue d'ensemble conceptuelle
 
-  note right of STRESSED
-    Some conditions
-    suboptimal
-  end note
+  GreenDesk modélise un écosystème végétal complet : espèces, plantes, forêts, saisons, effets, environnement.
 
-  note right of DORMANT
-    Growth stopped
-    severe conditions
-  end note
+  ### Schéma conceptuel
 
-  note right of DISEASED
-    Critical state
-    urgent intervention
-  end note</code></pre>
-<p><strong>États possibles</strong> :</p>
-<table>
-<thead>
-<tr>
-<th>État</th>
-<th>Santé</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><strong>HEALTHY</strong></td>
-<td>&gt; 80%</td>
-<td>Tout va bien</td>
-</tr>
-<tr>
-<td><strong>STRESSED</strong></td>
-<td>50-80%</td>
-<td>Conditions suboptimales</td>
-</tr>
-<tr>
-<td><strong>DORMANT</strong></td>
-<td>20-50%</td>
-<td>Croissance arrêtée</td>
-</tr>
-<tr>
-<td><strong>DISEASED</strong></td>
-<td>&lt; 20%</td>
-<td>Grave problème</td>
-</tr>
-</tbody>
-</table>
-<h2 id="cycle-de-vie-dune-plante">Cycle de vie d'une plante<a class="headerlink" href="#cycle-de-vie-dune-plante" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code>Création
-   ↓
-   ├─ Initialisation avec paramètres par défaut
-   ├─ Liée à une espèce
-   ├─ Peut être placée dans une forêt
-   ↓
-Évolution
-   ├─ Quotidienne (simulation)
-   ├─ Affectée par saisons/effets
-   ├─ Mise à jour santé/croissance/age
-   ↓
-Application d&#39;effets
-   ├─ Modification environnement
-   ├─ Impact sur la santé
-   ↓
-Fin de vie
-   └─ Suppression
-</code></pre></div>
-<h2 id="formules-de-calcul">Formules de calcul<a class="headerlink" href="#formules-de-calcul" title="Permanent link">&para;</a></h2>
-<h3 id="sante">Santé<a class="headerlink" href="#sante" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code>Stress = Σ(|ValeurActuelle - ValeurOptimale| / ValeurOptimale)
-Santé = max(0, 100 - (Stress * 50))
-</code></pre></div>
-<h3 id="croissance-mmjour">Croissance (mm/jour)<a class="headerlink" href="#croissance-mmjour" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code>Croissance = BaseGrowthRate × (Santé/100) × FacteurSaison × FacteurEffets
-</code></pre></div>
-<h3 id="etat">État<a class="headerlink" href="#etat" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code>if Santé &gt; 80    → HEALTHY
+  ```mermaid
+  flowchart TD
+      Forest["Forêt (Écosystème 2D)"]
+      Grid["Grille spatiale (10x10)"]
+      Plant1["Plante (Rose)"]
+      Plant2["Plante (Chêne)"]
+      Empty["Vide"]
+      Season["Saison actuelle : SPRING"]
+      Forest --&gt; Grid
+      Grid --&gt; Plant1
+      Grid --&gt; Empty
+      Grid --&gt; Plant2
+      Grid --&gt; Season
+      Plant1 --&gt; Species
+      Plant1 --&gt; Status
+      Plant1 --&gt; Environment
+      Plant1 --&gt; Effects
+      Species["Espèce"]
+      Status["État"]
+      Environment["Environnement"]
+      Effects["Effets"]
+  ```
+
+  ## Entités principales
+
+  ### Espèce (Species)
+  Définit les caractéristiques génétiques et besoins optimaux d'un type de plante.
+
+  **Exemple d'attributs** :
+  ```json
+  {
+    "id": "507f1f77bcf86cd799439011",
+    "name": "Rose",
+    "waterNeeds": 500.0,
+    "optimalTemperature": 20.0,
+    "optimalHumidity": 60.0,
+    "luxNeeds": 3000.0,
+    "baseGrowthRate": 2.5,
+    "seedProductionRate": 50.0
+  }
+  ```
+  **Rôle** : modèle réutilisable pour créer plusieurs plantes.
+
+  ### Plante (Plant)
+  Instance concrète d'une espèce, avec état, environnement et historique propres.
+
+  **Exemple d'attributs** :
+  ```json
+  {
+    "id": "507f1f77bcf86cd799439012",
+    "name": "Ma Rose",
+    "species": "Rose",
+    "status": "HEALTHY",
+    "age": 15,
+    "health": 95.0,
+    "growth": 8.5,
+    "environment": {
+      "water": 450.0,
+      "temperature": 22.0,
+      "humidity": 58.0,
+      "luxIntensity": 2900.0
+    },
+    "effects": ["FERTILIZER"]
+  }
+  ```
+  **Rôle** : représente une plante vivante, évolutive, soumise à des effets et à l'environnement.
+
+  ### Forêt (Forest)
+  Écosystème 2D, grille spatiale contenant plusieurs plantes, gère les saisons et interactions.
+
+  **Exemple d'attributs** :
+  ```json
+  {
+    "id": "507f1f77bcf86cd799439014",
+    "name": "Forêt Enchantée",
+    "width": 10,
+    "height": 10,
+    "currentSeason": "SPRING",
+    "plants": [ ... ]
+  }
+  ```
+
+  ### Effet (Effect)
+  Action ponctuelle ou continue modifiant l'état d'une plante (ex : engrais, ombrage, arrosage).
+
+  **Exemple** :
+  ```json
+  {
+    "name": "FERTILIZER",
+    "impact": 0.2,
+    "description": "Augmente la croissance de 20%"
+  }
+  ```
+
+  ### Environnement
+  Conditions locales autour de la plante (eau, température, humidité, lumière).
+
+  **Exemple** :
+  ```json
+  {
+    "water": 450.0,
+    "temperature": 22.0,
+    "humidity": 58.0,
+    "luxIntensity": 2900.0
+  }
+  ```
+
+  ## Cycle de vie d'une plante
+
+  1. Création d'une espèce (modèle génétique)
+  2. Instanciation d'une plante à partir d'une espèce
+  3. Placement dans une forêt (optionnel)
+  4. Application d'effets (engrais, arrosage, ombrage...)
+  5. Suivi de l'évolution (croissance, santé, stress)
+  6. Passage des saisons, adaptation de l'environnement
+
+  Pour des exemples concrets, consultez les pages suivantes :
+  - [Gestion des espèces](species.md)
+  - [Gestion des plantes](plants.md)
+  - [Gestion des forêts](forests.md)
+  - [Système d'effets](effects.md)</code></pre>
+if Santé &gt; 80    → HEALTHY
 else if Santé &gt; 50 → STRESSED
 else if Santé &gt; 20 → DORMANT
 else             → DISEASED
+<div class="highlight"><pre><span></span><code>## Exemple complet
+
+### Créer une simulation
+
+1. **Créer une espèce** : &quot;Rose&quot;
+   - waterNeeds: 500ml
+   - optimalTemperature: 20°C
+   - optimalHumidity: 60%
+   - luxNeeds: 3000 lux
+
+2. **Créer une plante** : &quot;Rose du Jardin&quot;
+   - water: 500ml (optimal)
+   - temperature: 25°C (5°C trop chaud)
+   - humidity: 60% (optimal)
+   - lux: 3000 (optimal)
+
+3. **Calculer la santé**
 </code></pre></div>
-<h2 id="exemple-complet">Exemple complet<a class="headerlink" href="#exemple-complet" title="Permanent link">&para;</a></h2>
-<h3 id="creer-une-simulation">Créer une simulation<a class="headerlink" href="#creer-une-simulation" title="Permanent link">&para;</a></h3>
-<ol>
-<li><strong>Créer une espèce</strong> : "Rose"</li>
-<li>waterNeeds: 500ml</li>
-<li>optimalTemperature: 20°C</li>
-<li>optimalHumidity: 60%</li>
-<li>
-<p>luxNeeds: 3000 lux</p>
-</li>
-<li>
-<p><strong>Créer une plante</strong> : "Rose du Jardin"</p>
-</li>
-<li>water: 500ml (optimal)</li>
-<li>temperature: 25°C (5°C trop chaud)</li>
-<li>humidity: 60% (optimal)</li>
-<li>
-<p>lux: 3000 (optimal)</p>
-</li>
-<li>
-<p><strong>Calculer la santé</strong></p>
-</li>
-</ol>
-<div class="highlight"><pre><span></span><code>Stress_water     = 0 / 500 = 0.00
+Stress_water     = 0 / 500 = 0.00
 Stress_temp      = 5 / 20 = 0.25
 Stress_humidity  = 0 / 60 = 0.00
 Stress_lux       = 0 / 3000 = 0.00
-StressTotal      = 0.25
-
-Santé = 100 - (0.25 × 50) = 87.5%
+StressTotal      = 0.25</p>
+<p>Santé = 100 - (0.25 × 50) = 87.5%
 → État = HEALTHY
-</code></pre></div>
+```</p>
 <ol>
 <li><strong>Placer dans une forêt</strong></li>
 <li>Position (5, 5) dans "Forêt Enchantée"</li>

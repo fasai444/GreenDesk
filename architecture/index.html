@@ -78,7 +78,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#architecture-du-projet" class="md-skip">
+        <a href="#architecture-du-projet-greendesk" class="md-skip">
           Aller au contenu
         </a>
       
@@ -829,18 +829,45 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#diagramme-architecture-generale" class="md-nav__link">
+  <a href="#vue-densemble" class="md-nav__link">
     <span class="md-ellipsis">
-      Diagramme Architecture Générale
+      Vue d'ensemble
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#diagramme-entites-uml" class="md-nav__link">
+  <a href="#diagramme-darchitecture-generale" class="md-nav__link">
     <span class="md-ellipsis">
-      Diagramme entités UML
+      Diagramme d'architecture générale
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#modelisation-uml-des-entites-principales" class="md-nav__link">
+    <span class="md-ellipsis">
+      Modélisation UML des entités principales
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#flux-de-donnees-et-interactions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Flux de données et interactions
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#points-cles-de-larchitecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      Points clés de l'architecture
     </span>
   </a>
   
@@ -1195,48 +1222,53 @@
                   
 
 
-<h1 id="architecture-du-projet">Architecture du projet<a class="headerlink" href="#architecture-du-projet" title="Permanent link">&para;</a></h1>
-<p>Documentation de l'architecture interne et du design de GreenDesk.</p>
-<h2 id="diagramme-architecture-generale">Diagramme Architecture Générale<a class="headerlink" href="#diagramme-architecture-generale" title="Permanent link">&para;</a></h2>
+<hr />
+<h1 id="architecture-du-projet-greendesk">Architecture du projet GreenDesk<a class="headerlink" href="#architecture-du-projet-greendesk" title="Permanent link">&para;</a></h1>
+<p>Cette page détaille l'architecture logicielle, les choix techniques et la modélisation métier de GreenDesk.</p>
+<h2 id="vue-densemble">Vue d'ensemble<a class="headerlink" href="#vue-densemble" title="Permanent link">&para;</a></h2>
+<p>GreenDesk adopte une architecture <strong>Spring Boot</strong> classique, découpée en couches :</p>
+<ul>
+<li><strong>Controller</strong> : expose l'API REST, gère les requêtes HTTP, la validation et les réponses</li>
+<li><strong>Service</strong> : contient la logique métier, les règles de gestion, les calculs</li>
+<li><strong>Repository</strong> : accès aux données, requêtes MongoDB, mapping objets/documents</li>
+<li><strong>Modèles métier</strong> : entités Java représentant les espèces, plantes, forêts, effets, etc.</li>
+</ul>
+<h2 id="diagramme-darchitecture-generale">Diagramme d'architecture générale<a class="headerlink" href="#diagramme-darchitecture-generale" title="Permanent link">&para;</a></h2>
 <pre class="mermaid"><code>graph TB
-    Client["Browser/Client&lt;br/&gt;HTML, JS, Swagger"]
-
+    Client["Navigateur / Client&lt;br/&gt;HTML, JS, Swagger"]
     Controller["Controller Layer&lt;br/&gt;REST API Endpoints"]
     Service["Service Layer&lt;br/&gt;Business Logic"]
     Repository["Repository Layer&lt;br/&gt;Data Access"]
     DB["MongoDB&lt;br/&gt;Database"]
-
     Client --&gt;|HTTP/REST| Controller
-    Controller --&gt;|Calls| Service
-    Service --&gt;|Queries| Repository
-    Repository --&gt;|JDBC| DB
-
+    Controller --&gt;|Appelle| Service
+    Service --&gt;|Requêtes| Repository
+    Repository --&gt;|Accès| DB
     style Client fill:#e8f5e9
     style Controller fill:#bbdefb
     style Service fill:#fff9c4
     style Repository fill:#ffccbc
     style DB fill:#f8bbd0</code></pre>
-<h2 id="diagramme-entites-uml">Diagramme entités UML<a class="headerlink" href="#diagramme-entites-uml" title="Permanent link">&para;</a></h2>
+<h2 id="modelisation-uml-des-entites-principales">Modélisation UML des entités principales<a class="headerlink" href="#modelisation-uml-des-entites-principales" title="Permanent link">&para;</a></h2>
 <pre class="mermaid"><code>classDiagram
     class Species {
         -String id
-        -String name*
-        -Double waterNeeds*
-        -Double optimalTemperature*
-        -Double optimalHumidity*
-        -Double luxNeeds*
-        -Double baseGrowthRate*
-        -Double seedProductionRate*
+        -String name
+        -Double waterNeeds
+        -Double optimalTemperature
+        -Double optimalHumidity
+        -Double luxNeeds
+        -Double baseGrowthRate
+        -Double seedProductionRate
         +createSpecies()
         +getByName()
         +updateSpecies()
         +deleteSpecies()
     }
-
     class Plant {
         -String id
         -String name
-        -String species*
+        -String species
         -PlantStatus status
         -Integer age
         -Double health
@@ -1248,60 +1280,97 @@
         +updateStatus()
         +applyEffect()
     }
-
-    class Environment {
-        -Double water
-        -Double temperature
-        -Double humidity
-        -Double luxIntensity
-        +updateEnvironment()
-        +calculateStress()
-    }
-
     class Forest {
         -String id
         -String name
-        -Integer width
-        -Integer height
+        -List~Plant~ plants
         -Season currentSeason
-        -List~PlantInForest~ plants
-        +createForest()
         +addPlant()
-        +progressSeason()
-        +getPlants()
+        +nextSeason()
     }
-
-    class PlantInForest {
-        -String plantId
-        -Integer posX
-        -Integer posY
-        -Double variationSeed
-    }
-
-    class Season {
-        -SeasonType type
-        -Double waterMultiplier
-        -Double temperatureModifier
-        -Double humidityModifier
-        -Double luxMultiplier
-    }
-
     class Effect {
-        &lt;&lt;enumeration&gt;&gt;
-        SHADE
-        FERTILIZER
-        EXTRA_WATERING
-        HEATING
+        -String name
+        -String description
+        -Double impact
+        +apply()
     }
+    Species &lt;|-- Plant
+    Plant &lt;|-- Forest
+    Plant o-- Effect</code></pre>
+<h2 id="flux-de-donnees-et-interactions">Flux de données et interactions<a class="headerlink" href="#flux-de-donnees-et-interactions" title="Permanent link">&para;</a></h2>
+<ol>
+<li>Le client (navigateur, outil, script) envoie une requête HTTP à l'API REST.</li>
+<li>Le contrôleur valide la requête, appelle le service approprié.</li>
+<li>Le service applique la logique métier, interagit avec les repositories.</li>
+<li>Les repositories effectuent les opérations CRUD sur MongoDB.</li>
+<li>La réponse est formatée et renvoyée au client.</li>
+</ol>
+<h2 id="points-cles-de-larchitecture">Points clés de l'architecture<a class="headerlink" href="#points-cles-de-larchitecture" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>Séparation des responsabilités</strong> : chaque couche a un rôle précis</li>
+<li><strong>Extensibilité</strong> : ajout de nouvelles entités ou endpoints facile</li>
+<li><strong>Tests</strong> : chaque couche est testable indépendamment</li>
+<li><strong>Performance</strong> : accès optimisé à MongoDB, requêtes indexées</li>
+</ul>
+<p>Pour plus de détails sur chaque entité ou endpoint, consultez les sections <a href="../api/overview/">API</a> et <a href="../usage/concepts/">Guide d'utilisation</a>.
+    }</p>
+<div class="highlight"><pre><span></span><code>class Environment {
+    -Double water
+    -Double temperature
+    -Double humidity
+    -Double luxIntensity
+    +updateEnvironment()
+    +calculateStress()
+}
 
-    Plant --&gt; Species : "belongs to"
-    Plant --&gt; Environment : "has"
-    Plant --&gt; Effect : "has many"
-    Forest --&gt; PlantInForest : "contains"
-    PlantInForest --&gt; Plant : "references"
-    Forest --&gt; Season : "has current"</code></pre>
+class Forest {
+    -String id
+    -String name
+    -Integer width
+    -Integer height
+    -Season currentSeason
+    -List~PlantInForest~ plants
+    +createForest()
+    +addPlant()
+    +progressSeason()
+    +getPlants()
+}
+
+class PlantInForest {
+    -String plantId
+    -Integer posX
+    -Integer posY
+    -Double variationSeed
+}
+
+class Season {
+    -SeasonType type
+    -Double waterMultiplier
+    -Double temperatureModifier
+    -Double humidityModifier
+    -Double luxMultiplier
+}
+
+class Effect {
+    &lt;&lt;enumeration&gt;&gt;
+    SHADE
+    FERTILIZER
+    EXTRA_WATERING
+    HEATING
+}
+
+Plant --&gt; Species : &quot;belongs to&quot;
+Plant --&gt; Environment : &quot;has&quot;
+Plant --&gt; Effect : &quot;has many&quot;
+Forest --&gt; PlantInForest : &quot;contains&quot;
+PlantInForest --&gt; Plant : &quot;references&quot;
+Forest --&gt; Season : &quot;has current&quot;
+</code></pre></div>
+<p>```
+</p>
 <h2 id="diagramme-flux-creation-plante">Diagramme flux création plante<a class="headerlink" href="#diagramme-flux-creation-plante" title="Permanent link">&para;</a></h2>
-<pre class="mermaid"><code>sequenceDiagram
+<p><code>mermaid
+sequenceDiagram
     actor User as User
     participant API as REST API
     participant Controller as Controller
@@ -1323,7 +1392,7 @@
     Repo--&gt;&gt;Service: Saved plant
     Service--&gt;&gt;Controller: Plant created
     Controller--&gt;&gt;API: 201 Created
-    API--&gt;&gt;User: JSON response</code></pre>
+    API--&gt;&gt;User: JSON response</code></p>
 <h2 id="diagramme-calcul-sante">Diagramme calcul santé<a class="headerlink" href="#diagramme-calcul-sante" title="Permanent link">&para;</a></h2>
 <pre class="mermaid"><code>flowchart TD
     A["Plant Environment"] --&gt; B["Get Species&lt;br/&gt;Optimal Values"]
