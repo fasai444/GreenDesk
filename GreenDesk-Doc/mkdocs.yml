@@ -5,7 +5,7 @@ site_url: https://greendesk.example.com
 
 theme:
   name: material
-  logo: assets/logo.svg
+  logo: assets/images/mkdocs-logo.svg
   favicon: assets/favicon.ico
   language: fr
   palette:
