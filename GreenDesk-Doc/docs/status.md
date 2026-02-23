@@ -1,8 +1,15 @@
-# Statut de la documentation
 
-Cette page est un indicateur simple pour vérifier que la publication GitHub Pages fonctionne.
+# Statut de la documentation et du déploiement
 
-- Build: OK
-- Déployé sur: https://MisasoaRobison.github.io/GreenDesk/
+Cette page permet de vérifier l'état de la documentation et du déploiement continu sur GitHub Pages.
 
-Si vous voyez cette page après un déploiement, la publication fonctionne correctement.
+## Dernier build
+
+- **Build** : OK (site généré avec MkDocs)
+- **Déploiement** : [https://MisasoaRobison.github.io/GreenDesk/](https://MisasoaRobison.github.io/GreenDesk/)
+
+## Vérification
+
+Si vous voyez cette page après un déploiement, la documentation est bien publiée et accessible publiquement.
+
+Pour toute anomalie, consultez les logs GitHub Actions ou ouvrez une issue sur le dépôt GitHub.

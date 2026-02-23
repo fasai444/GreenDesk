@@ -171,86 +171,138 @@ L'état d'une plante (`status`) est calculé automatiquement :
 
 ```mermaid
 stateDiagram-v2
-  [*] --> HEALTHY: Health > 80%
-    
-  HEALTHY --> STRESSED: Stress increases\nHealth 50-80%
-  STRESSED --> HEALTHY: Conditions improve\nHealth > 80%
-  STRESSED --> DORMANT: Severe stress\nHealth 20-50%
-  DORMANT --> STRESSED: Partial recovery\nHealth 50-80%
-  DORMANT --> DISEASED: Critical state\nHealth < 20%
-  DISEASED --> DORMANT: Treatment applied\nHealth 20-50%
-  STRESSED --> DISEASED: Critical stress\nHealth < 20%
-  DISEASED --> [*]: Death
-    
-  note right of HEALTHY
-    All conditions optimal
-    or near optimal
-  end note
-    
-  note right of STRESSED
-    Some conditions
-    suboptimal
-  end note
-    
-  note right of DORMANT
-    Growth stopped
-    severe conditions
-  end note
-    
-  note right of DISEASED
-    Critical state
-    urgent intervention
-  end note
-```
+  ---
+  # Concepts fondamentaux de GreenDesk
 
-**États possibles** :
+  Cette page présente les concepts clés pour comprendre et exploiter toute la puissance de GreenDesk.
 
-| État | Santé | Description |
-|------|-------|-------------|
-| **HEALTHY** | > 80% | Tout va bien |
-| **STRESSED** | 50-80% | Conditions suboptimales |
-| **DORMANT** | 20-50% | Croissance arrêtée |
-| **DISEASED** | < 20% | Grave problème |
+  ## Vue d'ensemble conceptuelle
 
-## Cycle de vie d'une plante
+  GreenDesk modélise un écosystème végétal complet : espèces, plantes, forêts, saisons, effets, environnement.
 
-```
-Création
-   ↓
-   ├─ Initialisation avec paramètres par défaut
-   ├─ Liée à une espèce
-   ├─ Peut être placée dans une forêt
-   ↓
-Évolution
-   ├─ Quotidienne (simulation)
-   ├─ Affectée par saisons/effets
-   ├─ Mise à jour santé/croissance/age
-   ↓
-Application d'effets
-   ├─ Modification environnement
-   ├─ Impact sur la santé
-   ↓
-Fin de vie
-   └─ Suppression
-```
+  ### Schéma conceptuel
 
-## Formules de calcul
+  ```mermaid
+  flowchart TD
+      Forest["Forêt (Écosystème 2D)"]
+      Grid["Grille spatiale (10x10)"]
+      Plant1["Plante (Rose)"]
+      Plant2["Plante (Chêne)"]
+      Empty["Vide"]
+      Season["Saison actuelle : SPRING"]
+      Forest --> Grid
+      Grid --> Plant1
+      Grid --> Empty
+      Grid --> Plant2
+      Grid --> Season
+      Plant1 --> Species
+      Plant1 --> Status
+      Plant1 --> Environment
+      Plant1 --> Effects
+      Species["Espèce"]
+      Status["État"]
+      Environment["Environnement"]
+      Effects["Effets"]
+  ```
 
-### Santé
+  ## Entités principales
 
-```
-Stress = Σ(|ValeurActuelle - ValeurOptimale| / ValeurOptimale)
-Santé = max(0, 100 - (Stress * 50))
-```
+  ### Espèce (Species)
+  Définit les caractéristiques génétiques et besoins optimaux d'un type de plante.
 
-### Croissance (mm/jour)
+  **Exemple d'attributs** :
+  ```json
+  {
+    "id": "507f1f77bcf86cd799439011",
+    "name": "Rose",
+    "waterNeeds": 500.0,
+    "optimalTemperature": 20.0,
+    "optimalHumidity": 60.0,
+    "luxNeeds": 3000.0,
+    "baseGrowthRate": 2.5,
+    "seedProductionRate": 50.0
+  }
+  ```
+  **Rôle** : modèle réutilisable pour créer plusieurs plantes.
 
-```
-Croissance = BaseGrowthRate × (Santé/100) × FacteurSaison × FacteurEffets
-```
+  ### Plante (Plant)
+  Instance concrète d'une espèce, avec état, environnement et historique propres.
 
-### État
+  **Exemple d'attributs** :
+  ```json
+  {
+    "id": "507f1f77bcf86cd799439012",
+    "name": "Ma Rose",
+    "species": "Rose",
+    "status": "HEALTHY",
+    "age": 15,
+    "health": 95.0,
+    "growth": 8.5,
+    "environment": {
+      "water": 450.0,
+      "temperature": 22.0,
+      "humidity": 58.0,
+      "luxIntensity": 2900.0
+    },
+    "effects": ["FERTILIZER"]
+  }
+  ```
+  **Rôle** : représente une plante vivante, évolutive, soumise à des effets et à l'environnement.
 
+  ### Forêt (Forest)
+  Écosystème 2D, grille spatiale contenant plusieurs plantes, gère les saisons et interactions.
+
+  **Exemple d'attributs** :
+  ```json
+  {
+    "id": "507f1f77bcf86cd799439014",
+    "name": "Forêt Enchantée",
+    "width": 10,
+    "height": 10,
+    "currentSeason": "SPRING",
+    "plants": [ ... ]
+  }
+  ```
+
+  ### Effet (Effect)
+  Action ponctuelle ou continue modifiant l'état d'une plante (ex : engrais, ombrage, arrosage).
+
+  **Exemple** :
+  ```json
+  {
+    "name": "FERTILIZER",
+    "impact": 0.2,
+    "description": "Augmente la croissance de 20%"
+  }
+  ```
+
+  ### Environnement
+  Conditions locales autour de la plante (eau, température, humidité, lumière).
+
+  **Exemple** :
+  ```json
+  {
+    "water": 450.0,
+    "temperature": 22.0,
+    "humidity": 58.0,
+    "luxIntensity": 2900.0
+  }
+  ```
+
+  ## Cycle de vie d'une plante
+
+  1. Création d'une espèce (modèle génétique)
+  2. Instanciation d'une plante à partir d'une espèce
+  3. Placement dans une forêt (optionnel)
+  4. Application d'effets (engrais, arrosage, ombrage...)
+  5. Suivi de l'évolution (croissance, santé, stress)
+  6. Passage des saisons, adaptation de l'environnement
+
+  Pour des exemples concrets, consultez les pages suivantes :
+  - [Gestion des espèces](species.md)
+  - [Gestion des plantes](plants.md)
+  - [Gestion des forêts](forests.md)
+  - [Système d'effets](effects.md)
 ```
 if Santé > 80    → HEALTHY
 else if Santé > 50 → STRESSED

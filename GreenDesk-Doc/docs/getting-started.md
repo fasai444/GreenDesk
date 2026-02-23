@@ -1,58 +1,61 @@
-# Guide de démarrage
+---
+# Guide de démarrage rapide
 
-## Pré-requis
+Cette page vous guide pas à pas pour installer, configurer et lancer GreenDesk en quelques minutes.
 
-Avant de commencer, assurez-vous d'avoir installé :
+## Prérequis système
 
-- **Java 21** ou supérieur
-- **Docker** et **Docker Compose** (recommandé)
-- **Git**
-- **Gradle 9.2.0** (optionnel, gradlew fourni)
+- **Java 21** ou supérieur (obligatoire)
+- **Docker** et **Docker Compose** (fortement recommandé)
+- **Git** (gestion du code)
+- **Gradle 9.2.0** (optionnel, wrapper fourni)
 
-## Installation rapide
+## Installation express avec Docker Compose
 
-### Option 1 : Docker Compose (Recommandé ⭐)
-
-La façon la plus simple de démarrer :
+La méthode la plus simple pour lancer GreenDesk et toutes ses dépendances (MongoDB, Mongo Express) :
 
 ```bash
+git clone https://github.com/MisasoaRobison/GreenDesk.git
 cd GreenDesk
 docker-compose up --build
 ```
 
-Cela va :
-- Construire l'application
-- Lancer MongoDB
-- Lancer Mongo Express
-- Lancer GreenDesk
+Cette commande va :
+- Construire l'application Java
+- Démarrer MongoDB (base de données)
+- Démarrer Mongo Express (interface d'administration)
+- Démarrer GreenDesk (API REST)
 
-### Option 2 : Gradle (Développement local)
+> **Astuce** : Pour arrêter, faites `docker-compose down`.
+
+## Installation locale (développement)
+
+Si vous souhaitez développer ou tester localement :
 
 ```bash
+git clone https://github.com/MisasoaRobison/GreenDesk.git
 cd GreenDesk
 ./gradlew bootRun
 ```
 
-Vous devez avoir MongoDB en local ou via Docker :
+MongoDB doit être accessible (en local ou via Docker) :
 
 ```bash
 docker run -d -p 27017:27017 --name mongodb mongo:latest
 ```
 
-## Accès à l'application
+## Accès aux services
 
-Une fois démarrée, accédez à :
-
-| Service | URL |
-|---------|-----|
-| Application | http://localhost:8080 |
-| Swagger/OpenAPI | http://localhost:8080/swagger-ui.html |
-| API JSON | http://localhost:8080/v3/api-docs |
-| Mongo Express | http://localhost:8081 |
+| Service              | URL                                 |
+|----------------------|-------------------------------------|
+| Application          | http://localhost:8080               |
+| Documentation API    | http://localhost:8080/swagger-ui.html |
+| Spécification OpenAPI| http://localhost:8080/v3/api-docs   |
+| Mongo Express        | http://localhost:8081               |
 
 ## Premier test : Créer une espèce
 
-### Via la CLI (curl)
+Testez l'API en créant une espèce via `curl` :
 
 ```bash
 curl -X POST http://localhost:8080/api/species \

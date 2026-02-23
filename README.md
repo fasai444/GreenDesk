@@ -12,7 +12,9 @@
   </a>
 </div>
 
-**Documentation en ligne** : [https://misasoarobison.github.io/GreenDesk/](https://misasoarobison.github.io/GreenDesk/)
+**README** : [https://misasoarobison.github.io/GreenDesk/](https://misasoarobison.github.io/GreenDesk/)
+
+**Documentation en ligne** : [https://misasoarobison.github.io/GreenDesk/GreenDesk-Doc/site/](https://misasoarobison.github.io/GreenDesk/GreenDesk-Doc/site/)
 
 ## Description
 

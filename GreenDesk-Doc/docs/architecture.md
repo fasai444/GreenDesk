@@ -1,23 +1,30 @@
-# Architecture du projet
+---
+# Architecture du projet GreenDesk
 
-Documentation de l'architecture interne et du design de GreenDesk.
+Cette page détaille l'architecture logicielle, les choix techniques et la modélisation métier de GreenDesk.
 
-## Diagramme Architecture Générale
+## Vue d'ensemble
+
+GreenDesk adopte une architecture **Spring Boot** classique, découpée en couches :
+
+- **Controller** : expose l'API REST, gère les requêtes HTTP, la validation et les réponses
+- **Service** : contient la logique métier, les règles de gestion, les calculs
+- **Repository** : accès aux données, requêtes MongoDB, mapping objets/documents
+- **Modèles métier** : entités Java représentant les espèces, plantes, forêts, effets, etc.
+
+## Diagramme d'architecture générale
 
 ```mermaid
 graph TB
-    Client["Browser/Client<br/>HTML, JS, Swagger"]
-    
+    Client["Navigateur / Client<br/>HTML, JS, Swagger"]
     Controller["Controller Layer<br/>REST API Endpoints"]
     Service["Service Layer<br/>Business Logic"]
     Repository["Repository Layer<br/>Data Access"]
     DB["MongoDB<br/>Database"]
-    
     Client -->|HTTP/REST| Controller
-    Controller -->|Calls| Service
-    Service -->|Queries| Repository
-    Repository -->|JDBC| DB
-    
+    Controller -->|Appelle| Service
+    Service -->|Requêtes| Repository
+    Repository -->|Accès| DB
     style Client fill:#e8f5e9
     style Controller fill:#bbdefb
     style Service fill:#fff9c4
@@ -25,29 +32,28 @@ graph TB
     style DB fill:#f8bbd0
 ```
 
-## Diagramme entités UML
+## Modélisation UML des entités principales
 
 ```mermaid
 classDiagram
     class Species {
         -String id
-        -String name*
-        -Double waterNeeds*
-        -Double optimalTemperature*
-        -Double optimalHumidity*
-        -Double luxNeeds*
-        -Double baseGrowthRate*
-        -Double seedProductionRate*
+        -String name
+        -Double waterNeeds
+        -Double optimalTemperature
+        -Double optimalHumidity
+        -Double luxNeeds
+        -Double baseGrowthRate
+        -Double seedProductionRate
         +createSpecies()
         +getByName()
         +updateSpecies()
         +deleteSpecies()
     }
-    
     class Plant {
         -String id
         -String name
-        -String species*
+        -String species
         -PlantStatus status
         -Integer age
         -Double health
@@ -58,6 +64,42 @@ classDiagram
         +calculateHealth()
         +updateStatus()
         +applyEffect()
+    }
+    class Forest {
+        -String id
+        -String name
+        -List~Plant~ plants
+        -Season currentSeason
+        +addPlant()
+        +nextSeason()
+    }
+    class Effect {
+        -String name
+        -String description
+        -Double impact
+        +apply()
+    }
+    Species <|-- Plant
+    Plant <|-- Forest
+    Plant o-- Effect
+```
+
+## Flux de données et interactions
+
+1. Le client (navigateur, outil, script) envoie une requête HTTP à l'API REST.
+2. Le contrôleur valide la requête, appelle le service approprié.
+3. Le service applique la logique métier, interagit avec les repositories.
+4. Les repositories effectuent les opérations CRUD sur MongoDB.
+5. La réponse est formatée et renvoyée au client.
+
+## Points clés de l'architecture
+
+- **Séparation des responsabilités** : chaque couche a un rôle précis
+- **Extensibilité** : ajout de nouvelles entités ou endpoints facile
+- **Tests** : chaque couche est testable indépendamment
+- **Performance** : accès optimisé à MongoDB, requêtes indexées
+
+Pour plus de détails sur chaque entité ou endpoint, consultez les sections [API](api/overview.md) et [Guide d'utilisation](usage/concepts.md).
     }
     
     class Environment {

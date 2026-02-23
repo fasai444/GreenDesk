@@ -1,34 +1,34 @@
-# Installation complète
+---
+# Installation complète de GreenDesk
 
-## Configuration système
+Cette page détaille toutes les étapes pour installer GreenDesk et ses dépendances, sur tous les environnements (cloud, local, Docker, Windows, Linux, Mac).
 
-### Minimale
+## Configuration système requise
+
+### Configuration minimale
 - Java 21+
-- 4 GB RAM
-- 500 MB espace disque
+- 4 Go RAM
+- 500 Mo espace disque
 
-### Recommandée
+### Configuration recommandée
 - Java 21+
-- 8 GB RAM
-- 2 GB espace disque
+- 8 Go RAM
+- 2 Go espace disque
 - Docker & Docker Compose
 - MongoDB 6.0+
 
 ## Installation de MongoDB
 
-### Option 1 : MongoDB Atlas (Cloud) - Recommandé
-
+### Option 1 : MongoDB Atlas (Cloud, recommandé)
 1. Créez un compte sur [MongoDB Atlas](https://www.mongodb.com/cloud/atlas)
 2. Créez un cluster gratuit
 3. Générez une chaîne de connexion
-4. Mise à jour du `application.properties` :
+4. Modifiez `application.properties` :
+   ```properties
+   spring.data.mongodb.uri=mongodb+srv://username:password@cluster.mongodb.net/greendesk?retryWrites=true&w=majority
+   ```
 
-```properties
-spring.data.mongodb.uri=mongodb+srv://username:password@cluster.mongodb.net/greendesk?retryWrites=true&w=majority
-```
-
-### Option 2 : MongoDB Local (Docker)
-
+### Option 2 : MongoDB local via Docker
 ```bash
 docker run -d \
   -p 27017:27017 \
@@ -37,27 +37,47 @@ docker run -d \
   --name mongodb \
   mongo:6.0
 ```
-
-Configuration dans `application.properties` :
-
+Dans `application.properties` :
 ```properties
 spring.data.mongodb.uri=mongodb://admin:password@localhost:27017/greendesk?authSource=admin
 ```
 
-### Option 3 : MongoDB Local (Natif)
+### Option 3 : MongoDB local natif
 
-**Linux/Mac** :
-
+#### Linux/Mac
 ```bash
 brew install mongodb-community
 brew services start mongodb-community
 ```
 
-**Windows** :
-
-1. Téléchargez depuis [mongodb.com](https://www.mongodb.com/try/download/community)
+#### Windows
+1. Téléchargez l'installeur sur [mongodb.com](https://www.mongodb.com/try/download/community)
 2. Exécutez l'installateur
 3. Lancez le service MongoDB
+
+## Configuration de l'application
+
+Dans `src/main/resources/application.properties` :
+```properties
+spring.data.mongodb.uri=<votre_uri_mongodb>
+server.port=8080
+```
+
+## Lancement de l'application
+
+### Avec Docker Compose
+```bash
+docker-compose up --build
+```
+
+### En local (développement)
+```bash
+./gradlew bootRun
+```
+
+## Vérification
+
+Accédez à [http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html) pour vérifier que l'API est opérationnelle.
 
 Configuration dans `application.properties` :
 
