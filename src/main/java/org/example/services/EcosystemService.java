@@ -3,6 +3,9 @@ package org.example.services;
 import org.example.entites.ecosystem.Ecosystem;
 import org.example.entites.ecosystem.EcosystemCell;
 import org.example.entites.ecosystem.diseases.PlantDisease;
+import org.example.entites.ecosystem.diseases.BacterialDisease;
+import org.example.entites.ecosystem.diseases.MildiouDisease;
+import org.example.entites.ecosystem.diseases.RustDisease;
 import org.example.entites.plant.Plant;
 import org.example.repositories.PlantRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -126,4 +129,57 @@ public class EcosystemService {
             this.newDisease = newDisease;
         }
     }
+
+    /**
+ * Infecte des cellules spécifiques avec une maladie donnée ou aléatoire.
+ * @param cellCoordinates Liste de coordonnées [x, y] des cellules à infecter.
+ * @param diseaseInstance Instance de PlantDisease à utiliser, ou null pour en choisir une aléatoire.
+ * @param initialSeverity Sévérité initiale (0.0 à 1.0) si aléatoire.
+ */
+    public void seedDiseasesFlexible(List<int[]> cellCoordinates, PlantDisease diseaseInstance, double initialSeverity) {
+    if (ecosystem == null) return;
+
+    for (int[] coords : cellCoordinates) {
+        int x = coords[0];
+        int y = coords[1];
+
+        EcosystemCell cell = ecosystem.getCells().stream()
+            .filter(c -> c.getForestCell().getX() == x && c.getForestCell().getY() == y)
+            .findFirst()
+            .orElse(null);
+        if (cell == null || !cell.hasPlant() || cell.isDiseased()) continue;
+
+        PlantDisease disease;
+
+        if (diseaseInstance == null) {
+            // Choix aléatoire parmi les maladies disponibles
+            int random = (int) (Math.random() * 3);
+            disease = switch (random) {
+                case 0 -> new BacterialDisease(initialSeverity);
+                case 1 -> new MildiouDisease(initialSeverity);
+                default -> new RustDisease(initialSeverity);
+            };
+        } else {
+            // Utiliser la maladie donnée
+            disease = diseaseInstance.copy(); // pour éviter de partager la même instance
+        }
+
+        cell.infect(disease);
+        System.out.println("Cell [" + x + "," + y + "] infectée avec " + disease.getName());
+        }
+    }
+
+    // Infecte une cellule donnée avec une maladie
+    public void infectCell(int x, int y, PlantDisease disease) {
+        if (ecosystem == null || disease == null) return;
+
+        EcosystemCell cell = ecosystem.getCells().stream()
+                .filter(c -> c.getForestCell().getX() == x && c.getForestCell().getY() == y)
+                .findFirst()
+                .orElse(null);
+
+        if (cell != null && cell.hasPlant()) {
+            cell.infect(disease);
+        }
+}
 }

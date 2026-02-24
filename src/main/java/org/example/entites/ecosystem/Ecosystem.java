@@ -29,4 +29,12 @@ public class Ecosystem {
         return cells;
     }
 
+    public Forest getForest() {
+        return forest;
+    }
+
+    public String getForestId() {
+        return forest != null ? forest.getId() : null;
+    }
+
 }

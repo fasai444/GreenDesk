@@ -46,7 +46,9 @@
 
 ### Livraison 1 (L1) - Base
 
-#### Gestion des especes
+#### L1-F1: Gestion des espèces et plantes (CRUD + applications d'interventions)
+
+##### Gestion des especes
 
 - Créer une espece avec ses besoins optimaux :
   - Eau (waterNeeds)
@@ -61,7 +63,7 @@
 - Supprimer une espece
 - Stockage persistant dans MongoDB
 
-#### Gestion des plantes
+##### Gestion des plantes
 
 - Creer une plante liee a une espece existante
 - Initialisation automatique des valeurs environnementales
@@ -71,7 +73,7 @@
 - Mettre a jour une plante
 - Supprimer une plante
 
-#### Logique metier
+##### Logique metier
 
 - Calcul de l'etat d'une plante en fonction :
   - Des besoins optimaux de l'espece
@@ -79,6 +81,24 @@
   - Stress calcule dynamiquement cote backend
 - Interventions possibles : arroser, tailler, reduire la lumiere
 - Evolution des plantes avec prise en compte des effets appliques
+
+#### L1-F2: Simulation de la croissance et l'état d'une plante en fonction de son environnement
+
+Cette fonctionnalité permet de simuler l’évolution d’une plante en fonction des conditions environnementales.
+
+##### Principe
+
+- Un environnement unique contient :
+  - Température
+  - Humidité
+  - Luminosité (cycle jour/nuit)
+  - Pluie
+  - Horodatage
+
+- À chaque heure simulée :
+  - L’environnement évolue (variation climatique réaliste).
+  - Chaque plante s’adapte aux nouvelles conditions.
+  - Sa croissance et son état sont mis à jour.
 
 ### Livraison 2 (L2) - Forets et Effets
 
@@ -386,7 +406,7 @@ curl -X POST http://localhost:8080/api/forests \
 }'
 ```
 
-**Ajouter une plante a une foret**
+**Ajouter une plantDe la densité locale de plantese a une foret**
 
 ```bash
 curl -X POST "http://localhost:8080/api/forests/FOREST_ID/plants/PLANT_ID?x=3&y=5"
@@ -581,20 +601,142 @@ Voir [DOCKER.md](DOCKER.md) pour:
 
 # Livraison 3 (L3) - Features L3-F1 & L3-F2
 
-## I. FEATURE L3-F1 : GESTION DES EFFETS PERSONNALISÉS
+#### L3-F1 : Simulation de la propagation de maladie dans l'écosystème (la forêt) 
 
-L'objectif de cette fonctionnalité est d'offrir à l'utilisateur une flexibilité totale dans le soin apporté à ses plantes en lui permettant de créer ses propres **"recettes"** d'effets.
+- Cette fonctionnalité simule la propagation d’une maladie végétale au sein d’une forêt selon une logique locale : l’état d’une plante dépend de l’état de ses voisines directes (s'inspire du modèle de Schelling).
+
+##### Principe 
+
+- La forêt est modélisée comme une grille de EcosystemCell :
+  - Une cellule peut contenir une plante ou être vide.
+  - Une plante peut être saine ou malade.
+  - Chaque cellule observe ses voisines (adjacentes + diagonales).
+  - Les cellules vides ne sont pas prises en compte dans les calculs de ratio.
+
+- À chaque tick :
+  - La maladie progresse chez les plantes infectées (progress()).
+  - Les décisions d’infection ou de guérison sont évaluées.
+  - Les changements sont appliqués simultanément (évite les effets en chaîne).
+
+##### Infection : plus qu’un simple nombre de voisins malades
+
+- Une plante saine peut devenir infectée si :
+  - Elle contient effectivement une plante.
+  - Elle n’est pas déjà malade.
+  - Elle a au moins un voisin avec plante.
+  - La proportion de voisins infectés parmi les voisins contenant une plante dépasse un seuil.
+  - Une maladie dominante est identifiée parmi les voisines (sévérité moyenne la plus élevée).
+  - Le seuil utilisé est celui défini par la maladie dominante (getInfectionThreshold()).
+  - ###### L’infection dépend donc :
+    - Du ratio de voisins infectés
+    - Du type de maladie présente
+    - Du seuil propre à cette maladie
+    - De la présence effective de plantes autour
+
+##### Guérison : condition symétrique mais indépendante
+
+- Une plante malade peut guérir si :
+  - Elle contient une plante.
+  - Elle est actuellement infectée.
+  - Elle possède au moins un voisin contenant une plante. 
+  - La proportion de voisins sains dépasse le seuil de guérison.
+  - Le seuil utilisé est celui défini par la maladie actuelle (getRecoveryThreshold()).
+  - ###### La guérison dépend :
+    - Du ratio de voisins sains
+    - Du seuil propre à la maladie en cours
+    - De la densité locale de plantes
+
+**Lancer un tick unique** 
+
+```Bash
+curl -X POST http://localhost:8080/api/ecosystem/tick
+```
+
+**Simuler plusieurs ticks**
+
+```Bash
+curl -X POST http://localhost:8080/api/ecosystem/simulate/{n}
+```
+**Consulter l'état des cellules:**
+  - Coordonnées [x,y]
+  - ID de la plante
+  - Maladie active ou `Healthy`
+  - NIveau de sévérité
+
+```Bash
+curl http://localhost:8080/api/ecosystem/cells
+```
+
+**Exemple de script complet**
+```Bash
+#!/bin/bash
+
+
+# 1️Récupérer l'ID de l'espèce Tomato qui est déjà présent en base de données
+SPECIES_ID=$(curl -s http://localhost:8080/api/species | jq -r '.[] | select(.name=="Tomato") | .id')
+echo "ID de l'espèce Tomato: $SPECIES_ID"
+
+# Créer une forêt
+FOREST_NAME="SimulationForest"
+FOREST_WIDTH=10
+FOREST_HEIGHT=10
+
+FOREST_ID=$(curl -s -X POST http://localhost:8080/api/forests \
+  -H "Content-Type: application/json" \
+  -d "{\"name\":\"$FOREST_NAME\", \"width\":$FOREST_WIDTH, \"height\":$FOREST_HEIGHT}" \
+  | jq -r '.id')
+
+echo "ID de la forêt: $FOREST_ID"
+
+# créer des plantes et ajouter dans la foret
+for i in $(seq 1 10); do
+  PLANT_NAME="Tomato_$i"
+  PLANT_ID=$(curl -s -X POST "http://localhost:8080/plants/create?name=$PLANT_NAME&speciesId=$SPECIES_ID" | jq -r '.id')
+  echo "Plante $i créée: $PLANT_ID"
+
+  X=$(( RANDOM % FOREST_WIDTH ))
+  Y=$(( RANDOM % FOREST_HEIGHT ))
+
+  RESPONSE=$(curl -s -X POST "http://localhost:8080/api/forests/$FOREST_ID/plants" \
+    -H "Content-Type: application/json" \
+    -d "{\"plantId\":\"$PLANT_ID\",\"x\":$X,\"y\":$Y}")
+  
+  echo "Ajout plante $i à ($X,$Y)"
+done
+
+# appliquer la simulation à cette foret, le service initialise aussi l'écosysteme
+INIT_RESPONSE=$(curl -s -X POST "http://localhost:8080/api/ecosystem/simulate/$FOREST_ID/0")
+echo "Écosystème initialisé: $INIT_RESPONSE"
+
+for tick in $(seq 1 $NUM_TICKS); do
+  echo "--------------------------------------"
+  echo "Tick $tick..."
+  
+  TICK_RESPONSE=$(curl -s -X POST "http://localhost:8080/api/ecosystem/tick/$FOREST_ID")
+  echo "$TICK_RESPONSE"
+
+  # Récupérer l'état détaillé des cellules
+  CELLS=$(curl -s "http://localhost:8080/api/ecosystem/cells/$FOREST_ID" | jq -r '.[]')
+  echo "État des cellules après tick $tick:"
+  echo "$CELLS"
+done 
+
+echo "suppression des plantes crées"
+DELETE_RESPONSE=$(curl -s -X DELETE "http://localhost:8080/plants")
+echo "$DELETE_RESPONSE"
+
+```
+
+#### FEATURE L3-F2 : SYSTÈME D’EFFETS PERSONNALISÉS ET STIMULI ENVIRONNEMENTAUX
+
+- Cette fonctionnalité offre à l’utilisateur un contrôle avancé sur ses plantes et sur l’environnement de la forêt. Elle combine :
+  - La création d’effets personnalisés appliqués aux plantes
+  - La simulation de stimuli climatiques à l’échelle d’une forêt
+  - L’analyse comparative des réactions physiologiques des plantes
 
 **Création d'Effets Custom :** Implémentation d'un système permettant de définir des modificateurs de température, d'eau et de stress index uniques.
-
 **Persistance Différenciée :** Utilisation d'un attribut **isCustom (boolean)** pour séparer les effets natifs du simulateur des créations de l'utilisateur.
-
 **Filtrage API :** Mise à jour des endpoints de consultation pour permettre l'affichage exclusif des effets personnalisés dans le dashboard utilisateur.
-
-
-## II. FEATURE L3-F2 : STIMULUS, CLONAGE ET COMPARAISON
-
-Cette fonctionnalité constitue l'outil d'analyse environnementale du projet. Elle permet de simuler des scénarios climatiques et de comparer les réactions physiologiques des plantes.
 
 ### 1. Stimulus de Masse par Forêt
 
