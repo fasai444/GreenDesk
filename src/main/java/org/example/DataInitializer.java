@@ -1,6 +1,5 @@
 package org.example;
 
-
 import org.example.entites.forest.Forest;
 import org.example.entites.plant.Plant;
 import org.example.entites.species.Species;
@@ -8,11 +7,13 @@ import org.example.repositories.ForestRepository;
 import org.example.repositories.PlantRepository;
 import org.example.repositories.SpeciesRepository;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 //import java.util.List;
 
 @Component
+@Profile("!test")
 public class DataInitializer implements CommandLineRunner {
 
     private final SpeciesRepository speciesRepository;
@@ -40,7 +41,7 @@ public class DataInitializer implements CommandLineRunner {
             // Si besoin, on force des valeurs pour l'exemple :
             if (tomato.getOptimalWaterNeeds() == 0) tomato.setOptimalWaterNeeds(200.0);
             if (tomato.getOptimalTemperature() == 0) tomato.setOptimalTemperature(22.0);
-            
+
             // SAUVEGARDE EN BDD
             speciesRepository.save(tomato);
             System.out.println("✅ Espèce sauvegardée : " + tomato.getName());
@@ -52,31 +53,18 @@ public class DataInitializer implements CommandLineRunner {
 
             // ----------------- 3. CRÉATION DE LA PLANTE (Venant de votre Test.java) -----------------
             Plant plant1 = new Plant("MyTomato", tomato);
-            
+
             // On applique la logique de votre test (Stress hydrique)
             // "plant1.setWaterLevel(plant1.getWaterLevel() + 50);"
-            plant1.setWaterLevel(tomato.getOptimalWaterNeeds() + 50); 
-            
+            plant1.setWaterLevel(tomato.getOptimalWaterNeeds() + 50);
+
             // Calcul de l'état initial avant sauvegarde
             plant1.evaluateState();
 
-            // IMPORTANT : Pour que la plante apparaisse dans la grille du Frontend,
-            // il faut la placer dans la forêt (Position X, Y)
-            // Supposons que votre classe Plant a un champ 'position' ou que Forest gère une liste.
-            // Option A : Si Forest stocke la liste des IDs
-            // Option B : Si vous utilisez l'API pour ajouter (recommandé en code métier, mais ici on fait du brut)
-            
-            // Simulation de l'ajout à la position (2, 2)
-            // Note: Adaptez selon votre modèle 'Plant'. Avez-vous un champ x,y ou un objet Position ?
-            // Exemple générique :
-            // plant1.setPosition(new Position(2, 2)); 
-            
             // SAUVEGARDE PLANTE
             plantRepository.save(plant1);
 
             // LIEN FORÊT <-> PLANTE
-            // Il faut dire à la forêt qu'elle contient cette plante
-            // Adaptez selon votre méthode : forest.addPlant(plant1) ou forest.getPlants().add(plant1)
             forest.getPlants().add(plant1); // Si c'est une liste d'objets
             forestRepository.save(forest);  // On resauvegarde la forêt mise à jour
 
@@ -87,3 +75,4 @@ public class DataInitializer implements CommandLineRunner {
         }
     }
 }
+
