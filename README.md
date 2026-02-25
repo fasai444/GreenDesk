@@ -19,7 +19,7 @@
 **README** : [README.md](README.md)
 
 
-**Documentation en ligne (GitHub Pages)** : [https://misasoarobison.github.io/GreenDesk/docs](https://misasoarobison.github.io/GreenDesk/docs)
+**Documentation en ligne (GitHub Pages)** : [https://misasoarobison.github.io/GreenDesk](https://misasoarobison.github.io/GreenDesk)
 
 **Cahier des charges** : [docs/cahier-des-charges.md](docs/cahier-des-charges.md)
 
