@@ -1,11 +1,12 @@
-package org.example.entities.plant;
 
-import org.example.entities.species.Species;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.DBRef;
-import org.springframework.data.mongodb.core.mapping.Document;
+    package org.example.entities.plant;
 
-import jakarta.validation.constraints.NotBlank;
+    import org.example.entities.species.Species;
+    import org.springframework.data.annotation.Id;
+    import org.springframework.data.mongodb.core.mapping.DBRef;
+    import org.springframework.data.mongodb.core.mapping.Document;
+
+    import jakarta.validation.constraints.NotBlank;
 
 
 @Document(collection ="plants")
@@ -201,20 +202,28 @@ public class Plant {
     public void setX(Integer x) {
         this.x = x;
     }
-    
+
     public Integer getY() {
         return y;
     }
-    
+
     public void setY(Integer y) {
         this.y = y;
     }
-    
+
     public int getVariationSeed() {
         return variationSeed;
     }
-    
+
+
+
     public void setVariationSeed(int variationSeed) {
         this.variationSeed = variationSeed;
+    }
+
+
+    // Setter pour l'id (pour les tests)
+    public void setId(String id) {
+        this.id = id;
     }
 }
