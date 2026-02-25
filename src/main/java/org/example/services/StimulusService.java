@@ -1,8 +1,8 @@
 package org.example.services;
 
-import org.example.entites.effect.Effect;
-import org.example.entites.plant.Plant;
-import org.example.entites.Stimulus;
+import org.example.entities.effect.Effect;
+import org.example.entities.plant.Plant;
+import org.example.entities.Stimulus;
 import org.example.repositories.EffectRepository;
 import org.example.repositories.PlantRepository;
 import org.example.repositories.StimulusRepository;
@@ -34,6 +34,15 @@ public class StimulusService {
     public Stimulus applyToForest(Stimulus stimulus) throws Exception {
         // Validation pour éviter le warning Null type safety
         Objects.requireNonNull(stimulus, "Le stimulus ne peut pas être nul");
+        if (stimulus.getForestId() == null || stimulus.getForestId().isBlank()) {
+            throw new IllegalArgumentException("forestId est requis");
+        }
+        if (stimulus.getType() == null || stimulus.getType().isBlank()) {
+            throw new IllegalArgumentException("type est requis");
+        }
+        if (stimulus.getDurationHours() <= 0) {
+            throw new IllegalArgumentException("durationHours doit être > 0");
+        }
 
         // 1. Enregistrer le stimulus dans l'historique
         Stimulus savedStimulus = stimulusRepository.save(stimulus);
@@ -48,10 +57,9 @@ public class StimulusService {
 
         // 3. Créer l'objet Effect correspondant au Stimulus
         Effect stimEffect = new Effect(
-            stimulus.getType(), 
-            "Effet généré par stimulus: " + stimulus.getType(), 
-            stimulus.getDurationHours()
-        );
+                stimulus.getType(),
+                "Effet généré par stimulus: " + stimulus.getType(),
+                stimulus.getDurationHours());
 
         // Configuration des modificateurs selon le type de stimulus
         if ("HEATWAVE".equalsIgnoreCase(stimulus.getType())) {
@@ -71,16 +79,30 @@ public class StimulusService {
         // 5. Appliquer l'effet à chaque plante de la forêt
         for (Plant plant : plants) {
             effectService.applyEffectToPlant(plant.getId(), savedEffect.getId());
+
+            if ("HEATWAVE".equalsIgnoreCase(stimulus.getType())) {
+                plant.setTemperature(plant.getTemperature() + stimulus.getIntensity());
+                plant.setWaterLevel(
+                        Math.max(0.0, plant.getWaterLevel() - Math.min(30.0, stimulus.getIntensity() * 2.0)));
+                plant.setHumidity(Math.max(0.0, plant.getHumidity() - Math.min(20.0, stimulus.getIntensity())));
+            } else if ("RAIN".equalsIgnoreCase(stimulus.getType())) {
+                plant.setWaterLevel(plant.getWaterLevel() + stimulus.getIntensity());
+                plant.setHumidity(Math.min(100.0, plant.getHumidity() + 2.0));
+                plant.setTemperature(plant.getTemperature() - 1.0);
+            }
+
+            plant.setPlantState(plant.evaluateState());
+            plantRepository.save(plant);
         }
 
         return savedStimulus;
     }
 
-        /**
+    /**
      * Clone une plante existante vers une autre forêt (Exigence L3-F2).
      */
-   public Plant clonePlantToForest(String plantId, String targetForestId, int newX, int newY) throws Exception {
-        
+    public Plant clonePlantToForest(String plantId, String targetForestId, int newX, int newY) throws Exception {
+
         // --- CORRECTION DU WARNING NULL SAFETY ---
         // On garantit que les IDs fournis ne sont pas nuls avant de les utiliser
         Objects.requireNonNull(plantId, "L'ID de la plante originale ne peut pas être nul");
@@ -90,9 +112,10 @@ public class StimulusService {
         Plant original = plantRepository.findById(plantId)
                 .orElseThrow(() -> new Exception("Plante originale introuvable avec l'ID: " + plantId));
 
-        // 2. Créer la copie (Assure-toi que public Plant() {} est bien dans ton entité Plant)
+        // 2. Créer la copie (Assure-toi que public Plant() {} est bien dans ton entité
+        // Plant)
         Plant clone = new Plant();
-        
+
         // 3. Copie conforme des attributs selon ton fichier Plant.java
         clone.setName(original.getName() + " (Clone)");
         clone.setSpecies(original.getSpecies()); // Nécessite setSpecies() dans Plant.java
@@ -104,11 +127,12 @@ public class StimulusService {
         clone.setPlantState(original.getPlantState());
         clone.setHeightCm(original.getHeightCm());
         clone.setVariationSeed(original.getVariationSeed());
-        
-        // 4. Assigner la destination (Forêt B) et les nouvelles coordonnées
-        clone.setForestId(targetForestId);
-        clone.setX(newX);
-        clone.setY(newY);
+
+        // 4. Les informations de placement seront appliquées par le service forêt
+        // après validation de la position (R1/R2).
+        clone.setForestId(null);
+        clone.setX(null);
+        clone.setY(null);
 
         // 5. Sauvegarder le clone en base
         return plantRepository.save(clone);

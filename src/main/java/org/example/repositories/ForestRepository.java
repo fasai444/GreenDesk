@@ -1,6 +1,6 @@
 package org.example.repositories;
 
-import org.example.entites.forest.Forest;
+import org.example.entities.forest.Forest;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 

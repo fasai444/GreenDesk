@@ -1,9 +1,9 @@
 package org.example;
 
-import org.example.entites.environment.EnvironmentData;
-import org.example.entites.plant.Plant;
-import org.example.entites.plant.PlantState;
-import org.example.entites.species.Species;
+import org.example.entities.environment.EnvironmentData;
+import org.example.entities.plant.Plant;
+import org.example.entities.plant.PlantState;
+import org.example.entities.species.Species;
 import org.example.services.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,13 +22,13 @@ import static org.junit.jupiter.api.Assertions.*;
 public class TestSimulationEnvironment {
 
     @Autowired
-    private SpeciesServices speciesServices;
+    private SpeciesService speciesServices;
 
     @Autowired
-    private PlantServices plantServices;
+    private PlantService plantServices;
 
     @Autowired
-    private EnvironmentServices envService;
+    private EnvironmentService envService;
 
     @Autowired
     private Simulation simulation;

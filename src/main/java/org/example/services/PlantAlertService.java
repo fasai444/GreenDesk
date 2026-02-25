@@ -1,10 +1,10 @@
 package org.example.services;
 
-import org.example.entites.alert.AlertSeverity;
-import org.example.entites.alert.AlertType;
-import org.example.entites.alert.PlantAlert;
-import org.example.entites.plant.Plant;
-import org.example.entites.species.Species;
+import org.example.entities.alert.AlertSeverity;
+import org.example.entities.alert.AlertType;
+import org.example.entities.alert.PlantAlert;
+import org.example.entities.plant.Plant;
+import org.example.entities.species.Species;
 import org.example.repositories.PlantAlertRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -12,34 +12,39 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
 public class PlantAlertService {
 
-    // Anti-spam: ne pas recréer la même alerte plus d'une fois toutes les 30 minutes
+    // Anti-spam: ne pas recréer la même alerte plus d'une fois toutes les 30
+    // minutes
     private static final int DEDUP_MINUTES = 30;
 
     @Autowired
     private PlantAlertRepository plantAlertRepository;
 
     public List<PlantAlert> getAlertsForPlant(String plantId, boolean activeOnly) {
+        String safePlantId = Objects.requireNonNull(plantId, "plantId must not be null");
         if (activeOnly) {
-            return plantAlertRepository.findByPlantIdAndAcknowledgedFalseOrderByCreatedAtDesc(plantId);
+            return plantAlertRepository.findByPlantIdAndAcknowledgedFalseOrderByCreatedAtDesc(safePlantId);
         }
-        return plantAlertRepository.findByPlantIdOrderByCreatedAtDesc(plantId);
+        return plantAlertRepository.findByPlantIdOrderByCreatedAtDesc(safePlantId);
     }
 
     public PlantAlert acknowledge(String alertId) throws Exception {
-        PlantAlert alert = plantAlertRepository.findById(alertId)
-                .orElseThrow(() -> new Exception("Alerte introuvable: " + alertId));
+        String safeAlertId = Objects.requireNonNull(alertId, "alertId must not be null");
+        PlantAlert alert = plantAlertRepository.findById(safeAlertId)
+                .orElseThrow(() -> new Exception("Alerte introuvable: " + safeAlertId));
         alert.setAcknowledged(true);
         return plantAlertRepository.save(alert);
     }
 
     /**
      * Appelé après chaque nouvelle lecture capteur.
-     * Compare reading + plant current state vs species optimals et crée des alertes.
+     * Compare reading + plant current state vs species optimals et crée des
+     * alertes.
      */
     public List<PlantAlert> evaluateAndCreateAlerts(Plant plant) {
         Species s = plant.getSpecies();
@@ -94,7 +99,7 @@ public class PlantAlertService {
     }
 
     private void maybeCreate(List<PlantAlert> created, String plantId, LocalDateTime now,
-                             AlertType type, AlertSeverity severity, String message) {
+            AlertType type, AlertSeverity severity, String message) {
 
         Optional<PlantAlert> last = plantAlertRepository
                 .findFirstByPlantIdAndTypeAndAcknowledgedFalseOrderByCreatedAtDesc(plantId, type);

@@ -1,6 +1,6 @@
 package org.example.repositories;
 
-import org.example.entites.effect.Effect;
+import org.example.entities.effect.Effect;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 

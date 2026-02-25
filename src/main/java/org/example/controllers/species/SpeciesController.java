@@ -1,7 +1,7 @@
 package org.example.controllers.species;
 
-import org.example.entites.species.Species;
-import org.example.services.SpeciesServices;
+import org.example.entities.species.Species;
+import org.example.services.SpeciesService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,7 +13,7 @@ import java.util.Optional;
 public class SpeciesController {
 
     @Autowired
-    private SpeciesServices speciesServices;
+    private SpeciesService speciesServices;
 
     // ----------------- GET all species -----------------
     @GetMapping

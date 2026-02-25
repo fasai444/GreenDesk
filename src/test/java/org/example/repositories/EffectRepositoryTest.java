@@ -1,6 +1,6 @@
 package org.example.repositories;
 
-import org.example.entites.effect.Effect;
+import org.example.entities.effect.Effect;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

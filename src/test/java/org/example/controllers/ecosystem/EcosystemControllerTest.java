@@ -1,8 +1,8 @@
 package org.example.controllers.ecosystem;
 
-import org.example.entites.forest.Forest;
-import org.example.entites.plant.Plant;
-import org.example.entites.species.Species;
+import org.example.entities.forest.Forest;
+import org.example.entities.plant.Plant;
+import org.example.entities.species.Species;
 import org.example.repositories.ForestRepository;
 import org.example.repositories.PlantRepository;
 import org.example.repositories.SpeciesRepository;
@@ -134,5 +134,41 @@ class EcosystemControllerTest {
         mockMvc.perform(post("/api/ecosystem/simulate/-2"))
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("ticks simulés")));
+    }
+
+    @Test
+    @Order(7)
+    @DisplayName("GET /api/ecosystem/cells/{forestId} → status forêt ciblée")
+    void getCellsStatus_forForestId() throws Exception {
+        ensureForestWithOneCell();
+        String forestId = forestRepository.findAll().get(0).getId();
+
+        mockMvc.perform(get("/api/ecosystem/cells/{forestId}", forestId))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(greaterThanOrEqualTo(1))));
+    }
+
+    @Test
+    @Order(8)
+    @DisplayName("POST /api/ecosystem/simulate/{forestId}/{n} → simulation ciblée")
+    void simulate_forForestId() throws Exception {
+        ensureForestWithOneCell();
+        String forestId = forestRepository.findAll().get(0).getId();
+
+        mockMvc.perform(post("/api/ecosystem/simulate/{forestId}/{n}", forestId, 2))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("ticks simulés pour la forêt")));
+    }
+
+    @Test
+    @Order(9)
+    @DisplayName("POST /api/ecosystem/tick/{forestId} → tick ciblé")
+    void tick_forForestId() throws Exception {
+        ensureForestWithOneCell();
+        String forestId = forestRepository.findAll().get(0).getId();
+
+        mockMvc.perform(post("/api/ecosystem/tick/{forestId}", forestId))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("Tick effectué pour la forêt")));
     }
 }

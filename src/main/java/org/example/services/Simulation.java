@@ -1,20 +1,18 @@
 package org.example.services;
 
-import org.example.entites.environment.EnvironmentData;
-//import org.example.entites.plant.Plant;
+import org.example.entities.environment.EnvironmentData;
+//import org.example.entities.plant.Plant;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 @Service
 public class Simulation {
 
-    private final EnvironmentServices envService;
-    private final PlantServices plantServices;
+    private final EnvironmentService envService;
     private final EnvironmentData environment; // ton unique environnement
 
-    public Simulation(EnvironmentServices envService, PlantServices plantServices, EnvironmentData environment) {
+    public Simulation(EnvironmentService envService, EnvironmentData environment) {
         this.envService = envService;
-        this.plantServices = plantServices;
         this.environment = environment;
     }
 

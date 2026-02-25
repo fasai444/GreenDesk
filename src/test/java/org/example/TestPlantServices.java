@@ -1,12 +1,12 @@
 package org.example;
 
-import org.example.entites.environment.EnvironmentData;
-import org.example.entites.plant.Plant;
-import org.example.entites.plant.PlantState;
-import org.example.entites.species.Species;
-import org.example.entites.Intervention;
-import org.example.services.PlantServices;
-import org.example.services.SpeciesServices;
+import org.example.entities.environment.EnvironmentData;
+import org.example.entities.plant.Plant;
+import org.example.entities.plant.PlantState;
+import org.example.entities.species.Species;
+import org.example.entities.Intervention;
+import org.example.services.PlantService;
+import org.example.services.SpeciesService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,10 +38,10 @@ class TestPlantServices {
     }
 
     @Autowired
-    private PlantServices plantServices;
+    private PlantService plantServices;
 
     @Autowired
-    private SpeciesServices speciesServices;
+    private SpeciesService speciesServices;
 
     private Species species;
 

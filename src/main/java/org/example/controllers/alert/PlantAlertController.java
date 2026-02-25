@@ -1,6 +1,6 @@
 package org.example.controllers.alert;
 
-import org.example.entites.alert.PlantAlert;
+import org.example.entities.alert.PlantAlert;
 import org.example.services.PlantAlertService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

@@ -1,7 +1,7 @@
 package org.example.services;
 
-import org.example.entites.environment.Season;
-import org.example.entites.environment.SeasonCycle;
+import org.example.entities.environment.Season;
+import org.example.entities.environment.SeasonCycle;
 import org.example.repositories.SeasonCycleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

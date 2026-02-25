@@ -1,7 +1,7 @@
 package org.example.controllers.plant;
 
 import org.example.controllers.plant.dto.CreateSensorReadingRequest;
-import org.example.entites.SensorReading;
+import org.example.entities.SensorReading;
 import org.example.services.SensorReadingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

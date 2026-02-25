@@ -1,19 +1,21 @@
 package org.example.repositories;
 
-import org.example.entites.plant.Plant;
-import org.example.entites.plant.PlantState;
-import org.example.entites.species.Species;
+import org.example.entities.plant.Plant;
+import org.example.entities.plant.PlantState;
+import org.example.entities.species.Species;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
+import org.springframework.test.context.TestPropertySource;
 
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 @DataMongoTest
+@TestPropertySource(properties = "spring.data.mongodb.database=greendesk_plant_repository_test")
 class PlantRepositoryTest {
 
     @Autowired

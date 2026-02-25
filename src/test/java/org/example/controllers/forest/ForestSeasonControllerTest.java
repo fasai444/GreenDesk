@@ -1,9 +1,9 @@
 package org.example.controllers.forest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.example.entites.environment.Season;
-import org.example.entites.environment.SeasonCycle;
-import org.example.entites.environment.SeasonType;
+import org.example.entities.environment.Season;
+import org.example.entities.environment.SeasonCycle;
+import org.example.entities.environment.SeasonType;
 import org.example.services.SeasonService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

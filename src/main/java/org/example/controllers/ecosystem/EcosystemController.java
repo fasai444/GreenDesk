@@ -1,19 +1,19 @@
 package org.example.controllers.ecosystem;
 
-import org.example.entites.ecosystem.Ecosystem;
-import org.example.entites.ecosystem.diseases.BacterialDisease;
-import org.example.entites.ecosystem.diseases.MildiouDisease;
-import org.example.entites.ecosystem.diseases.RustDisease;
-import org.example.entites.ecosystem.EcosystemCell;
-import org.example.entites.ecosystem.diseases.PlantDisease;
-import org.example.entites.plant.Plant;
-import org.example.entites.forest.Forest;
+import org.example.entities.ecosystem.Ecosystem;
+import org.example.entities.ecosystem.diseases.BacterialDisease;
+import org.example.entities.ecosystem.diseases.MildiouDisease;
+import org.example.entities.ecosystem.diseases.RustDisease;
+import org.example.entities.ecosystem.EcosystemCell;
+import org.example.entities.ecosystem.diseases.PlantDisease;
+import org.example.entities.plant.Plant;
+import org.example.entities.forest.Forest;
 import org.example.repositories.ForestRepository;
-import org.example.repositories.PlantRepository;
 import org.example.services.EcosystemService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @RestController
@@ -22,24 +22,22 @@ public class EcosystemController {
 
     private final EcosystemService ecosystemService;
     private final ForestRepository forestRepository;
-    private final PlantRepository plantRepository;
 
     // On garde un écosystème en mémoire pour la session
     private Ecosystem ecosystem;
 
     public EcosystemController(EcosystemService ecosystemService,
-                               ForestRepository forestRepository,
-                               PlantRepository plantRepository) {
+            ForestRepository forestRepository) {
         this.ecosystemService = ecosystemService;
         this.forestRepository = forestRepository;
-        this.plantRepository = plantRepository;
     }
 
     /**
      * Initialise un écosystème à partir de la première forêt en BDD.
      */
     private void ensureEcosystemInitialized() {
-        if (ecosystem != null) return; // déjà initialisé
+        if (ecosystem != null)
+            return; // déjà initialisé
 
         // Cherche la première forêt existante
         Forest forest = forestRepository.findAll().stream().findFirst()
@@ -54,75 +52,97 @@ public class EcosystemController {
     }
 
     private void ensureForestCellsInitialized(Forest forest) {
-        int x = 0;
-        int y = 0;
-
         for (Plant plant : forest.getPlants()) {
             boolean alreadyAssigned = forest.getCells().stream()
                     .anyMatch(c -> plant.getId().equals(c.getPlantId()));
-            if (alreadyAssigned) continue;
-
-            Forest.ForestCell cell = new Forest.ForestCell(x, y, plant.getId());
-            forest.addCell(cell);
-
-            x++;
-            if (x >= forest.getWidth()) {
-                x = 0;
-                y++;
+            if (alreadyAssigned) {
+                continue;
             }
+
+            Forest.ForestCell freeCell = findFirstFreeCell(forest);
+            if (freeCell == null) {
+                break;
+            }
+
+            forest.addCell(new Forest.ForestCell(freeCell.getX(), freeCell.getY(), plant.getId()));
         }
     }
 
-    //Créer un écosystème avec une forêt donnée
+    private Forest.ForestCell findFirstFreeCell(Forest forest) {
+        for (int y = 0; y < forest.getHeight(); y++) {
+            for (int x = 0; x < forest.getWidth(); x++) {
+                if (!forest.isPositionOccupied(x, y)) {
+                    return new Forest.ForestCell(x, y, null);
+                }
+            }
+        }
+
+        return null;
+    }
+
+    // Créer un écosystème avec une forêt donnée
     private void ensureEcosystemInitialized(String forestId) {
-    if (ecosystem != null && ecosystem.getForest().getId().equals(forestId)) return;
+        if (ecosystem != null && ecosystem.getForest().getId().equals(forestId))
+            return;
 
-    Forest forest = forestRepository.findById(forestId)
-            .orElseThrow(() -> new IllegalStateException("Aucune forêt trouvée avec l'ID : " + forestId));
+        Forest forest = forestRepository.findById(Objects.requireNonNull(forestId))
+                .orElseThrow(() -> new IllegalStateException("Aucune forêt trouvée avec l'ID : " + forestId));
 
-    initEcosystemWithForest(forest);
+        initEcosystemWithForest(forest);
     }
-    
+
     private void initEcosystemWithForest(Forest forest) {
-    // Associer les plantes à des cellules si nécessaire
-    for (Plant plant : forest.getPlants()) {
-        if (plant.getX() == null || plant.getY() == null) {
-            int x = (int) (Math.random() * forest.getWidth());
-            int y = (int) (Math.random() * forest.getHeight());
-            while (forest.isPositionOccupied(x, y)) {
-                x = (int) (Math.random() * forest.getWidth());
-                y = (int) (Math.random() * forest.getHeight());
+        // Associer les plantes à des cellules si nécessaire
+        for (Plant plant : forest.getPlants()) {
+            boolean alreadyAssigned = forest.getCells().stream()
+                    .anyMatch(c -> plant.getId().equals(c.getPlantId()));
+            if (alreadyAssigned) {
+                continue;
             }
+
+            Integer plantX = plant.getX();
+            Integer plantY = plant.getY();
+            int x = plantX != null ? plantX : -1;
+            int y = plantY != null ? plantY : -1;
+            boolean hasValidCoordinates = x >= 0 && y >= 0 && x < forest.getWidth() && y < forest.getHeight();
+
+            if (!hasValidCoordinates || forest.isPositionOccupied(x, y)) {
+                Forest.ForestCell freeCell = findFirstFreeCell(forest);
+                if (freeCell == null) {
+                    break;
+                }
+                x = freeCell.getX();
+                y = freeCell.getY();
+            }
+
             plant.setX(x);
-            plant.setY(y); 
-            Forest.ForestCell cell = new Forest.ForestCell(x, y, plant.getId());
-            forest.getCells().add(cell);
+            plant.setY(y);
+            forest.addCell(new Forest.ForestCell(x, y, plant.getId()));
+        }
+
+        ecosystem = new Ecosystem(forest);
+        ecosystem.initialiseEcosystem();
+        ecosystemService.setEcosystem(ecosystem);
+
+        int nbInitialDiseased = Math.min(15, forest.getPlants().size());
+        int infected = 0;
+        while (infected < nbInitialDiseased) {
+            EcosystemCell cell = ecosystem.getCells().get((int) (Math.random() * ecosystem.getCells().size()));
+            if (!cell.hasPlant() || cell.isDiseased())
+                continue;
+
+            double severity = 0.05 + Math.random() * 0.05;
+
+            PlantDisease disease = switch ((int) (Math.random() * 3)) {
+                case 0 -> new BacterialDisease(severity);
+                case 1 -> new MildiouDisease(severity);
+                default -> new RustDisease(severity);
+            };
+            // Infecte la cellule via le service
+            cell.infect(disease);
+            infected++;
         }
     }
-
-    ecosystem = new Ecosystem(forest);
-    ecosystem.initialiseEcosystem();
-    ecosystemService.setEcosystem(ecosystem);
-
-    int nbInitialDiseased = Math.min(15, forest.getPlants().size());
-    int infected = 0;
-    while(infected < nbInitialDiseased){
-        EcosystemCell cell = ecosystem.getCells().get((int) (Math.random() * ecosystem.getCells().size()));
-        if(!cell.hasPlant() || cell.isDiseased()) continue;
-        
-        double severity = 0.05 + Math.random() * 0.05;
-
-        PlantDisease disease = switch ((int) (Math.random() * 3)) {
-            case 0 -> new BacterialDisease(severity);
-            case 1 -> new MildiouDisease(severity);
-            default -> new RustDisease(severity);
-        };
-        // Infecte la cellule via le service
-        cell.infect(disease);
-        infected++;
-    }
-    }
-
 
     // Lancer un tick
     @PostMapping("/tick")
@@ -169,17 +189,17 @@ public class EcosystemController {
     public List<String> getCellsStatus(@PathVariable String forestId) {
         ensureEcosystemInitialized(forestId);
         return ecosystemService.getEcosystemCells().stream()
-            .map(cell -> {
-                String plantId = cell.getForestCell().getPlantId();
-                String disease = cell.isDiseased() ? cell.getDisease().getName() : "Healthy";
-                double severity = cell.isDiseased() ? cell.getDisease().getSeverity() : 0.0;
-                return "Cell [" + cell.getForestCell().getX() + "," + cell.getForestCell().getY() +
-                        "] Plant: " + plantId +
-                        " | Disease: " + disease +
-                        " | Severity: " + severity;
-            })
-            .collect(Collectors.toList());
-    }   
+                .map(cell -> {
+                    String plantId = cell.getForestCell().getPlantId();
+                    String disease = cell.isDiseased() ? cell.getDisease().getName() : "Healthy";
+                    double severity = cell.isDiseased() ? cell.getDisease().getSeverity() : 0.0;
+                    return "Cell [" + cell.getForestCell().getX() + "," + cell.getForestCell().getY() +
+                            "] Plant: " + plantId +
+                            " | Disease: " + disease +
+                            " | Severity: " + severity;
+                })
+                .collect(Collectors.toList());
+    }
 
     // Tick pour forêt spécifique
     @PostMapping("/tick/{forestId}")

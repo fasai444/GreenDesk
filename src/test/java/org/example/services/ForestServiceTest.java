@@ -1,8 +1,8 @@
 package org.example.services;
 
-import org.example.entites.forest.Forest;
-import org.example.entites.plant.Plant;
-import org.example.entites.species.Species;
+import org.example.entities.forest.Forest;
+import org.example.entities.plant.Plant;
+import org.example.entities.species.Species;
 import org.example.repositories.ForestRepository;
 import org.example.repositories.PlantRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -93,9 +93,8 @@ class ForestServiceTest {
         when(forestRepository.findById("f1")).thenReturn(Optional.of(mockForest));
         when(plantRepository.findById("p1")).thenReturn(Optional.of(mockPlant));
 
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
-                forestService.addPlantToForest("f1", "p1", 5, 5)
-        );
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> forestService.addPlantToForest("f1", "p1", 5, 5));
 
         assertTrue(exception.getMessage().contains("déjà occupée"));
     }
@@ -103,12 +102,22 @@ class ForestServiceTest {
     @Test
     void testAddPlantToForest_OutOfBounds() {
         when(forestRepository.findById("f1")).thenReturn(Optional.of(mockForest));
-        when(plantRepository.findById("p1")).thenReturn(Optional.of(mockPlant));
-        when(plantRepository.findAllById(anyList())).thenReturn(new ArrayList<>());
 
-        assertThrows(IllegalArgumentException.class, () ->
-                forestService.addPlantToForest("f1", "p1", 15, 15)
-        );
+        assertThrows(IllegalArgumentException.class, () -> forestService.addPlantToForest("f1", "p1", 15, 15));
+    }
+
+    @Test
+    void testAddPlantToForest_PlantAlreadyAssigned() {
+        mockPlant.setForestId("other-forest");
+
+        when(forestRepository.findById("f1")).thenReturn(Optional.of(mockForest));
+        when(plantRepository.findById("p1")).thenReturn(Optional.of(mockPlant));
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> forestService.addPlantToForest("f1", "p1", 2, 2));
+
+        assertTrue(exception.getMessage().contains("Plante déjà affectée"));
+        verify(forestRepository, never()).save(any(Forest.class));
     }
 
     @Test

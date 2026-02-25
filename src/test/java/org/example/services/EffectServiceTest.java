@@ -1,7 +1,9 @@
 package org.example.services;
 
-import org.example.entites.effect.Effect;
-import org.example.entites.plant.PlantEffect;
+import org.example.entities.effect.Effect;
+import org.example.entities.plant.Plant;
+import org.example.entities.plant.PlantEffect;
+import org.example.entities.species.Species;
 import org.example.repositories.EffectRepository;
 import org.example.repositories.PlantEffectRepository;
 import org.example.repositories.PlantRepository;
@@ -43,16 +45,16 @@ class EffectServiceTest {
     void setUp() {
         mockEffect = new Effect("Watering", "Adds water", 5);
         mockEffect.setWaterModifier(10.0);
-        
+
         mockPlantEffect = new PlantEffect("plant-1", "effect-1", LocalDateTime.now(), 5);
     }
 
     @Test
     void testInitializeEffectsCatalog() {
         when(effectRepository.count()).thenReturn(0L);
-        
+
         effectService.initializeEffectsCatalog();
-        
+
         verify(effectRepository, times(1)).saveAll(anyList());
     }
 
@@ -60,9 +62,9 @@ class EffectServiceTest {
     void testCreateCustomEffect() {
         Effect inputEffect = new Effect("Custom", "Desc", 2);
         when(effectRepository.save(inputEffect)).thenReturn(inputEffect);
-        
+
         Effect saved = effectService.createCustomEffect(inputEffect);
-        
+
         assertTrue(saved.getIsCustom());
         verify(effectRepository, times(1)).save(inputEffect);
     }
@@ -80,6 +82,31 @@ class EffectServiceTest {
     }
 
     @Test
+    void testApplyEffectToPlant_AppliesImmediateImpact() throws Exception {
+        Species species = new Species("DemoSpecies", 400.0, 20.0, 60.0, 2500.0, 2.0, 0.5);
+        Plant plant = new Plant("DemoPlant", species, 400.0, 20.0, 60.0, 2500.0);
+        plant.evaluateState();
+        double stressBefore = plant.getStressIndex();
+
+        Effect heat = new Effect("HEAT", "Heat effect", 3);
+        heat.setTemperatureModifier(5.0);
+        heat.setWaterModifier(-20.0);
+        heat.setStressReduction(-0.1);
+
+        when(plantRepository.existsById("plant-1")).thenReturn(true);
+        when(effectRepository.findById("effect-1")).thenReturn(Optional.of(heat));
+        when(plantEffectRepository.save(any(PlantEffect.class))).thenReturn(mockPlantEffect);
+        when(plantRepository.findById("plant-1")).thenReturn(Optional.of(plant));
+
+        effectService.applyEffectToPlant("plant-1", "effect-1");
+
+        assertEquals(25.0, plant.getTemperature());
+        assertEquals(380.0, plant.getWaterLevel());
+        assertTrue(plant.getStressIndex() > stressBefore);
+        verify(plantRepository, atLeastOnce()).save(plant);
+    }
+
+    @Test
     void testApplyEffectToPlant_PlantNotFound() {
         when(plantRepository.existsById("plant-1")).thenReturn(false);
 
@@ -92,8 +119,10 @@ class EffectServiceTest {
     @Test
     void testGetActivePlantEffects() {
         PlantEffect activeEffect = new PlantEffect("p1", "e1", LocalDateTime.now(), 5);
-        PlantEffect expiredEffect = new PlantEffect("p1", "e2", LocalDateTime.now().minusHours(10), 5); // Started 10h ago, duration 5h
-        
+        PlantEffect expiredEffect = new PlantEffect("p1", "e2", LocalDateTime.now().minusHours(10), 5); // Started 10h
+                                                                                                        // ago, duration
+                                                                                                        // 5h
+
         when(plantEffectRepository.findByPlantIdAndActive("p1", true))
                 .thenReturn(Arrays.asList(activeEffect, expiredEffect));
 
@@ -107,9 +136,9 @@ class EffectServiceTest {
     @Test
     void testRemoveEffectFromPlant() throws Exception {
         when(plantEffectRepository.findById("pe-1")).thenReturn(Optional.of(mockPlantEffect));
-        
+
         effectService.removeEffectFromPlant("pe-1");
-        
+
         assertFalse(mockPlantEffect.isActive());
         verify(plantEffectRepository, times(1)).save(mockPlantEffect);
     }
@@ -118,12 +147,16 @@ class EffectServiceTest {
     void testCalculateTotalModifiers() {
         PlantEffect active1 = new PlantEffect("p1", "e1", LocalDateTime.now(), 5);
         PlantEffect active2 = new PlantEffect("p1", "e2", LocalDateTime.now(), 5);
-        
+
         when(plantEffectRepository.findByPlantIdAndActive("p1", true)).thenReturn(Arrays.asList(active1, active2));
-        
-        Effect effect1 = new Effect("E1", "", 5); effect1.setTemperatureModifier(5.0); effect1.setWaterModifier(10.0);
-        Effect effect2 = new Effect("E2", "", 5); effect2.setTemperatureModifier(2.0); effect2.setLuxModifier(100.0);
-        
+
+        Effect effect1 = new Effect("E1", "", 5);
+        effect1.setTemperatureModifier(5.0);
+        effect1.setWaterModifier(10.0);
+        Effect effect2 = new Effect("E2", "", 5);
+        effect2.setTemperatureModifier(2.0);
+        effect2.setLuxModifier(100.0);
+
         when(effectRepository.findById("e1")).thenReturn(Optional.of(effect1));
         when(effectRepository.findById("e2")).thenReturn(Optional.of(effect2));
 

@@ -1,9 +1,9 @@
-.gradle
+.gradle/
 build/
+out/
+target/
 !gradle/wrapper/gradle-wrapper.jar
-!**/src/main/**/build/
-!**/src/test/**/build/
-.kotlin
+.kotlin/
 
 ### IntelliJ IDEA ###
 .idea/modules.xml
@@ -14,8 +14,6 @@ build/
 *.iml
 *.ipr
 out/
-!**/src/main/**/out/
-!**/src/test/**/out/
 
 ### Eclipse ###
 .apt_generated
@@ -41,6 +39,19 @@ bin/
 
 ### Mac OS ###
 .DS_Store
+Thumbs.db
+
+### Runtime / logs ###
+logs/
+*.log
+hs_err_pid*
+replay_pid*
+
+### Local env ###
+.env
+.env.*
+
+### Python artifacts (docs tooling) ###
 venv
 .venv
 __pycache__/
@@ -49,9 +60,7 @@ __pycache__/
 *.pyd
 *.egg-info/
 dist/
-build/
 *.egg
-*.log
 *.bak
 *.swp
 *.swo

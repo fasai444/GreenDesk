@@ -1,12 +1,12 @@
 package org.example.services;
 
-import org.example.entites.ecosystem.Ecosystem;
-import org.example.entites.ecosystem.EcosystemCell;
-import org.example.entites.ecosystem.diseases.PlantDisease;
-import org.example.entites.ecosystem.diseases.BacterialDisease;
-import org.example.entites.ecosystem.diseases.MildiouDisease;
-import org.example.entites.ecosystem.diseases.RustDisease;
-import org.example.entites.plant.Plant;
+import org.example.entities.ecosystem.Ecosystem;
+import org.example.entities.ecosystem.EcosystemCell;
+import org.example.entities.ecosystem.diseases.PlantDisease;
+import org.example.entities.ecosystem.diseases.BacterialDisease;
+import org.example.entities.ecosystem.diseases.MildiouDisease;
+import org.example.entities.ecosystem.diseases.RustDisease;
+import org.example.entities.plant.Plant;
 import org.example.repositories.PlantRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

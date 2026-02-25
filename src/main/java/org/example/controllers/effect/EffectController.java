@@ -1,7 +1,7 @@
 package org.example.controllers.effect;
 
-import org.example.entites.effect.Effect;
-import org.example.entites.plant.PlantEffect;
+import org.example.entities.effect.Effect;
+import org.example.entities.plant.PlantEffect;
 import org.example.services.EffectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,10 +15,10 @@ import java.util.Map;
 @RequestMapping("/api") // Gardé /api pour être cohérent avec vos autres contrôleurs
 @CrossOrigin(origins = "*") // Permet au frontend de communiquer avec l'API
 public class EffectController {
-    
+
     @Autowired
     private EffectService effectService;
-    
+
     /**
      * GET /api/effects
      * Récupère le catalogue de tous les effets disponibles (L2-F2).
@@ -26,13 +26,13 @@ public class EffectController {
      */
     @GetMapping("/effects") // Ajout du path spécifique ici
     public ResponseEntity<List<Effect>> getAllEffects(@RequestParam(required = false) Boolean custom) {
-        
+
         // Initialiser le catalogue s'il n'existe pas
         effectService.initializeEffectsCatalog();
-        
-        // Appel au service avec le paramètre de filtrage 
-        List<Effect> effects = effectService.getAllEffects();
-        
+
+        // Appel au service avec le paramètre de filtrage
+        List<Effect> effects = effectService.getAllEffects(custom);
+
         return ResponseEntity.ok(effects);
     }
 
@@ -46,7 +46,7 @@ public class EffectController {
         Effect createdEffect = effectService.createCustomEffect(effect);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdEffect);
     }
-    
+
     /**
      * POST /api/plants/{plantId}/effects/{effectId}
      * Applique un effet à une plante (L2-F2). [cite: 102]
@@ -63,7 +63,7 @@ public class EffectController {
                     .body(Map.of("error", e.getMessage()));
         }
     }
-    
+
     /**
      * GET /api/plants/{plantId}/effects
      * Récupère tous les effets d'une plante (L2-F2). [cite: 103]
@@ -73,7 +73,7 @@ public class EffectController {
         List<PlantEffect> effects = effectService.getPlantEffects(plantId);
         return ResponseEntity.ok(effects);
     }
-    
+
     /**
      * GET /api/plants/{plantId}/effects/active
      * Récupère les effets actifs d'une plante.
@@ -83,7 +83,7 @@ public class EffectController {
         List<PlantEffect> effects = effectService.getActivePlantEffects(plantId);
         return ResponseEntity.ok(effects);
     }
-    
+
     /**
      * DELETE /api/plants/effects/{plantEffectId}
      * Retire (désactive) un effet d'une plante (L2-F2). [cite: 95]

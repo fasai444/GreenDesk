@@ -1,12 +1,11 @@
 package org.example;
 
-import org.example.entites.species.Species;
-import org.example.services.SpeciesServices;
+import org.example.entities.species.Species;
+import org.example.services.SpeciesService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -15,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class TestSpeciesServices {
 
     @Autowired
-    private SpeciesServices speciesServices;
+    private SpeciesService speciesServices;
 
     @Test
     void createSpecies_shouldFailIfNameAlreadyExists() throws Exception {
@@ -32,22 +31,20 @@ class TestSpeciesServices {
         assertNotNull(species.getId(), "L'espèce Lavande doit avoir un ID");
 
         // Essai de créer la même espèce => exception attendue
-        Exception ex = assertThrows(Exception.class, () ->
-                speciesServices.createSpecies(new Species("Lavande"))
-        );
+        Exception ex = assertThrows(Exception.class, () -> speciesServices.createSpecies(new Species("Lavande")));
         assertTrue(ex.getMessage().contains("existe déjà"), "La création d'un doublon doit échouer");
     }
 
-
     @Test
     void getSpeciesByName_success() throws Exception {
-        Species species;
-        // Vérifie si l'espèce existe déjà
-        if (speciesServices.getSpeciesByName("Basilic").isPresent()) {
-            species = speciesServices.getSpeciesByName("Basilic").get();
-        } else {
-            species = speciesServices.createSpecies(new Species("Basilic"));
-        }
+        speciesServices.getSpeciesByName("Basilic")
+                .orElseGet(() -> {
+                    try {
+                        return speciesServices.createSpecies(new Species("Basilic"));
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                });
 
         Species s = speciesServices.getSpeciesByName("Basilic")
                 .orElseThrow();

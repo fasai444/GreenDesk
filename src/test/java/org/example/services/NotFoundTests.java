@@ -8,14 +8,14 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Optional;
-import org.example.entites.forest.Forest;
-import org.example.entites.plant.Plant;
+import org.example.entities.forest.Forest;
+import org.example.entities.plant.Plant;
 
 @SpringBootTest
 public class NotFoundTests {
 
     @Autowired
-    private PlantServices plantService;
+    private PlantService plantService;
 
     @Autowired
     private ForestService forestService;

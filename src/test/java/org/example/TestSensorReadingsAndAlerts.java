@@ -1,16 +1,16 @@
 package org.example;
 
 import org.example.controllers.plant.dto.CreateSensorReadingRequest;
-import org.example.entites.SensorReading;
-import org.example.entites.alert.PlantAlert;
-import org.example.entites.plant.Plant;
-import org.example.entites.species.Species;
+import org.example.entities.SensorReading;
+import org.example.entities.alert.PlantAlert;
+import org.example.entities.plant.Plant;
+import org.example.entities.species.Species;
 import org.example.repositories.PlantAlertRepository;
 import org.example.repositories.PlantRepository;
 import org.example.repositories.SensorReadingRepository;
-import org.example.services.PlantServices;
+import org.example.services.PlantService;
 import org.example.services.SensorReadingService;
-import org.example.services.SpeciesServices;
+import org.example.services.SpeciesService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,8 +25,8 @@ import static org.junit.jupiter.api.Assertions.*;
 @ActiveProfiles("test")
 class TestSensorReadingsAndAlerts {
 
-    @Autowired private PlantServices plantServices;
-    @Autowired private SpeciesServices speciesServices;
+    @Autowired private PlantService plantServices;
+    @Autowired private SpeciesService speciesServices;
 
     @Autowired private SensorReadingService sensorReadingService;
 

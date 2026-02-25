@@ -1,10 +1,10 @@
 package org.example.services;
 
-import org.example.entites.ecosystem.Ecosystem;
-import org.example.entites.ecosystem.EcosystemCell;
-import org.example.entites.ecosystem.diseases.PlantDisease;
-import org.example.entites.forest.Forest;
-import org.example.entites.plant.Plant;
+import org.example.entities.ecosystem.Ecosystem;
+import org.example.entities.ecosystem.EcosystemCell;
+import org.example.entities.ecosystem.diseases.PlantDisease;
+import org.example.entities.forest.Forest;
+import org.example.entities.plant.Plant;
 import org.example.repositories.PlantRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

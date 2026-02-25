@@ -1,7 +1,7 @@
 package org.example.controllers.environment;
 
-import org.example.entites.environment.Season;
-import org.example.entites.environment.SeasonType;
+import org.example.entities.environment.Season;
+import org.example.entities.environment.SeasonType;
 import org.example.services.SeasonService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

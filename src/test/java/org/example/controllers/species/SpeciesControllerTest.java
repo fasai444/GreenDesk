@@ -1,8 +1,8 @@
 package org.example.controllers.species;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.example.entites.species.Species;
-import org.example.services.SpeciesServices;
+import org.example.entities.species.Species;
+import org.example.services.SpeciesService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,10 +12,10 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -30,11 +30,12 @@ class SpeciesControllerTest {
     private ObjectMapper objectMapper;
 
     @MockBean
-    private SpeciesServices speciesServices;
+    private SpeciesService speciesServices;
 
     private Species mockSpecies;
 
     @BeforeEach
+    @SuppressWarnings("unused")
     void setUp() {
         mockSpecies = new Species();
         mockSpecies.setName("Oak");
@@ -72,8 +73,8 @@ class SpeciesControllerTest {
         when(speciesServices.createSpecies(any(Species.class))).thenReturn(mockSpecies);
 
         mockMvc.perform(post("/api/species")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(mockSpecies)))
+                .contentType(Objects.requireNonNull(MediaType.APPLICATION_JSON))
+                .content(Objects.requireNonNull(objectMapper.writeValueAsString(mockSpecies))))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value("Oak"));
     }
@@ -83,8 +84,8 @@ class SpeciesControllerTest {
         when(speciesServices.createSpecies(any(Species.class))).thenThrow(new RuntimeException("Invalid Data"));
 
         mockMvc.perform(post("/api/species")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(mockSpecies)))
+                .contentType(Objects.requireNonNull(MediaType.APPLICATION_JSON))
+                .content(Objects.requireNonNull(objectMapper.writeValueAsString(mockSpecies))))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().string("Invalid Data"));
     }
@@ -95,8 +96,8 @@ class SpeciesControllerTest {
         when(speciesServices.createSpecies(any(Species.class))).thenReturn(mockSpecies);
 
         mockMvc.perform(put("/api/species/1")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(mockSpecies)))
+                .contentType(Objects.requireNonNull(MediaType.APPLICATION_JSON))
+                .content(Objects.requireNonNull(objectMapper.writeValueAsString(mockSpecies))))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value("Oak"));
     }
@@ -106,8 +107,8 @@ class SpeciesControllerTest {
         doThrow(new RuntimeException("ID not found")).when(speciesServices).deleteSpeciesById("1");
 
         mockMvc.perform(put("/api/species/1")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(mockSpecies)))
+                .contentType(Objects.requireNonNull(MediaType.APPLICATION_JSON))
+                .content(Objects.requireNonNull(objectMapper.writeValueAsString(mockSpecies))))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().string("ID not found"));
     }

@@ -1,6 +1,6 @@
 package org.example.repositories;
 
-import org.example.entites.SensorReading;
+import org.example.entities.SensorReading;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

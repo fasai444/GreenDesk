@@ -1,12 +1,12 @@
 package org.example;
 
-import org.example.entites.ecosystem.diseases.BacterialDisease;
-import org.example.entites.ecosystem.diseases.MildiouDisease;
-import org.example.entites.ecosystem.diseases.PlantDisease;
-import org.example.entites.ecosystem.diseases.RustDisease;
-import org.example.entites.forest.Forest;
-import org.example.entites.plant.Plant;
-import org.example.entites.species.Species;
+import org.example.entities.ecosystem.diseases.BacterialDisease;
+import org.example.entities.ecosystem.diseases.MildiouDisease;
+import org.example.entities.ecosystem.diseases.PlantDisease;
+import org.example.entities.ecosystem.diseases.RustDisease;
+import org.example.entities.forest.Forest;
+import org.example.entities.plant.Plant;
+import org.example.entities.species.Species;
 import org.example.repositories.PlantRepository;
 import org.example.repositories.SpeciesRepository;
 import org.example.services.EcosystemService;
@@ -17,6 +17,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.util.List;
+import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -32,12 +33,12 @@ class TestEcosystemServices {
     @Autowired
     private EcosystemService ecosystemService;
 
-    private org.example.entites.ecosystem.Ecosystem ecosystem;
+    private org.example.entities.ecosystem.Ecosystem ecosystem;
     private Plant healthyPlant;
     private Plant stressedPlant;
-    private Forest forest;
 
     @BeforeEach
+    @SuppressWarnings("unused")
     void setup() {
         plantRepository.deleteAll();
 
@@ -58,7 +59,7 @@ class TestEcosystemServices {
         Forest forest = new Forest("TestForest", 2, 2);
         forest.setCells(List.of(cell1, cell2));
 
-        ecosystem = new org.example.entites.ecosystem.Ecosystem(forest);
+        ecosystem = new org.example.entities.ecosystem.Ecosystem(forest);
         ecosystem.initialiseEcosystem();
 
         // Injecter l’écosystème dans le service
@@ -67,20 +68,20 @@ class TestEcosystemServices {
 
     @Test
     void testProgressDisease_CellWithDisease_UpdatesPlant() {
-        org.example.entites.ecosystem.EcosystemCell cell = ecosystem.getCells().get(0);
+        org.example.entities.ecosystem.EcosystemCell cell = ecosystem.getCells().get(0);
         MildiouDisease disease = new MildiouDisease(0.5);
         cell.infect(disease);
 
         ecosystemService.tick();
 
-        Plant p = plantRepository.findById(healthyPlant.getId()).orElseThrow();
+        Plant p = plantRepository.findById(Objects.requireNonNull(healthyPlant.getId())).orElseThrow();
         assertNotNull(p.getHeightCm());
         assertNotNull(p.getStressIndex());
     }
 
     @Test
     void testInfection_ScenarioThresholdNotReached() {
-        org.example.entites.ecosystem.EcosystemCell cell = ecosystem.getCells().get(0);
+        org.example.entities.ecosystem.EcosystemCell cell = ecosystem.getCells().get(0);
 
         ecosystemService.tick();
 
@@ -89,8 +90,8 @@ class TestEcosystemServices {
 
     @Test
     void testInfection_ScenarioThresholdReached() {
-        org.example.entites.ecosystem.EcosystemCell cell = ecosystem.getCells().get(0);
-        org.example.entites.ecosystem.EcosystemCell neighbor = ecosystem.getCells().get(1);
+        org.example.entities.ecosystem.EcosystemCell cell = ecosystem.getCells().get(0);
+        org.example.entities.ecosystem.EcosystemCell neighbor = ecosystem.getCells().get(1);
 
         neighbor.infect(new MildiouDisease(0.7));
 
@@ -103,7 +104,7 @@ class TestEcosystemServices {
 
     @Test
     void testRecovery_CellRecoversIfThresholdReached() {
-        org.example.entites.ecosystem.EcosystemCell cell = ecosystem.getCells().get(0);
+        org.example.entities.ecosystem.EcosystemCell cell = ecosystem.getCells().get(0);
         cell.infect(new BacterialDisease(0.8));
 
         ecosystemService.tick();
@@ -113,20 +114,20 @@ class TestEcosystemServices {
 
     @Test
     void testPlantRepositoryIsCalledOnProgress() {
-        org.example.entites.ecosystem.EcosystemCell cell = ecosystem.getCells().get(1);
+        org.example.entities.ecosystem.EcosystemCell cell = ecosystem.getCells().get(1);
         cell.infect(new RustDisease(0.5));
 
         ecosystemService.tick();
 
-        Plant p = plantRepository.findById(stressedPlant.getId()).orElseThrow();
+        Plant p = plantRepository.findById(Objects.requireNonNull(stressedPlant.getId())).orElseThrow();
         assertNotNull(p.getStressIndex());
         assertNotNull(p.getHeightCm());
     }
 
     @Test
     void testMajorityDiseaseSelection() {
-        org.example.entites.ecosystem.EcosystemCell cell = ecosystem.getCells().get(0);
-        org.example.entites.ecosystem.EcosystemCell neighbor = ecosystem.getCells().get(1);
+        org.example.entities.ecosystem.EcosystemCell cell = ecosystem.getCells().get(0);
+        org.example.entities.ecosystem.EcosystemCell neighbor = ecosystem.getCells().get(1);
 
         neighbor.infect(new MildiouDisease(0.3));
 
@@ -138,7 +139,8 @@ class TestEcosystemServices {
         String extraPlantId = extraPlant.getId();
 
         Forest.ForestCell extraCell = new Forest.ForestCell(1, 1, extraPlantId);
-        org.example.entites.ecosystem.EcosystemCell neighbor2 = new org.example.entites.ecosystem.EcosystemCell(extraCell);
+        org.example.entities.ecosystem.EcosystemCell neighbor2 = new org.example.entities.ecosystem.EcosystemCell(
+                extraCell);
         neighbor2.infect(new BacterialDisease(0.7));
 
         ecosystem.getCells().add(neighbor2);
@@ -151,8 +153,8 @@ class TestEcosystemServices {
 
     @Test
     void testSimulateTicks() {
-        org.example.entites.ecosystem.EcosystemCell cell1 = ecosystem.getCells().get(0);
-        org.example.entites.ecosystem.EcosystemCell cell2 = ecosystem.getCells().get(1);
+        org.example.entities.ecosystem.EcosystemCell cell1 = ecosystem.getCells().get(0);
+        org.example.entities.ecosystem.EcosystemCell cell2 = ecosystem.getCells().get(1);
 
         cell2.infect(new MildiouDisease(0.6));
 

@@ -2,34 +2,92 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>🦠 GreenDesk Lab — Propagation des maladies</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GreenDesk - Analyse Maladies</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
-<body class="lab">
+<body class="bg-light">
 
-<h1>🧪 GreenDesk Lab – Simulation de propagation des maladies</h1>
-<p class="subtitle">Clique sur une case pour inspecter la plante</p>
+<nav class="navbar navbar-expand-lg navbar-dark gd-navbar mb-4">
+    <div class="container">
+        <a class="navbar-brand fw-bold" href="home.html"><i class="fas fa-leaf"></i> GreenDesk</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarDisease">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarDisease">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item"><a class="nav-link" href="home.html">Parcours</a></li>
+                <li class="nav-item"><a class="nav-link" href="dashboard.html">Vue d'ensemble</a></li>
+                <li class="nav-item"><a class="nav-link" href="index.html">Simulation</a></li>
+                <li class="nav-item"><a class="nav-link" href="species.html">Espèces</a></li>
+                <li class="nav-item"><a class="nav-link" href="effects.html">Effets</a></li>
+                <li class="nav-item"><a class="nav-link active fw-bold" href="disease.html">Maladies</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
 
-<div class="toolbar">
-    <button class="btn" onclick="tick()">▶ Tick</button>
-    <input type="number" id="nbTicks" value="5" min="1">
-    <button class="btn" onclick="simulate()">⏩ Simuler</button>
-    <button class="btn ghost" onclick="loadGrid()">🔄 Refresh</button>
+<div class="container app-shell">
+    <div class="card border-0 shadow-sm mb-3 page-hero-card">
+        <div class="card-body py-3">
+            <small class="page-kicker d-block">Étape 3 · Analyser</small>
+            <h1 class="h4 mb-1">Propagation des maladies</h1>
+            <p class="text-muted mb-0">Validez l'impact de vos scénarios en observant l'évolution sanitaire cellule par cellule.</p>
+        </div>
+    </div>
+
+    <div id="diseaseFeedback" class="alert d-none app-feedback mb-3" role="alert"></div>
+
+    <div class="row g-3 mb-3">
+        <div class="col-lg-8">
+            <div class="card shadow-sm border-0 soft-panel h-100">
+                <div class="card-body d-flex flex-wrap gap-2 align-items-center">
+                    <button class="btn btn-outline-primary" id="tickBtn" onclick="tick()"><i class="fas fa-forward-step me-1"></i> Tick</button>
+                    <div class="input-group" style="max-width: 180px;">
+                        <span class="input-group-text">Ticks</span>
+                        <input type="number" id="nbTicks" class="form-control" value="5" min="1">
+                    </div>
+                    <button class="btn btn-primary" id="simulateBtn" onclick="simulate()"><i class="fas fa-forward-fast me-1"></i> Simuler</button>
+                    <button class="btn btn-outline-secondary" id="refreshDiseaseBtn" onclick="loadGrid()"><i class="fas fa-rotate me-1"></i> Rafraîchir</button>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="card shadow-sm border-0 soft-panel h-100">
+                <div class="card-body">
+                    <small class="text-muted text-uppercase">État global de la grille</small>
+                    <div class="d-flex justify-content-between small mt-2">
+                        <span><i class="fas fa-circle text-success me-1"></i>Saines</span><strong id="healthyCount">0</strong>
+                    </div>
+                    <div class="d-flex justify-content-between small mt-1">
+                        <span><i class="fas fa-circle text-danger me-1"></i>Malades</span><strong id="diseasedCount">0</strong>
+                    </div>
+                    <div class="d-flex justify-content-between small mt-1">
+                        <span><i class="fas fa-circle text-secondary me-1"></i>Vides</span><strong id="emptyCount">0</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm border-0 soft-panel mb-3">
+        <div class="card-body">
+            <div class="small text-muted mb-2">Légende: <span class="badge bg-success">Sain</span> <span class="badge bg-danger">Malade</span> <span class="badge bg-secondary">Vide</span></div>
+            <div id="grid" class="grid"></div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm border-0 soft-panel">
+        <div class="card-body">
+            <h2 class="h6">Inspecteur de cellule</h2>
+            <pre id="cellDetails" class="mb-0">Clique sur une cellule…</pre>
+        </div>
+    </div>
 </div>
 
-<div class="legend">
-    <span class="dot healthy"></span> Sain
-    <span class="dot diseased"></span> Malade
-    <span class="dot empty"></span> Vide
-</div>
-
-<div id="grid" class="grid"></div>
-
-<div class="panel">
-    <h3>📍 Détails de la cellule</h3>
-    <pre id="cellDetails">Clique sur une cellule…</pre>
-</div>
-
-<script src="ecosystem.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="disease.js"></script>
 </body>
 </html>

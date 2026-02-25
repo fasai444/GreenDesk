@@ -1,8 +1,8 @@
 package org.example.controllers.forest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.example.entites.forest.Forest;
-import org.example.entites.plant.Plant;
+import org.example.entities.forest.Forest;
+import org.example.entities.plant.Plant;
 import org.example.services.ForestService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -52,8 +52,8 @@ class ForestControllerTest {
         when(forestService.createForest("Forêt Magique", 10, 10)).thenReturn(mockForest);
 
         mockMvc.perform(post("/api/forests")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.name").value("Forêt Magique"))
                 .andExpect(jsonPath("$.width").value(10));
@@ -70,8 +70,8 @@ class ForestControllerTest {
                 .thenThrow(new RuntimeException("Dimensions invalides"));
 
         mockMvc.perform(post("/api/forests")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.error").value("Dimensions invalides"));
     }
@@ -110,8 +110,8 @@ class ForestControllerTest {
         when(forestService.addPlantToForest("f1", "p1", 2, 3)).thenReturn(mockForest);
 
         mockMvc.perform(post("/api/forests/f1/plants")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated());
     }
 
@@ -123,10 +123,33 @@ class ForestControllerTest {
                 .thenThrow(new IllegalArgumentException("Position occupée"));
 
         mockMvc.perform(post("/api/forests/f1/plants")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isConflict())
                 .andExpect(jsonPath("$.error").value("Position occupée"));
+    }
+
+    @Test
+    void testAddPlantToForest_Success_WhenCoordinatesAreStrings() throws Exception {
+        Map<String, Object> request = Map.of("plantId", "p1", "x", "2", "y", "3");
+
+        when(forestService.addPlantToForest("f1", "p1", 2, 3)).thenReturn(mockForest);
+
+        mockMvc.perform(post("/api/forests/f1/plants")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isCreated());
+    }
+
+    @Test
+    void testAddPlantToForest_BadRequest_WhenPayloadInvalid() throws Exception {
+        Map<String, Object> request = Map.of("plantId", "p1", "x", 2.5, "y", 3);
+
+        mockMvc.perform(post("/api/forests/f1/plants")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error").value("Champ invalide: x"));
     }
 
     @Test
@@ -146,8 +169,8 @@ class ForestControllerTest {
         when(forestService.removePlantFromForest("f1", 3, 5)).thenReturn(mockForest);
 
         mockMvc.perform(delete("/api/forests/f1/plants")
-                        .param("x", "3")
-                        .param("y", "5"))
+                .param("x", "3")
+                .param("y", "5"))
                 .andExpect(status().isOk());
     }
 

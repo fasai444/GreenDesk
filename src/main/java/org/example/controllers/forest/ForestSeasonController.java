@@ -1,7 +1,7 @@
 package org.example.controllers.forest;
 
-import org.example.entites.environment.Season;
-import org.example.entites.environment.SeasonCycle;
+import org.example.entities.environment.Season;
+import org.example.entities.environment.SeasonCycle;
 import org.example.services.SeasonService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
