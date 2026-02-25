@@ -58,7 +58,12 @@
       name: 'GreenDesk',
       repo: '',
       homepage: 'index.md',
-      loadSidebar: true,
+      
+      routerMode: 'hash',
+      basePath: './',
+      notFoundPage: '404.md',
+      alias: { '/.*/_sidebar.md': '/_sidebar.md', '/.*/_navbar.md': '/_navbar.md' },
+loadSidebar: true,
       loadNavbar: true,
       subMaxLevel: 3,
       maxLevel: 3,

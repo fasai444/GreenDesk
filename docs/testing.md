@@ -46,25 +46,25 @@ Calculée depuis les compteurs globaux JaCoCo (`LINE: covered=1590, missed=372`,
 
 ```mermaid
 flowchart TD
-  A[Commande: ./gradlew clean check] --> B[Task test]
-  B --> C[Exécution JUnit / Spring Tests]
-  C --> D[Résultats tests XML + HTML]
-  B --> E[Task jacocoTestReport]
-  E --> F[Rapports JaCoCo XML + HTML]
-  F --> G[jacocoTestCoverageVerification]
-  G --> H{Seuils respectés ?}
-  H -->|Oui| I[Build OK]
-  H -->|Non| J[Build FAIL]
+	A[Commande: ./gradlew clean check] --> B[Task test]
+	B --> C[Exécution JUnit / Spring Tests]
+	C --> D[Résultats tests XML + HTML]
+	B --> E[Task jacocoTestReport]
+	E --> F[Rapports JaCoCo XML + HTML]
+	F --> G[jacocoTestCoverageVerification]
+	G --> H{Seuils respectés ?}
+	H -->|Oui| I[Build OK]
+	H -->|Non| J[Build FAIL]
 ```
 
 ## Diagramme couverture JaCoCo
 
 ```mermaid
 pie showData
-  title Couverture actuelle (dernier rapport)
-  "LINE" : 81.04
-  "BRANCH" : 52.47
-  "CLASS" : 98.18
+	title Couverture actuelle (dernier rapport)
+	"LINE" : 81.04
+	"BRANCH" : 52.47
+	"CLASS" : 98.18
 ```
 
 ## Stratégie de tests recommandée

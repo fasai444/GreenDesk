@@ -13,91 +13,91 @@ GreenDesk suit une architecture Spring Boot classique:
 
 ```mermaid
 flowchart LR
-    Client[Client / Frontend / API Consumer] --> C[Controllers]
-    C --> S[Services]
-    S --> R[Repositories]
-    R --> M[(MongoDB)]
+		Client[Client / Frontend / API Consumer] --> C[Controllers]
+		C --> S[Services]
+		S --> R[Repositories]
+		R --> M[(MongoDB)]
 
-    S --> E[Entities]
-    C --> DTO[DTOs Request/Response]
+		S --> E[Entities]
+		C --> DTO[DTOs Request/Response]
 ```
 
 ## Diagramme de classes (Mermaid)
 
 ```mermaid
 classDiagram
-    class Species {
-      +id: String
-      +name: String
-      +optimalWaterNeeds: double
-      +optimalTemperature: double
-      +optimalHumidity: double
-      +optimalLuxNeeds: double
-    }
+		class Species {
+			+id: String
+			+name: String
+			+optimalWaterNeeds: double
+			+optimalTemperature: double
+			+optimalHumidity: double
+			+optimalLuxNeeds: double
+		}
 
-    class Plant {
-      +id: String
-      +name: String
-      +forestId: String
-      +stressIndex: double
-      +evaluateState()
-    }
+		class Plant {
+			+id: String
+			+name: String
+			+forestId: String
+			+stressIndex: double
+			+evaluateState()
+		}
 
-    class Forest {
-      +id: String
-      +name: String
-      +width: int
-      +height: int
-    }
+		class Forest {
+			+id: String
+			+name: String
+			+width: int
+			+height: int
+		}
 
-    class Effect {
-      +id: String
-      +name: String
-      +durationHours: int
-    }
+		class Effect {
+			+id: String
+			+name: String
+			+durationHours: int
+		}
 
-    class PlantEffect {
-      +id: String
-      +plantId: String
-      +effectId: String
-      +active: boolean
-    }
+		class PlantEffect {
+			+id: String
+			+plantId: String
+			+effectId: String
+			+active: boolean
+		}
 
-    class SensorReading {
-      +id: String
-      +plantId: String
-      +timestamp: LocalDateTime
-      +temperature: double
-      +humidity: double
-      +lux: double
-      +rainfall: double
-    }
+		class SensorReading {
+			+id: String
+			+plantId: String
+			+timestamp: LocalDateTime
+			+temperature: double
+			+humidity: double
+			+lux: double
+			+rainfall: double
+		}
 
-    class PlantAlert {
-      +id: String
-      +plantId: String
-      +type: AlertType
-      +severity: AlertSeverity
-      +acknowledged: boolean
-    }
+		class PlantAlert {
+			+id: String
+			+plantId: String
+			+type: AlertType
+			+severity: AlertSeverity
+			+acknowledged: boolean
+		}
 
-    class GreenhouseOpsService {
-      +getOverview()
-      +getRoiInsights(hours)
-      +emitSensorTick(forestId, profile)
-    }
+		class GreenhouseOpsService {
+			+getOverview()
+			+getRoiInsights(hours)
+			+emitSensorTick(forestId, profile)
+		}
 
-    Species "1" <-- "*" Plant : species
-    Forest "1" <-- "*" Plant : contains
-    Plant "1" <-- "*" PlantEffect : has
-    Effect "1" <-- "*" PlantEffect : references
-    Plant "1" <-- "*" SensorReading : records
-    Plant "1" <-- "*" PlantAlert : alerts
-    GreenhouseOpsService ..> Plant
-    GreenhouseOpsService ..> Forest
-    GreenhouseOpsService ..> SensorReading
-    GreenhouseOpsService ..> PlantAlert
-    GreenhouseOpsService ..> PlantEffect
+		Species "1" <-- "*" Plant : species
+		Forest "1" <-- "*" Plant : contains
+		Plant "1" <-- "*" PlantEffect : has
+		Effect "1" <-- "*" PlantEffect : references
+		Plant "1" <-- "*" SensorReading : records
+		Plant "1" <-- "*" PlantAlert : alerts
+		GreenhouseOpsService ..> Plant
+		GreenhouseOpsService ..> Forest
+		GreenhouseOpsService ..> SensorReading
+		GreenhouseOpsService ..> PlantAlert
+		GreenhouseOpsService ..> PlantEffect
 ```
 
 ## Modules métier principaux

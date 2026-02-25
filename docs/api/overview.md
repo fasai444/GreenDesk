@@ -39,9 +39,9 @@ Les endpoints `/api/greenhouse/*` renvoient désormais les erreurs `400` au form
 
 ```json
 {
-  "error": "message lisible",
-  "endpoint": "/api/greenhouse/...",
-  "timestamp": "2026-02-25T..."
+	"error": "message lisible",
+	"endpoint": "/api/greenhouse/...",
+	"timestamp": "2026-02-25T..."
 }
 ```
 
