@@ -76,14 +76,12 @@ class PlantAlertServiceTest {
         PlantAlert recent = new PlantAlert("p1", LocalDateTime.now(), AlertType.HIGH_TEMPERATURE,
                 AlertSeverity.WARNING, "recent");
 
+        // Stub général pour éviter PotentialStubbingProblem
+        when(plantAlertRepository.findFirstByPlantIdAndTypeAndAcknowledgedFalseOrderByCreatedAtDesc(any(), any()))
+                .thenReturn(Optional.empty());
+        // Stubs spécifiques pour les cas attendus
         when(plantAlertRepository.findFirstByPlantIdAndTypeAndAcknowledgedFalseOrderByCreatedAtDesc(eq("p1"),
                 eq(AlertType.HIGH_TEMPERATURE))).thenReturn(Optional.of(recent));
-        when(plantAlertRepository.findFirstByPlantIdAndTypeAndAcknowledgedFalseOrderByCreatedAtDesc(eq("p1"),
-                eq(AlertType.LOW_HUMIDITY))).thenReturn(Optional.empty());
-        when(plantAlertRepository.findFirstByPlantIdAndTypeAndAcknowledgedFalseOrderByCreatedAtDesc(eq("p1"),
-                eq(AlertType.LOW_LIGHT))).thenReturn(Optional.empty());
-        when(plantAlertRepository.findFirstByPlantIdAndTypeAndAcknowledgedFalseOrderByCreatedAtDesc(eq("p1"),
-                eq(AlertType.LOW_WATER))).thenReturn(Optional.empty());
         when(plantAlertRepository.save(any(PlantAlert.class))).thenAnswer(inv -> inv.getArgument(0));
 
         List<PlantAlert> created = plantAlertService.evaluateAndCreateAlerts(plant);
