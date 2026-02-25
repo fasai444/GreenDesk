@@ -18,10 +18,8 @@
 
 **README** : [README.md](README.md)
 
-**Documentation** : [docs/index.md](docs/index.md)
 
-
-**Documentation en ligne (GitHub Pages)** : [https://misasoarobison.github.io/GreenDesk/docs/index.html](https://misasoarobison.github.io/GreenDesk/docs/index.html)
+**Documentation en ligne (GitHub Pages)** : [https://misasoarobison.github.io/GreenDesk/](https://misasoarobison.github.io/GreenDesk/)
 
 **Cahier des charges** : [docs/cahier-des-charges.md](docs/cahier-des-charges.md)
 
