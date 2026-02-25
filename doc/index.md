@@ -84,7 +84,7 @@
 	</a>
 </section>
 
-👉 Galerie complète: [Captures d'écran](screenshots.md)
+Galerie complète: [Captures d'écran](screenshots.md)
 
 ## Liens utiles
 
