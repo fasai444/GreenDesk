@@ -42,6 +42,8 @@
 
 ## Architecture
 
+![GreenDesk System Architecture](docs/architecture.png)
+
 **Le projet met en pratique** :
 
 - Architecture **Spring Boot** claire **(Controller / Service / Repository)**
