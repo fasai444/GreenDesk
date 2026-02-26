@@ -14,6 +14,15 @@
 </head>
 
 <body>
+  <div class="top-actions" aria-label="Actions documentation">
+    <button id="exportPdfBtn" class="action-btn action-btn-primary" title="Exporter la documentation en PDF">
+      Exporter en PDF
+    </button>
+    <button id="scrollTopBtn" class="action-btn" title="Revenir en haut">
+      Haut de page
+    </button>
+  </div>
+
   <div id="app">Chargement de la documentation...</div>
 
   <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
@@ -54,23 +63,39 @@
       });
     };
 
+    const docsifyUiPlugin = (hook) => {
+      hook.doneEach(() => {
+        const exportBtn = document.getElementById('exportPdfBtn');
+        const topBtn = document.getElementById('scrollTopBtn');
+
+        if (exportBtn && !exportBtn.dataset.bound) {
+          exportBtn.dataset.bound = 'true';
+          exportBtn.addEventListener('click', () => {
+            window.print();
+          });
+        }
+
+        if (topBtn && !topBtn.dataset.bound) {
+          topBtn.dataset.bound = 'true';
+          topBtn.addEventListener('click', () => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          });
+        }
+      });
+    };
+
     window.$docsify = {
-      name: 'GreenDesk',
+      name: '',
       repo: '',
       homepage: 'index.md',
-      
-      routerMode: 'hash',
-      basePath: './',
-      notFoundPage: '404.md',
-      alias: { '/.*/_sidebar.md': '/_sidebar.md', '/.*/_navbar.md': '/_navbar.md' },
-loadSidebar: true,
-      loadNavbar: true,
-      subMaxLevel: 3,
-      maxLevel: 3,
+      loadSidebar: false,
+      loadNavbar: false,
+      subMaxLevel: 0,
+      maxLevel: 0,
       auto2top: true,
       relativePath: true,
       coverpage: false,
-      mergeNavbar: true,
+      mergeNavbar: false,
       topMargin: 70,
       pagination: {
         previousText: 'Précédent',
@@ -90,7 +115,7 @@ loadSidebar: true,
         errorText: 'Erreur',
         successText: 'Copié'
       },
-      plugins: [docsifyMermaidPlugin]
+      plugins: [docsifyMermaidPlugin, docsifyUiPlugin]
     };
   </script>
 
