@@ -42,7 +42,7 @@
 
 ## Architecture
 
-![GreenDesk System Architecture](docs/architecture.png)
+![GreenDesk System Architecture](architecture.png)
 
 **Le projet met en pratique** :
 
