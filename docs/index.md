@@ -769,10 +769,6 @@ Commandes standard :
 
 ![Swagger](assets/images/site-swagger-ui.png)
 
-**Capture test forêt**
-
-![Test forêt](assets/images/site-forest-test.png)
-
 ---
 
 ## 7. Guide d’Installation & Déploiement
