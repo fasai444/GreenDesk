@@ -8,6 +8,9 @@
   <a href="https://github.com/MisasoaRobison/GreenDesk/actions/workflows/docs-pages.yml">
     <img src="https://github.com/MisasoaRobison/GreenDesk/actions/workflows/docs-pages.yml/badge.svg" alt="Docs Deploy Status" />
   </a>
+  <a href="https://github.com/MisasoaRobison/GreenDesk/actions/workflows/gradle.yml">
+    <img src="https://github.com/MisasoaRobison/GreenDesk/actions/workflows/gradle.yml/badge.svg" alt="Code Quality Status" />
+  </a>
   <a href="docs/index.md">
     <img src="https://img.shields.io/badge/Documentation-Markdown-green" alt="Documentation" />
   </a>
