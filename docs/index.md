@@ -287,6 +287,10 @@ flowchart LR
     class domain domainStyle
 ```
 
+Ce diagramme montre l'architecture en couches de GreenDesk et la séparation claire des responsabilités.
+Les contrôleurs exposent les endpoints REST, les services appliquent les règles métier (stress, états, effets, alertes), et les repositories gèrent la persistance MongoDB.
+Cette organisation limite les régressions, facilite les tests ciblés et rend l'évolution des features plus sûre.
+
 #### 3.2.2 Diagramme de classes - Livraison 1
 
 Ce diagramme représente la base du domaine métier au démarrage du projet.
@@ -332,6 +336,10 @@ classDiagram
     Species "1" <-- "*" Plant : species
     Plant "1" <-- "*" EnvironmentData : observedIn
 ```
+
+Ce diagramme illustre le noyau initial du projet : un référentiel d'espèces, des plantes rattachées et des observations d'environnement.
+Dans GreenDesk, c'est ce triplet qui permet de calculer `stressIndex`, de déduire `PlantState` et de conserver l'historique des conditions.
+Il sert de base fonctionnelle aux endpoints CRUD de F1 et à la simulation individuelle de F2.
 
 #### 3.2.3 Diagramme de classes - Livraison 2
 
@@ -432,6 +440,10 @@ classDiagram
     style SensorReading fill:#b2dfdb,stroke:#00695c,stroke-width:2px
     style PlantAlert fill:#ffcdd2,stroke:#c62828,stroke-width:2px
 ```
+
+Ce schéma montre l'extension opérationnelle de GreenDesk autour de la plante : placement en forêt, cycle saisonnier, actions correctives, capteurs et alertes.
+Il matérialise le flux métier réel du projet : observer, agir, mesurer, puis superviser.
+Cette vue explique pourquoi F3, F4 et F5 doivent être cohérentes entre elles pour produire une simulation exploitable.
 
 #### 3.2.4 Diagramme de classes final - Livraison 3
 
@@ -567,6 +579,10 @@ classDiagram
     Species "1" <-- "*" PlacementSuggestion : suggestedSpecies
 ```
 
+Ce diagramme final présente la vision complète du produit, de la donnée agronomique jusqu'au pilotage global.
+Il relie l'opérationnel (plantes, effets, alertes, capteurs) à la décision (simulation écosystème, ROI, suggestions de placement).
+C'est la référence structurelle utilisée pour aligner le backend, les APIs et les scénarios métier des livraisons finales.
+
 #### 3.2.5 Diagrammes de séquence (back)
 
 **Création d'une plante**
@@ -587,6 +603,10 @@ sequenceDiagram
     controller-->>client: 200 JSON
 ```
 
+Cette séquence décrit le flux standard de création d'une plante côté backend.
+Elle montre le passage `Controller -> Service -> Repository`, avec validation métier avant écriture en base.
+Dans le projet, ce flux garantit qu'une plante est créée de manière cohérente avec son espèce et directement exploitable en simulation.
+
 **Application d'un effet**
 
 ```mermaid
@@ -605,6 +625,10 @@ sequenceDiagram
     service-->>controller: result
     controller-->>user: 200 JSON
 ```
+
+Cette séquence montre l'application d'un effet sur une plante depuis l'API.
+Le service vérifie la plante cible, persiste l'effet actif, puis renvoie un résultat consommable par l'interface.
+C'est le mécanisme clé de F4 pour transformer une action utilisateur en impact réel sur le calcul de stress/croissance.
 
 **Consultation ROI**
 
@@ -625,6 +649,10 @@ sequenceDiagram
     controller-->>manager: 200 JSON
 ```
 
+Cette séquence représente la consultation ROI pour le pilotage des forêts.
+Le service agrège les données de plantes et d'alertes sur une fenêtre temporelle afin de calculer un score orienté décision.
+Elle traduit le besoin métier de comparer rapidement les zones prioritaires d'intervention.
+
 #### 3.2.6 Diagramme d'objet (back)
 
 ```mermaid
@@ -640,6 +668,10 @@ flowchart LR
     style plant42 fill:#c8e6c9,stroke:#2e7d32,stroke-width:2px
     style effect7 fill:#f3e5f5,stroke:#6a1b9a,stroke-width:2px
 ```
+
+Ce diagramme d'objet donne un instantané concret d'un état de simulation : une forêt, une plante et un effet actif.
+Il aide à visualiser les identifiants et relations réellement manipulés dans les services.
+Cette vue est utile pour relier les concepts UML aux documents MongoDB observés en exécution.
 
 #### 3.2.7 Diagramme de cas d'utilisation
 
@@ -667,6 +699,10 @@ flowchart LR
     equipe --> uc7
 ```
 
+Ce cas d'utilisation répartit les responsabilités GreenDesk entre opérateur, responsable agronomique et équipe technique.
+Il montre quelles fonctionnalités sont centrées terrain (gestion, actions, suivi) et lesquelles relèvent du pilotage ou de l'intégration.
+Cette séparation reflète le fonctionnement réel du projet et facilite la priorisation du backlog par profil utilisateur.
+
 #### 3.2.8 Diagramme d'activité
 
 ```mermaid
@@ -683,6 +719,10 @@ flowchart TD
     a_goal -->|Non| a_action
     a_goal -->|Oui| a_finish([Fin])
 ```
+
+Ce diagramme d'activité montre la boucle de pilotage terrain utilisée dans GreenDesk.
+Le cycle commence par la lecture des KPI/alertes, enchaîne avec les actions correctives, puis passe par la simulation et la mesure des résultats.
+La boucle est répétée jusqu'à stabilisation, ce qui correspond au mode opératoire attendu en exploitation.
 
 #### 3.2.9 Diagramme d'état
 
@@ -707,6 +747,10 @@ stateDiagram-v2
     class DISEASED diseasedStyle
 ```
 
+Ce diagramme d'état formalise les transitions de santé d'une plante selon les seuils de `stressIndex`.
+Il rend explicite la logique du moteur (`HEALTHY -> STRESSED -> DORMANT -> DISEASED`) ainsi que les retours possibles après amélioration ou traitement.
+C'est la règle de lecture principale pour interpréter les changements observés dans les écrans de simulation et d'alertes.
+
 ---
 
 ## 4. Fonctionnalités Détaillées (User Guide)
@@ -715,22 +759,113 @@ stateDiagram-v2
 
 ### 4.1 Feature 1 - Gestion des espèces et plantes CRUD
 
-**But feature** : centraliser le référentiel agronomique.
+**1) Objectif (fonctionnel)**
 
-**Scénarios / Personas**
+Cette feature fournit les opérations de base (CRUD) pour :
 
-- Persona : Opérateur serre
-- Scénario : création d'une espèce puis réutilisation lors de la création de plantes.
+- gérer les espèces (définition des besoins optimaux d'une plante),
+- gérer les plantes (instances réelles simulées, liées à une espèce).
+
+Elle constitue le socle du projet : sans espèces/plantes, il n'y a ni simulation, ni forêt, ni effets.
+
+**2) Concepts métiers**
+
+**2.1 Espèce (Species)**
+
+Une espèce représente un modèle "biologique" qui définit les valeurs optimales attendues :
+
+- eau optimale (`optimalWater`),
+- température optimale (`optimalTemperature`),
+- humidité optimale (`optimalHumidity`),
+- lumière optimale (`optimalLux`),
+- taux de croissance de base (`baseGrowthRate`),
+- éventuellement un identifiant unique / nom d'espèce.
+
+Une espèce est donc une référence utilisée pour calculer le stress et la croissance.
+
+**2.2 Plante (Plant)**
+
+Une plante représente une instance réelle simulée :
+
+- elle est liée à une espèce (`speciesName` ou `speciesId` selon le modèle),
+- elle possède des valeurs dynamiques qui évoluent :
+- `waterLevel`, `temperature`, `humidity`, `lux`,
+- `height` (croissance),
+- `stressIndex` (`0..1`),
+- `state` : `HEALTHY / STRESSED / DORMANT / DISEASED`,
+- elle peut posséder une variabilité (`variationSeed`) utilisée dans certaines règles (ex : anti-clones en forêt).
+
+**3) Règles métier (basées sur le code)**
+
+**3.1 Validation minimale côté API**
+
+Lors de la création/mise à jour :
+
+- les champs essentiels doivent être présents (nom, optimaux, etc.),
+- les valeurs doivent être cohérentes (ex : pas de valeurs négatives).
+
+Remarque : les validations peuvent être simples (contrôles dans service/controller). L'objectif est d'éviter des données "impossibles" en base.
+
+**3.2 Cohérence Plante ↔ Espèce**
+
+Lorsqu'on crée une plante :
+
+- l'espèce associée doit exister, sinon erreur (plante orpheline interdite),
+- les valeurs initiales de plante peuvent être :
+- alignées sur les optimaux (départ "healthy"), ou
+- initialisées selon un preset (selon logique du projet).
+
+**4) API exposée (routes CRUD)**
+
+**4.1 CRUD Espèces**
+
+Opérations principales :
+
+- créer une espèce,
+- lister toutes les espèces,
+- récupérer une espèce (par identifiant ou par nom selon API),
+- mettre à jour une espèce,
+- supprimer une espèce,
+- (optionnel) supprimer toutes les espèces (utile en dev/tests).
+
+Ces endpoints sont exposés par le controller des espèces et persistés via un repository MongoDB.
+
+**4.2 CRUD Plantes**
+
+Opérations principales :
+
+- créer une plante,
+- lister toutes les plantes,
+- récupérer une plante par ID,
+- mettre à jour une plante,
+- supprimer une plante,
+- (optionnel) supprimer toutes les plantes (reset environnement de test).
+
+En plus du CRUD, le projet expose souvent :
+
+- un endpoint pour lire l'état (`state`) d'une plante,
+- un endpoint pour lire le status (ou indicateurs) d'une plante.
+
+**5) Stockage (MongoDB)**
+
+Les espèces et plantes sont stockées dans MongoDB via Spring Data MongoDB :
+
+- `SpeciesRepository` pour les espèces,
+- `PlantRepository` pour les plantes.
+
+Chaque entité est persistée sous forme de document MongoDB (avec `_id` généré).
+
+**6) Scénario d'usage (simple et clair)**
+
+1. L'utilisateur crée une espèce : "Tomate" avec `optimalWater=60`, `optimalTemperature=24`, `optimalHumidity=65`, `optimalLux=8000`.
+2. Il crée ensuite une plante rattachée à "Tomate".
+3. Il consulte la liste des plantes et récupère l'ID.
+4. Il met à jour des valeurs si besoin (ex : `waterLevel`).
+5. Il supprime la plante / l'espèce à la fin.
 
 **Wireframe / screenshot**
 
 ![Espèces](assets/images/site-species.png)
-
-**Résumé NVF**
-
-- N : nécessaire pour définir les seuils de référence.
-- V : valeur forte sur la cohérence des diagnostics.
-- F : faisable via endpoints CRUD déjà exposés.
 
 ### 4.2 Feature 2 - Simulation évolutive d'une plante
 
@@ -834,9 +969,17 @@ Ce mécanisme est robuste : il fonctionne aussi bien avec `+1` mois qu'avec un g
 
 **Wireframe / screenshot**
 
-**Capture - Forêt & saisons (test terrain)**
+**Capture - Forêt & saisons**
 
-![Forêt & saisons](assets/images/site-forest-feature43.png)
+![Forêt & saisons](assets/images/site-forest-feature43-empty.png)
+
+**Capture - Création d'une forêt**
+
+![Création d'une forêt](assets/images/site-forest-create-modal.png)
+
+**Capture - Test forêt**
+
+![Test forêt](assets/images/site-forest-test.png)
 
 **Résumé NVF**
 
@@ -922,7 +1065,40 @@ Dans le code, le flux est :
 
 **Wireframe / screenshot**
 
+**Capture - Création d'un effet personnalisé**
+
+![Création d'un effet personnalisé](assets/images/site-effects-custom-create.png)
+
+On peut aussi créer des effets personnalisés (durée, croissance, réduction du stress, température), puis les appliquer aux plantes selon le besoin métier.
+
 ![Effets](assets/images/site-effects.png)
+
+**Capture - Impact des effets en temps réel**
+
+![Impact des effets en temps réel](assets/images/site-effects-realtime-impact.png)
+
+Cette vue représente le suivi en temps réel des effets actifs par plante et par forêt, avec le niveau de stress associé.
+Elle permet d'identifier rapidement les plantes qui cumulent beaucoup d'effets et nécessitent un ajustement.
+
+**Capture - Inspecteur avant envoi d'un effet**
+
+![Inspecteur plante avant effet](assets/images/site-effects-inspector-before-effect.png)
+
+Cette capture montre l'état de la plante avant action : `DORMANT`, avec un score de stress à `63.6%`.
+Elle sert de point de référence avant l'envoi d'un effet/stimulus via le bouton **Ouvrir les actions de la plante**.
+
+**Capture - Application de l'effet Extra Watering**
+
+![Application Extra Watering](assets/images/site-effects-apply-extra-watering.png)
+
+Ici, on applique l'effet `Extra Watering (4h)` sur la plante `Plante_6_0` en cliquant sur **Appliquer**.
+
+**Capture - Après application : évolution du stress**
+
+![Après application de l'effet](assets/images/site-effects-after-application-stress-change.png)
+
+Après application et recalcul de simulation, le stress passe de `63.6%` à `92.6%` et l'état devient `DISEASED`.
+Cela montre que `Extra Watering` est bien pris en compte, mais que le score final dépend aussi des autres écarts environnementaux et de l'évolution au tick suivant.
 
 **Résumé NVF**
 
@@ -932,22 +1108,165 @@ Dans le code, le flux est :
 
 ### 4.5 Feature 5 - Simulation & alertes
 
-**But feature** : anticiper les dérives et gérer les incidents.
+**1) Objectif (fonctionnel)**
 
-**Scénarios / Personas**
+Cette feature permet de simuler un système de capteurs connecté à chaque plante, d'enregistrer un historique de mesures, puis de générer automatiquement des alertes quand les conditions s'éloignent trop des valeurs optimales définies par l'espèce.
 
-- Persona : Responsable agronomique
-- Scénario : simuler plusieurs ticks, analyser alertes, acquitter les alertes traitées.
+Elle sert à :
+
+- alimenter la simulation avec des données "terrain" (température, humidité, lumière, pluie),
+- mettre à jour l'état de santé de la plante (stress + `PlantState`),
+- déclencher des alertes (`WARNING`/`CRITICAL`) exploitables côté dashboard/monitoring,
+- permettre la consultation des alertes + l'acknowledgement (acquittement).
+
+**2) Modèle de données (ce que le code stocke)**
+
+**2.1 SensorReading (lecture capteur)**
+
+Le code introduit une entité `SensorReading` (collection Mongo `sensor_readings`) qui représente une lecture à un instant donné :
+
+- `plantId` : la plante concernée,
+- `timestamp` : date/heure de lecture,
+- `temperature` (°C),
+- `humidity` (%),
+- `lux` (lx),
+- `rainfall` (mm / unité simplifiée).
+
+Objectif : garder un historique complet des conditions.
+
+**2.2 PlantAlert (alerte)**
+
+Le code introduit une entité `PlantAlert` (collection Mongo `plant_alerts`) :
+
+- `plantId`,
+- `createdAt`,
+- `type` (`AlertType`) : `LOW_TEMPERATURE`, `HIGH_TEMPERATURE`, `LOW_HUMIDITY`, `HIGH_HUMIDITY`, `LOW_LIGHT`, `HIGH_LIGHT`, `LOW_WATER`, `HIGH_WATER`,
+- `severity` (`AlertSeverity`) : `WARNING` / `CRITICAL`,
+- `message` : message explicite (avec valeurs + optimum),
+- `acknowledged` : booléen (alerte active = non acquittée).
+
+Objectif : rendre les anomalies lisibles + actionnables.
+
+**3) Flux technique (basé sur le code)**
+
+**Étape A - Enregistrement d'une lecture capteur**
+
+Quand on envoie une nouvelle lecture via l'API :
+
+- le service récupère la plante par `plantId`,
+- il crée un `SensorReading` avec :
+- `timestamp` (fourni ou `now`),
+- `temperature` / `humidity` / `lux` / `rainfall`,
+- il sauvegarde la lecture dans MongoDB.
+
+Cela crée un historique consultable et filtrable.
+
+**Étape B - Mise à jour "temps réel" de la plante (simulation)**
+
+Après avoir enregistré la lecture, le service met à jour la plante avec les valeurs reçues :
+
+- `plant.temperature = req.temperature`
+- `plant.humidity = req.humidity`
+- `plant.lux = req.lux`
+
+Et pour l'eau (mapping simplifié pluie -> eau) :
+
+- `plant.waterLevel = max(0, plant.waterLevel + rainfall)`
+
+Ensuite le code recalcule l'état de la plante :
+
+- `plant.setPlantState(plant.evaluateState())`
+
+`evaluateState()` :
+
+- recalcule `stressIndex` via `calculateStressIndex()`,
+- applique les seuils :
+- `< 0.3` -> `HEALTHY`
+- `< 0.6` -> `STRESSED`
+- `< 0.9` -> `DORMANT`
+- sinon -> `DISEASED`
+
+Puis il sauvegarde la plante en base.
+
+Résultat : chaque lecture capteur met à jour la plante comme si elle "vivait" en temps réel.
+
+**Étape C - Génération automatique d'alertes**
+
+Après mise à jour, le service déclenche :
+
+- `PlantAlertService.evaluateAndCreateAlerts(plant)`
+
+Ce service compare les valeurs de la plante avec les optimaux de l'espèce (`Species`) et crée des alertes si dépassement de seuils :
+
+Température :
+
+- si `|temp - optimalTemp| > 4°C` -> alerte,
+- `WARNING` si `> 4°C`, `CRITICAL` si `> 8°C`,
+- type : `LOW_TEMPERATURE` ou `HIGH_TEMPERATURE`.
+
+Humidité :
+
+- si `|humidity - optimalHumidity| > 10%` -> alerte,
+- `WARNING` si `> 10%`, `CRITICAL` si `> 20%`,
+- type : `LOW_HUMIDITY` ou `HIGH_HUMIDITY`.
+
+Lumière (lux) :
+
+- trop faible si `lux < 0.7 * optimalLux`,
+- `CRITICAL` si `lux < 0.5 * optimalLux`,
+- type : `LOW_LIGHT`,
+- trop forte si `lux > 1.3 * optimalLux`,
+- `CRITICAL` si `lux > 1.6 * optimalLux`,
+- type : `HIGH_LIGHT`.
+
+Eau :
+
+- si `|water - optimalWater| > 15 mL` -> alerte,
+- `CRITICAL` si `> 30 mL`,
+- type : `LOW_WATER` ou `HIGH_WATER`.
+
+Chaque alerte contient un message explicite du style :
+
+`Temperature 30.0°C (optimal 22.0°C) - écart 8.0°C`
+
+**4) Anti-spam (important : c'est dans votre code)**
+
+Le code applique une règle anti-duplication :
+
+- ne pas recréer la même alerte (même type pour une plante) plus d'une fois toutes les 30 minutes,
+- constante : `DEDUP_MINUTES = 30`.
+
+Cela évite d'inonder le dashboard avec des alertes identiques.
+
+**5) API exposée (endpoints exacts)**
+
+**5.1 Capteurs (`SensorReadingController`)**
+
+- `POST /plants/{plantId}/sensor-readings` : ajoute une lecture capteur et déclenche mise à jour plante + alertes.
+- `GET /plants/{plantId}/sensor-readings` : liste l'historique (tri décroissant).
+- `GET /plants/{plantId}/sensor-readings?from=...&to=...` : liste filtrée entre 2 timestamps (`LocalDateTime.parse()`).
+- `GET /plants/{plantId}/sensor-readings/latest` : retourne la dernière lecture.
+
+**5.2 Alertes (`PlantAlertController`)**
+
+- `GET /plants/{plantId}/alerts?active=true|false` : liste les alertes d'une plante (par défaut : actives uniquement).
+- `POST /alerts/{alertId}/ack` : acquitte une alerte (`acknowledged=true`).
+
+**6) Scénario d'usage (simple à présenter)**
+
+1. L'utilisateur envoie une lecture capteur : `temp=32°C`, `humidity=40%`, `lux=12000`, `rainfall=0`.
+2. Le système sauvegarde la lecture, met à jour la plante, recalcule `stressIndex` + état.
+3. Le système déclenche des alertes : `HIGH_TEMPERATURE`, `LOW_HUMIDITY`, `HIGH_LIGHT` selon dépassement.
+4. Sur le dashboard, l'utilisateur consulte : `GET /plants/{id}/alerts?active=true`.
+5. Après intervention, il acquitte : `POST /alerts/{alertId}/ack`.
 
 **Wireframe / screenshot**
 
 ![Maladies](assets/images/site-disease.png)
 
-**Résumé NVF**
+**Capture - Alertes serre en cours**
 
-- N : indispensable pour réduction du risque.
-- V : priorisation par sévérité.
-- F : module simulation + module alertes testés.
+![Alertes actives](assets/images/site-alerts-active-list.png)
 
 ### 4.6 Feature 6 - Simulation écosystème
 
@@ -1013,7 +1332,7 @@ Si dans le modèle de Schelling, c'est le seuil de satisfaction qui détermine s
 
 **Wireframe / screenshot**
 
-![Simulation écosystème](assets/images/site-simulation.png)
+![Simulation écosystème](assets/images/site-ecosystem-feature46-test.png)
 
 **Résumé NVF**
 
@@ -1023,143 +1342,256 @@ Si dans le modèle de Schelling, c'est le seuil de satisfaction qui détermine s
 
 ### 4.7 Feature 7 - Greenhouse Ops (KPI / ROI)
 
-**But feature** : classer les forêts selon leur ROI (Return on Investment) pour piloter les décisions d'exploitation.
+**But**
+
+Classer les forêts selon leur ROI (Return on Investment) afin de piloter les décisions d'exploitation (prioriser les actions, limiter les pertes, optimiser les coûts).
 
 **1) Description (fonctionnelle)**
 
-La feature **Classement ROI par forêt** permet de mesurer la performance globale de chaque forêt sur une période de simulation et de produire un classement `Top/Worst`.
+La feature **Classement ROI par forêt** mesure la performance globale de chaque forêt sur une période de simulation et produit un classement `Top / Worst`.
 
-Objectifs fonctionnels :
+Objectifs :
+
 - calculer un ROI pour chaque forêt à partir des résultats de simulation,
 - classer les forêts (`Top / Worst`) selon leur ROI,
 - comparer rapidement plusieurs forêts / scénarios,
 - aider à la décision : identifier les forêts à optimiser (stress élevé, maladies, pertes, interventions coûteuses, effets trop fréquents).
 
 Résultat attendu côté UI / dashboard :
+
 - valeur économique estimée (`€/jour`),
-- indice risque (`/100`),
+- indice de risque (`/100`),
 - coût estimé (`€/jour`),
-- tableau de classement par forêt (niveau / score / tendance / risque / coût).
+- tableau de classement par forêt (niveau / ROI score / tendance / risque / coût),
+- bouton `Export CSV`.
 
 **2) Données d'entrée (issues de la simulation)**
 
 `A. Plantes / états (Plant + Forest)`
-- nombre total de plantes dans la forêt,
-- répartition par statut : `HEALTHY`, `STRESSED`, `DORMANT`, `DISEASED`,
-- stress moyen (ex : moyenne de `stressIndex`),
-- croissance moyenne (ex : delta de height ou growth calculé),
-- pertes / plantes quasi mortes (ou pénalité forte sur `DISEASED`).
+
+- nombre total de plantes,
+- répartition : `HEALTHY`, `STRESSED`, `DORMANT`, `DISEASED`,
+- stress moyen (moyenne de `stressIndex`),
+- croissance moyenne (delta `height` ou croissance calculée),
+- pertes / pénalité forte sur `DISEASED`.
 
 `B. Effets / interventions (PlantEffect + Effect)`
-- nombre d'effets appliqués sur la période,
+
+- nombre d'effets appliqués,
 - coût total des interventions (estimé par type d'effet),
-- durée totale d'intervention (heures).
+- durée totale d'intervention (heures, si applicable).
 
 `C. Écosystème / maladies (Ecosystem / cells)`
+
 - taux de cellules infectées (ou nombre de plantes malades),
-- évolution de l'infection (augmente / stable / diminue).
+- tendance infection (augmente / stable / diminue).
 
 `D. Temps / période`
-- fenêtre temporelle choisie (ex : `24h`, `7 jours`),
+
+- fenêtre temporelle (ex : `24h`, `7 jours`),
 - nombre de ticks ou mois simulés.
 
 **3) Formule ROI (définition utilisée)**
 
-Le ROI est basé sur la logique `valeur produite vs coûts + pénalités`.
+Le ROI est basé sur : valeur produite - coûts - pénalités.
 
-`3.1 Score santé (Health Score)`
+**3.1 Score santé (Health Score)**
 
 Variables :
+
 - `HealthyRatio = #HEALTHY / #TOTAL`
 - `StressedRatio = #STRESSED / #TOTAL`
 - `DormantRatio = #DORMANT / #TOTAL`
 - `DiseasedRatio = #DISEASED / #TOTAL`
-- `StressMean = moyenne(stressIndex)` (0..1)
+- `StressMean = moyenne(stressIndex)` (`0..1`)
 
 Pondération :
+
 - `HealthScore = 100 * (1.0*HealthyRatio + 0.6*StressedRatio + 0.3*DormantRatio - 0.8*DiseasedRatio)`
 - `HealthScore = HealthScore - (StressMean * 20)`
 - `HealthScore = clamp(HealthScore, 0, 100)`
 
-`3.2 Valeur économique estimée (Economic Value)`
+**3.2 Valeur économique estimée (Economic Value)**
 
 - `EconomicValuePerDay = BaseValue * #TOTAL * (HealthScore/100)`
-- Exemple : `BaseValue = 2.0 €/plante/jour`, si `#TOTAL = 50` et `HealthScore = 80`, alors `80 €/jour`.
 
-`3.3 Coût des interventions (Cost of Interventions)`
+Exemple : `BaseValue = 2.0 €/plante/jour`, `#TOTAL=50`, `HealthScore=80` -> `80 €/jour`.
 
-- `Cost = Somme(count(effectType) * unitCost(effectType))`
-- Exemples de coûts unitaires :
-- `ExtraWatering : 0.20 € / application`
-- `Fertilizer : 0.50 € / application`
-- `Heating : 1.00 € / heure (ou / application)`
-- `Shade : 0.10 € / application`
+**3.3 Coût des interventions (Cost)**
 
-`3.4 Pénalité risque (Risk Penalty)`
+- `Cost = Σ (count(effectType) * unitCost(effectType))`
+
+Exemples :
+
+- `ExtraWatering` : `0.20 € / application`
+- `Fertilizer` : `0.50 € / application`
+- `Heating` : `1.00 € / heure` (ou `/ application`)
+- `Shade` : `0.10 € / application`
+
+**3.4 Pénalité de risque (Risk Penalty)**
 
 - `RiskScore = 100 * (0.6*StressMean + 0.4*DiseasedRatio)`
 - `RiskScore = clamp(RiskScore, 0, 100)`
 - `RiskPenalty = (RiskScore/100) * RiskWeight`
-- Exemple : `RiskWeight = 20 €/jour`
 
-`3.5 ROI final (score de classement)`
+Exemple : `RiskWeight = 20 €/jour`.
 
-Option A (recommandée pour le classement lisible) :
+**3.5 ROI final (score de classement)**
+
+Option A (recommandée) :
+
 - `ROI = EconomicValuePerDay - Cost - RiskPenalty`
 
-Option B (ratio) :
-- `ROI = (EconomicValuePerDay - Cost - RiskPenalty) / max(Cost, 1)`
+(Option B ratio possible, mais moins lisible pour le classement.)
 
-**4) Agrégation et classement (algorithme)**
+**4) Agrégation & classement (algorithme)**
 
 Pour chaque forêt :
-- récupérer la liste des plantes placées,
-- calculer les compteurs par état,
-- calculer `StressMean`,
-- récupérer les effets appliqués sur la période (`PlantEffect`) et calculer `Cost`,
-- récupérer les infos maladie (`DiseasedRatio` / taux infecté),
+
+- récupérer les plantes placées,
+- compter les états, calculer `StressMean`,
+- récupérer les effets appliqués et calculer `Cost`,
+- récupérer l'indicateur maladie (taux infecté / `diseased ratio`),
 - calculer `HealthScore`, `EconomicValuePerDay`, `RiskScore`, `RiskPenalty`, `ROI`,
 - trier les forêts par `ROI DESC`,
-- produire : `Top N` (ex : 5) et `Worst N` (ex : 5).
+- produire `Top N` et `Worst N`.
 
-**5) Niveaux (stable / à risque)**
+**5) Niveaux (`STABLE` / `A_RISQUE` / `CRITIQUE`)**
 
 - `STABLE` si `RiskScore < 35` et `ROI >= 0`
-- `A RISQUE` si `35 <= RiskScore < 70` ou `ROI < 0`
+- `A_RISQUE` si `35 <= RiskScore < 70` ou `ROI < 0`
 - `CRITIQUE` si `RiskScore >= 70`
 
-**6) API (proposition d'endpoints)**
+**6) Lecture du dashboard (capture)**
 
-- `GET /api/roi/forests?window=24h`
-- `GET /api/roi/forests/top?window=24h&n=5`
-- `GET /api/roi/forests/worst?window=24h&n=5`
-- `GET /api/roi/forests/export.csv?window=24h`
+`ROI serre (estimation)`
 
-**7) Exemple (lecture rapide)**
+- `Économie eau/jour (L)` : gain direct (moins de gaspillage d'eau grâce au pilotage).
+- `Indice risque (/100)` : probabilité de pertes / dégradation (stress + maladies).
+- `Coût estimé/jour (€)` : investissement quotidien en interventions (effets/stimulus).
 
-Fenêtre : `24h`
+`Classement ROI par forêt`
 
-- Forêt A : `50 plantes`, `HealthScore=80`, `coûts=10€`, `RiskPenalty=5€`
-- `EconomicValue = 2*50*0.8 = 80€`
-- `ROI = 80 - 10 - 5 = 65 €/jour` (`Top`)
+- `NIVEAU` : stable ou à risque (priorisation).
+- `ROI SCORE` : rentabilité estimée (plus haut = mieux).
+- `TENDANCE ROI` : évolution (`Stable / Positive`).
+- `RISQUE` : risque propre à la forêt.
+- `COÛT/J` : coût des interventions pour cette forêt.
 
-- Forêt B : `50 plantes`, `HealthScore=45`, `coûts=18€`, `RiskPenalty=12€`
-- `EconomicValue = 2*50*0.45 = 45€`
-- `ROI = 45 - 18 - 12 = 15 €/jour` (milieu)
+`Gain agriculteur`
 
-- Forêt C : `50 plantes`, `HealthScore=30`, `coûts=25€`, `RiskPenalty=20€`
-- `EconomicValue = 30€`
-- `ROI = 30 - 25 - 20 = -15 €/jour` (`Worst`)
+- économie d'eau + valeur économique estimée,
+- baisse du risque (moins de pertes),
+- ROI net plus élevé (valeur - coûts - pénalités).
+
+`Coût`
+
+- représente les interventions nécessaires pour stabiliser/améliorer la production.
+
+**7) Export CSV (téléchargement)**
+
+Le bouton `Export CSV ROI forêts` télécharge le classement pour analyse/reporting.
+
+CSV (colonnes typiques) :
+
+- `forest_name`
+- `level`
+- `roi_score`
+- `roi_trend`
+- `risk_score`
+- `cost_per_day`
+- (optionnel) `health_score`, `stress_mean`, `%diseased`, `effects_count`, `water_saving_per_day`
+
+**8) Exemple**
+
+Fenêtre `24h` :
+
+- Forêt A : `#TOTAL=50`, `HealthScore=80`, `Cost=10€`, `RiskPenalty=5€`
+- `EconomicValue=80€` -> `ROI=80-10-5 = 65 €/jour` (`Top`)
+
+- Forêt C : `#TOTAL=50`, `HealthScore=30`, `Cost=25€`, `RiskPenalty=20€`
+- `EconomicValue=30€` -> `ROI=30-25-20 = -15 €/jour` (`Worst`)
 
 **Wireframe / screenshot**
 
-![Greenhouse Ops](assets/images/site-simulation.png)
+![ROI forêt - Dashboard](assets/images/site-roi-feature7-dashboard.png)
 
-**Résumé NVF**
+**9) Description du test ROI (lecture de la capture)**
 
-- N : nécessaire pour le pilotage data-driven.
-- V : améliore l'arbitrage coût/risque/performance.
-- F : endpoints `GreenhouseOpsController` opérationnels.
+`Fenêtre : 24h`
+
+Tous les calculs affichés sont agrégés sur les 24 dernières heures (ou la période sélectionnée).  
+Cela permet de comparer les résultats d'un jour à l'autre.
+
+`Économie eau/jour : 38.2 L`
+
+C'est un gain direct pour l'agriculteur : le système estime combien d'eau a été économisée grâce à un pilotage plus intelligent :
+
+- mesures capteurs,
+- interventions ciblées (pas d'arrosage inutile),
+- actions préventives (ex : ombrage) qui évitent une surconsommation.
+
+Plus ce chiffre est élevé, plus l'exploitation réduit ses charges et son gaspillage.
+
+`Indice risque : 57.6 / 100`
+
+C'est un niveau de danger global sur la production (`0` = aucun risque, `100` = critique).  
+Il reflète typiquement :
+
+- stress moyen élevé,
+- plantes en état dégradé (`STRESSED` / `DORMANT` / `DISEASED`),
+- présence/propagation de maladies,
+- conditions trop éloignées des valeurs optimales.
+
+`57.6/100` correspond à un risque modéré/élevé : il faut surveiller et renforcer la prévention.
+
+`Coût estimé/jour : 19.17 €`
+
+C'est ce que l'exploitation dépense pour piloter et stabiliser :
+
+- arrosage supplémentaire,
+- chauffage,
+- engrais,
+- ombrage, etc.
+
+Ce coût est l'investissement. Il est acceptable si :
+
+- le risque baisse,
+- les forêts remontent au classement,
+- la tendance ROI devient positive.
+
+`Recommandation (texte)`
+
+Le message résume l'action à prendre :  
+"Risque modéré : maintenir la fréquence capteurs et renforcer les effets préventifs..."
+
+Donc on n'augmente pas forcément les coûts partout : on cible les zones sensibles.
+
+`Bloc du bas : Classement ROI par forêt`
+
+Ce tableau compare toutes les forêts/scénarios sur la même fenêtre.
+
+- `FORÊT` : nom de la forêt (ou scénario), ex : `SCN-02 Canicule`, `SCN-03 Pluie Intense`.
+- `NIVEAU (STABLE / A_RISQUE)` :
+- `STABLE` : forêt maîtrisée (faible risque et/ou ROI acceptable),
+- `A_RISQUE` : forêt à traiter (risque élevé et/ou ROI négatif).
+- `ROI SCORE` : rentabilité estimée (proche de `0`/positif = correct, négatif = perte sur la période).
+- `TENDANCE ROI` (`Stable / Positive`) :
+- `Stable` : pas d'amélioration notable,
+- `Positive` : amélioration en cours (les actions commencent à payer).
+- `RISQUE` : valeur numérique du danger pour la forêt.
+- `COÛT/J` : dépense liée aux interventions.
+
+Lecture opérationnelle :
+
+- si le coût monte mais que la tendance ROI ne s'améliore pas, la stratégie est à revoir,
+- si le coût reste raisonnable et la tendance ROI devient positive, le pilotage est efficace.
+
+`Conclusion agriculteur`
+
+- gains visibles : économie d'eau + amélioration du ROI (quand il remonte),
+- coûts visibles : coût/jour des interventions (investissement),
+- décision : le classement indique où agir en priorité (forêts à risque / ROI négatif), et l'export CSV permet le reporting et la comparaison des périodes.
 
 ### 4.8 Feature 8 - Capteurs (Sensor Readings)
 
@@ -1205,6 +1637,10 @@ Le moteur repose sur un algorithme génétique :
 - croisement des solutions retenues,
 - application de mutations contrôlées,
 - répétition sur plusieurs générations jusqu'à obtenir une solution globalement meilleure qu'un placement aléatoire.
+
+**Capture - Test feature 9**
+
+![Optimiseur de placement](assets/images/site-feature9-placement-optimizer-test.png)
 
 **Résumé NVF**
 
@@ -1272,6 +1708,10 @@ flowchart TD
 	D -->|Non| F[Corrections requises]
 	E --> G[Documentation vérifiée]
 ```
+
+Ce schéma CI/CD résume le contrôle qualité GreenDesk du push jusqu'à la validation de merge.
+Chaque changement passe par `clean check`, les tests et la couverture JaCoCo avant d'être considéré intégrable.
+La vérification documentaire dans le pipeline garantit que le code et la documentation restent alignés à chaque livraison.
 
 Commandes standard :
 
