@@ -62,7 +62,7 @@ jobs:
             BODY=$'Release automatique de la Livraison 2.\n\nContenu:\n- Build du projet\n- Tests automatiques\n- Documentation PDF'
           else
             TITLE="Livraison 3 - ${TAG}"
-            BODY=$'Release automatique de la Livraison 3.\n\nContenu:\n- Build du projet\n- Documentation complète\n- Assets publiés'
+            BODY=$'Release automatique de la Livraison 3.\n\nContenu:\n- Build du projet\n- Documentation complete\n- Assets publies'
           fi
 
           {
@@ -78,8 +78,8 @@ jobs:
           tag_name: ${{ github.ref_name }}
           name: ${{ steps.meta.outputs.title }}
           body: ${{ steps.meta.outputs.body }}
+          fail_on_unmatched_files: false
           files: |
             build/libs/*.jar
-            build/distributions/*.zip
             build/docs/javadoc.zip
             build/docs/documentation.pdf
