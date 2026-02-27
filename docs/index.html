@@ -25,10 +25,38 @@
 
   <div id="app">Chargement de la documentation...</div>
 
-  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
   <script>
+    mermaid.initialize({ 
+      startOnLoad: false, 
+      theme: 'default', 
+      securityLevel: 'loose',
+      flowchart: { useMaxWidth: true, htmlLabels: true }
+    });
+
     const docsifyUiPlugin = (hook) => {
+      hook.afterEach((html, next) => {
+        // Transform mermaid code blocks to divs before rendering
+        html = html.replace(/<pre[^>]*data-lang="mermaid"[^>]*><code[^>]*>([\s\S]*?)<\/code><\/pre>/g, 
+          (match, code) => {
+            const decodedCode = code
+              .replace(/&lt;/g, '<')
+              .replace(/&gt;/g, '>')
+              .replace(/&amp;/g, '&')
+              .replace(/&quot;/g, '"')
+              .replace(/&#39;/g, "'");
+            return '<div class="mermaid">' + decodedCode + '</div>';
+          });
+        next(html);
+      });
+      
       hook.doneEach(() => {
+        // Render all mermaid diagrams
+        const mermaidElements = document.querySelectorAll('.mermaid');
+        if (mermaidElements.length > 0) {
+          mermaid.run({ nodes: mermaidElements });
+        }
+
         const summaryLinks = document.querySelectorAll('.markdown-section a[href^="#"]');
         summaryLinks.forEach((link) => {
           if (link.dataset.anchorBound) {
@@ -111,17 +139,10 @@
         errorText: 'Erreur',
         successText: 'Copié'
       },
-      mermaidConfig: {
-        startOnLoad: true,
-        securityLevel: 'loose',
-        theme: 'default',
-        flowchart: { htmlLabels: true, curve: 'basis' }
-      },
       plugins: [docsifyUiPlugin]
     };
   </script>
 
-  <script src="https://cdn.jsdelivr.net/npm/docsify-mermaid@2/dist/docsify-mermaid.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/docsify@4"></script>
   <script src="https://cdn.jsdelivr.net/npm/docsify/lib/plugins/search.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/docsify-pagination/dist/docsify-pagination.min.js"></script>

@@ -106,6 +106,16 @@ stateDiagram-v2
   ContratErreur --> PretMerge
   TestsEchoues --> Correctifs
   Correctifs --> TestsCibles
+  
+  classDef successStyle fill:#c8e6c9,stroke:#2e7d32,stroke-width:2px
+  classDef errorStyle fill:#ffcdd2,stroke:#c62828,stroke-width:2px
+  classDef processStyle fill:#bbdefb,stroke:#1565c0,stroke-width:2px
+  classDef readyStyle fill:#fff9c4,stroke:#f57f17,stroke-width:3px
+  
+  class TestsPasses,ContratErreur successStyle
+  class TestsEchoues,Correctifs errorStyle
+  class TestsCibles processStyle
+  class PretMerge readyStyle
 ```
 
 ## Impact API

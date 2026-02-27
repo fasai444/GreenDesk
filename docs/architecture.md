@@ -13,91 +13,114 @@ GreenDesk suit une architecture Spring Boot classique:
 
 ```mermaid
 flowchart LR
-		Client[Client / Frontend / API Consumer] --> C[Controllers]
-		C --> S[Services]
-		S --> R[Repositories]
-		R --> M[(MongoDB)]
+    Client[Client / Frontend / API Consumer] --> C[Controllers]
+    C --> S[Services]
+    S --> R[Repositories]
+    R --> M[(MongoDB)]
 
-		S --> E[Entities]
-		C --> DTO[DTOs Request/Response]
+    S --> E[Entities]
+    C --> DTO[DTOs Request/Response]
+    
+    classDef clientStyle fill:#e1f5ff,stroke:#01579b,stroke-width:2px
+    classDef ctrlStyle fill:#fff9c4,stroke:#f57f17,stroke-width:2px
+    classDef svcStyle fill:#c8e6c9,stroke:#2e7d32,stroke-width:2px
+    classDef repoStyle fill:#ffccbc,stroke:#d84315,stroke-width:2px
+    classDef dbStyle fill:#f3e5f5,stroke:#6a1b9a,stroke-width:2px
+    classDef domainStyle fill:#b2dfdb,stroke:#00695c,stroke-width:2px
+    
+    class Client clientStyle
+    class C ctrlStyle
+    class S svcStyle
+    class R repoStyle
+    class M dbStyle
+    class E,DTO domainStyle
 ```
 
 ## Diagramme de classes (Mermaid)
 
 ```mermaid
 classDiagram
-		class Species {
-			+id: String
-			+name: String
-			+optimalWaterNeeds: double
-			+optimalTemperature: double
-			+optimalHumidity: double
-			+optimalLuxNeeds: double
-		}
+    class Species {
+        +id: String
+        +name: String
+        +optimalWaterNeeds: double
+        +optimalTemperature: double
+        +optimalHumidity: double
+        +optimalLuxNeeds: double
+    }
 
-		class Plant {
-			+id: String
-			+name: String
-			+forestId: String
-			+stressIndex: double
-			+evaluateState()
-		}
+    class Plant {
+        +id: String
+        +name: String
+        +forestId: String
+        +stressIndex: double
+        +evaluateState()
+    }
 
-		class Forest {
-			+id: String
-			+name: String
-			+width: int
-			+height: int
-		}
+    class Forest {
+        +id: String
+        +name: String
+        +width: int
+        +height: int
+    }
 
-		class Effect {
-			+id: String
-			+name: String
-			+durationHours: int
-		}
+    class Effect {
+        +id: String
+        +name: String
+        +durationHours: int
+    }
 
-		class PlantEffect {
-			+id: String
-			+plantId: String
-			+effectId: String
-			+active: boolean
-		}
+    class PlantEffect {
+        +id: String
+        +plantId: String
+        +effectId: String
+        +active: boolean
+    }
 
-		class SensorReading {
-			+id: String
-			+plantId: String
-			+timestamp: LocalDateTime
-			+temperature: double
-			+humidity: double
-			+lux: double
-			+rainfall: double
-		}
+    class SensorReading {
+        +id: String
+        +plantId: String
+        +timestamp: LocalDateTime
+        +temperature: double
+        +humidity: double
+        +lux: double
+        +rainfall: double
+    }
 
-		class PlantAlert {
-			+id: String
-			+plantId: String
-			+type: AlertType
-			+severity: AlertSeverity
-			+acknowledged: boolean
-		}
+    class PlantAlert {
+        +id: String
+        +plantId: String
+        +type: AlertType
+        +severity: AlertSeverity
+        +acknowledged: boolean
+    }
 
-		class GreenhouseOpsService {
-			+getOverview()
-			+getRoiInsights(hours)
-			+emitSensorTick(forestId, profile)
-		}
+    class GreenhouseOpsService {
+        +getOverview()
+        +getRoiInsights(hours)
+        +emitSensorTick(forestId, profile)
+    }
 
-		Species "1" <-- "*" Plant : species
-		Forest "1" <-- "*" Plant : contains
-		Plant "1" <-- "*" PlantEffect : has
-		Effect "1" <-- "*" PlantEffect : references
-		Plant "1" <-- "*" SensorReading : records
-		Plant "1" <-- "*" PlantAlert : alerts
-		GreenhouseOpsService ..> Plant
-		GreenhouseOpsService ..> Forest
-		GreenhouseOpsService ..> SensorReading
-		GreenhouseOpsService ..> PlantAlert
-		GreenhouseOpsService ..> PlantEffect
+    Species "1" <-- "*" Plant : species
+    Forest "1" <-- "*" Plant : contains
+    Plant "1" <-- "*" PlantEffect : has
+    Effect "1" <-- "*" PlantEffect : references
+    Plant "1" <-- "*" SensorReading : records
+    Plant "1" <-- "*" PlantAlert : alerts
+    GreenhouseOpsService ..> Plant
+    GreenhouseOpsService ..> Forest
+    GreenhouseOpsService ..> SensorReading
+    GreenhouseOpsService ..> PlantAlert
+    GreenhouseOpsService ..> PlantEffect
+    
+    style Species fill:#c8e6c9,stroke:#2e7d32,stroke-width:2px
+    style Plant fill:#bbdefb,stroke:#1565c0,stroke-width:2px
+    style Forest fill:#fff9c4,stroke:#f57f17,stroke-width:2px
+    style Effect fill:#f3e5f5,stroke:#6a1b9a,stroke-width:2px
+    style PlantEffect fill:#ffccbc,stroke:#d84315,stroke-width:2px
+    style SensorReading fill:#b2dfdb,stroke:#00695c,stroke-width:2px
+    style PlantAlert fill:#ffcdd2,stroke:#c62828,stroke-width:2px
+    style GreenhouseOpsService fill:#e1f5ff,stroke:#01579b,stroke-width:2px
 ```
 
 ## Modules métier principaux

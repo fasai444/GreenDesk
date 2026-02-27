@@ -46,25 +46,33 @@ Calculée depuis les compteurs globaux JaCoCo (`LINE: covered=1590, missed=372`,
 
 ```mermaid
 flowchart TD
-	A[Commande: ./gradlew clean check] --> B[Task test]
-	B --> C[Exécution JUnit / Spring Tests]
-	C --> D[Résultats tests XML + HTML]
-	B --> E[Task jacocoTestReport]
-	E --> F[Rapports JaCoCo XML + HTML]
-	F --> G[jacocoTestCoverageVerification]
-	G --> H{Seuils respectés ?}
-	H -->|Oui| I[Build OK]
-	H -->|Non| J[Build FAIL]
+    A[Commande: ./gradlew clean check] --> B[Task test]
+    B --> C[Exécution JUnit / Spring Tests]
+    C --> D[Résultats tests XML + HTML]
+    B --> E[Task jacocoTestReport]
+    E --> F[Rapports JaCoCo XML + HTML]
+    F --> G[jacocoTestCoverageVerification]
+    G --> H{Seuils respectés ?}
+    H -->|Oui| I[Build OK]
+    H -->|Non| J[Build FAIL]
+    
+    style A fill:#e1f5ff,stroke:#01579b,stroke-width:2px
+    style B,E fill:#fff9c4,stroke:#f57f17,stroke-width:2px
+    style C,F,G fill:#bbdefb,stroke:#1565c0,stroke-width:2px
+    style D fill:#b2dfdb,stroke:#00695c,stroke-width:2px
+    style H fill:#f3e5f5,stroke:#6a1b9a,stroke-width:2px
+    style I fill:#c8e6c9,stroke:#2e7d32,stroke-width:3px
+    style J fill:#ffcdd2,stroke:#c62828,stroke-width:3px
 ```
 
 ## Diagramme couverture JaCoCo
 
 ```mermaid
 pie showData
-	title Couverture actuelle (dernier rapport)
-	"LINE" : 81.04
-	"BRANCH" : 52.47
-	"CLASS" : 98.18
+    title Couverture actuelle (dernier rapport)
+    "LINE" : 81.04
+    "BRANCH" : 52.47
+    "CLASS" : 98.18
 ```
 
 ## Stratégie de tests recommandée

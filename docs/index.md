@@ -14,12 +14,24 @@
 
 **Auteurs / Équipe**
 
-- *Hadi ISSA*
-- *Fatima SAIDI*
-- *Lydia AMROUCHE*
-- *Misasoa ROBINSON*
-- *Mamadou DIALLO*
+- **Hadi ISSA**
+- **Fatima SAIDI**
+- **Lydia AMROUCHE**
+- **Misasoa ROBISON**
+- **Mamadou DIALLO**
 
+<div style="display: flex; justify-content: center; gap: 60px; margin: 40px 0; flex-wrap: wrap;">
+  <div style="text-align: center;">
+    <img src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=https://github.com/MisasoaRobison/GreenDesk" alt="QR Code GitHub Repository" style="border: 3px solid #1565c0; padding: 15px; background: white; border-radius: 8px;">
+    <p style="margin-top: 15px; font-weight: bold; font-size: 16px;">📦 Repository GitHub</p>
+    <p style="font-size: 13px; color: #666;">github.com/MisasoaRobison/GreenDesk</p>
+  </div>
+  <div style="text-align: center;">
+    <img src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=https://misasoarobison.github.io/GreenDesk/" alt="QR Code Documentation" style="border: 3px solid #2e7d32; padding: 15px; background: white; border-radius: 8px;">
+    <p style="margin-top: 15px; font-weight: bold; font-size: 16px;">📚 Documentation en ligne</p>
+    <p style="font-size: 13px; color: #666;">misasoarobison.github.io/GreenDesk</p>
+  </div>
+</div>
 <div class="doc-callout">
 <strong>Export PDF :</strong> le bouton <em>Exporter en PDF</em> en haut de page déclenche l’impression PDF (style A4 optimisé).
 </div>
@@ -80,7 +92,7 @@
 - la gestion des espèces et des plantes,
 - la simulation d’environnements **(forêts, saisons, effets, stimuli)**,
 - la supervision des alertes,
-- l’analyse de KPI et d’indicateurs **ROI**.
+- l’analyse de **KPI** et d’indicateurs **ROI**.
 
 L’objectif est de fournir une base décisionnelle fiable, testée et documentée, utilisable autant par les opérateurs métiers que par l’équipe technique.
 
@@ -131,9 +143,9 @@ Un scénario métier concret qui combine création, simulation, alertes, correct
 
 **Résultat attendu**
 
-- Cycle complet de gestion plante → forêt → simulation → correction.
+- Cycle complet de gestion plante -> forêt -> simulation -> correction.
 - Diminution du stress/alertes après intervention.
-- Décision pilotée par indicateurs Greenhouse Ops.
+- Décision pilotée par indicateurs **Greenhouse Ops**.
 
 ### 1.2 Équipe & Contributeurs
 
@@ -142,7 +154,7 @@ Membres du groupe :
 - **Hadi ISSA**
 - **Fatima SAIDI**
 - **Lydia AMROUCHE**
-- **Misasoa ROBINSON**
+- **Misasoa ROBISON**
 - **Mamadou DIALLO**
 
 Répartition des contributions :
@@ -151,6 +163,23 @@ Répartition des contributions :
 - Backend & API : contrôleurs, services, persistance.
 - Qualité & CI : tests, couverture, validation pipeline.
 - Documentation : dossier unique, annexes, export PDF.
+
+#### Répartition par langage et par membre
+
+| Langage / Technologie | Hadi ISSA | Fatima SAIDI | Lydia AMROUCHE | Misasoa ROBISON | Mamadou DIALLO |
+|---|:---:|:---:|:---:|:---:|:---:|
+| **Java** | 3 | 2 | 3 | 4 | 3 |
+| **Spring Boot** | 3 | 2 | 3 | 4 | 3 |
+| **MongoDB** | 2 | 1 | 2 | 4 | 2 |
+| **JUnit / Tests** | 4 | 2 | 2 | 2 | 2 |
+| **Gradle / Build** | 3 | 3 | 2 | 2 | 1 |
+| **HTML / CSS / JS** | 1 | 1 | 3 | 2 | 1 |
+| **Markdown / Docs** | 2 | 2 | 4 | 1 | 1 |
+| **Mermaid / UML** | 2 | 1 | 4 | 2 | 1 |
+| **Git / CI-CD** | 3 | 3 | 2 | 2 | 2 |
+| **Architecture** | 3 | 2 | 3 | 3 | 3 |
+
+**Légende** : 1 = Faible | 2 = Moyen | 3 = Fort | 4 = Très fort
 
 ### 1.3 Gestion de Projet & DevOps
 
@@ -163,10 +192,10 @@ L’organisation suit une approche itérative inspirée Agile/Scrum :
 
 **Mécanismes opérationnels**
 
-- Versioning Git avec branches feature.
-- Contrôle qualité local : `./gradlew clean check`.
-- Validation CI : tests + JaCoCo + cohérence doc.
-- Traçabilité : PR explicites avec impact API/métier.
+- Versioning **Git** avec branches feature.
+- **Contrôle qualité local** : `./gradlew clean check`.
+- **Validation CI** : tests + JaCoCo + cohérence doc.
+- **Traçabilité** : PR explicites avec impact API/métier.
 
 ---
 
@@ -255,73 +284,95 @@ L’utilisabilité est pensée pour réduire le temps entre observation et actio
 
 ```mermaid
 flowchart LR
-	Client[Frontend / API Consumer] --> Ctrl[Controllers]
-	Ctrl --> Svc[Services]
-	Svc --> Repo[Repositories]
-	Repo --> DB[(MongoDB)]
-	Svc --> Domain[Entities / Domain Rules]
+    Client[Frontend / API Consumer] --> Ctrl[Controllers]
+    Ctrl --> Svc[Services]
+    Svc --> Repo[Repositories]
+    Repo --> DB[(MongoDB)]
+    Svc --> Domain[Entities / Domain Rules]
+    
+    classDef clientStyle fill:#e1f5ff,stroke:#01579b,stroke-width:2px
+    classDef ctrlStyle fill:#fff9c4,stroke:#f57f17,stroke-width:2px
+    classDef svcStyle fill:#c8e6c9,stroke:#2e7d32,stroke-width:2px
+    classDef repoStyle fill:#ffccbc,stroke:#d84315,stroke-width:2px
+    classDef dbStyle fill:#f3e5f5,stroke:#6a1b9a,stroke-width:2px
+    classDef domainStyle fill:#b2dfdb,stroke:#00695c,stroke-width:2px
+    
+    class Client clientStyle
+    class Ctrl ctrlStyle
+    class Svc svcStyle
+    class Repo repoStyle
+    class DB dbStyle
+    class Domain domainStyle
 ```
 
 #### 3.2.2 Diagramme de classes (back)
 
 ```mermaid
 classDiagram
-	class Species {
-		+String id
-		+String name
-		+double optimalWaterNeeds
-		+double optimalTemperature
-		+double optimalHumidity
-		+double optimalLuxNeeds
-	}
+    class Species {
+        +String id
+        +String name
+        +double optimalWaterNeeds
+        +double optimalTemperature
+        +double optimalHumidity
+        +double optimalLuxNeeds
+    }
 
-	class Plant {
-		+String id
-		+String name
-		+String forestId
-		+double stressIndex
-		+PlantState plantState
-	}
+    class Plant {
+        +String id
+        +String name
+        +String forestId
+        +double stressIndex
+        +PlantState plantState
+    }
 
-	class Forest {
-		+String id
-		+String name
-		+int width
-		+int height
-	}
+    class Forest {
+        +String id
+        +String name
+        +int width
+        +int height
+    }
 
-	class Effect {
-		+String id
-		+String name
-		+int durationHours
-	}
+    class Effect {
+        +String id
+        +String name
+        +int durationHours
+    }
 
-	class PlantEffect {
-		+String id
-		+String plantId
-		+String effectId
-		+boolean active
-	}
+    class PlantEffect {
+        +String id
+        +String plantId
+        +String effectId
+        +boolean active
+    }
 
-	class SensorReading {
-		+String id
-		+String plantId
-		+LocalDateTime timestamp
-	}
+    class SensorReading {
+        +String id
+        +String plantId
+        +LocalDateTime timestamp
+    }
 
-	class PlantAlert {
-		+String id
-		+String plantId
-		+AlertType type
-		+AlertSeverity severity
-		+boolean acknowledged
-	}
+    class PlantAlert {
+        +String id
+        +String plantId
+        +AlertType type
+        +AlertSeverity severity
+        +boolean acknowledged
+    }
 
-	Species "1" <-- "*" Plant : species
-	Forest "1" <-- "*" Plant : contains
-	Plant "1" <-- "*" PlantEffect : has
-	Plant "1" <-- "*" SensorReading : records
-	Plant "1" <-- "*" PlantAlert : alerts
+    Species "1" <-- "*" Plant : species
+    Forest "1" <-- "*" Plant : contains
+    Plant "1" <-- "*" PlantEffect : has
+    Plant "1" <-- "*" SensorReading : records
+    Plant "1" <-- "*" PlantAlert : alerts
+    
+    style Species fill:#c8e6c9,stroke:#2e7d32,stroke-width:2px
+    style Plant fill:#bbdefb,stroke:#1565c0,stroke-width:2px
+    style Forest fill:#fff9c4,stroke:#f57f17,stroke-width:2px
+    style Effect fill:#f3e5f5,stroke:#6a1b9a,stroke-width:2px
+    style PlantEffect fill:#ffccbc,stroke:#d84315,stroke-width:2px
+    style SensorReading fill:#b2dfdb,stroke:#00695c,stroke-width:2px
+    style PlantAlert fill:#ffcdd2,stroke:#c62828,stroke-width:2px
 ```
 
 #### 3.2.3 Diagrammes de séquence (back)
@@ -329,122 +380,160 @@ classDiagram
 **Création d’une plante**
 
 ```mermaid
+%%{init: {'theme':'base', 'themeVariables': { 'primaryColor':'#bbdefb','primaryTextColor':'#000','primaryBorderColor':'#1565c0','lineColor':'#1565c0','secondaryColor':'#c8e6c9','tertiaryColor':'#fff9c4','noteBkgColor':'#fff3cd','noteTextColor':'#000'}}}%%
 sequenceDiagram
-	participant client as Client
-	participant controller as PlantController
-	participant service as PlantService
-	participant repository as PlantRepository
+    participant client as Client
+    participant controller as PlantController
+    participant service as PlantService
+    participant repository as PlantRepository
 
-	client->>controller: POST /api/plants/create
-	controller->>service: createPlant(name, speciesId, ...)
-	service->>repository: save(plant)
-	repository-->>service: plantPersisted
-	service-->>controller: plant
-	controller-->>client: 200 JSON
+    client->>controller: POST /api/plants/create
+    controller->>service: createPlant(name, speciesId, ...)
+    service->>repository: save(plant)
+    repository-->>service: plantPersisted
+    service-->>controller: plant
+    controller-->>client: 200 JSON
 ```
 
 **Application d’un effet**
 
 ```mermaid
+%%{init: {'theme':'base', 'themeVariables': { 'primaryColor':'#c8e6c9','primaryTextColor':'#000','primaryBorderColor':'#2e7d32','lineColor':'#2e7d32','secondaryColor':'#f3e5f5','tertiaryColor':'#ffccbc','noteBkgColor':'#fff3cd','noteTextColor':'#000'}}}%%
 sequenceDiagram
-	participant user as Operateur
-	participant controller as EffectController
-	participant service as EffectService
-	participant plantRepo as PlantRepository
-	participant effectRepo as PlantEffectRepository
+    participant user as Operateur
+    participant controller as EffectController
+    participant service as EffectService
+    participant plantRepo as PlantRepository
+    participant effectRepo as PlantEffectRepository
 
-	user->>controller: POST /api/plants/{plantId}/effects/{effectId}
-	controller->>service: applyEffectToPlant(plantId, effectId)
-	service->>plantRepo: findById(plantId)
-	service->>effectRepo: save(plantEffect)
-	service-->>controller: result
-	controller-->>user: 200 JSON
+    user->>controller: POST /api/plants/{plantId}/effects/{effectId}
+    controller->>service: applyEffectToPlant(plantId, effectId)
+    service->>plantRepo: findById(plantId)
+    service->>effectRepo: save(plantEffect)
+    service-->>controller: result
+    controller-->>user: 200 JSON
 ```
 
 **Consultation ROI**
 
 ```mermaid
+%%{init: {'theme':'base', 'themeVariables': { 'primaryColor':'#fff9c4','primaryTextColor':'#000','primaryBorderColor':'#f57f17','lineColor':'#f57f17','secondaryColor':'#bbdefb','tertiaryColor':'#b2dfdb','noteBkgColor':'#fff3cd','noteTextColor':'#000'}}}%%
 sequenceDiagram
-	participant manager as Responsable
-	participant controller as GreenhouseOpsController
-	participant service as GreenhouseOpsService
-	participant plantRepo as PlantRepository
-	participant alertRepo as PlantAlertRepository
+    participant manager as Responsable
+    participant controller as GreenhouseOpsController
+    participant service as GreenhouseOpsService
+    participant plantRepo as PlantRepository
+    participant alertRepo as PlantAlertRepository
 
-	manager->>controller: GET /api/greenhouse/roi?hours=24
-	controller->>service: getRoiInsights(24)
-	service->>plantRepo: findAll()
-	service->>alertRepo: findActiveAlerts(24h)
-	service-->>controller: roiPayload
-	controller-->>manager: 200 JSON
+    manager->>controller: GET /api/greenhouse/roi?hours=24
+    controller->>service: getRoiInsights(24)
+    service->>plantRepo: findAll()
+    service->>alertRepo: findActiveAlerts(24h)
+    service-->>controller: roiPayload
+    controller-->>manager: 200 JSON
 ```
 
 #### 3.2.4 Diagramme d’objet (back)
 
 ```mermaid
 flowchart LR
-	forest1["forest_1<br/>id=f-1<br/>name=Serre Nord"]
-	plant42["plant_42<br/>id=p-42<br/>state=HEALTHY<br/>stressIndex=0.18"]
-	effect7["effect_7<br/>id=e-7<br/>name=Shade"]
+    forest1["forest_1<br/>id=f-1<br/>name=Serre Nord"]
+    plant42["plant_42<br/>id=p-42<br/>state=HEALTHY<br/>stressIndex=0.18"]
+    effect7["effect_7<br/>id=e-7<br/>name=Shade"]
 
-	forest1 -->|contains| plant42
-	plant42 -->|activeEffect| effect7
+    forest1 -->|contains| plant42
+    plant42 -->|activeEffect| effect7
+    
+    style forest1 fill:#fff9c4,stroke:#f57f17,stroke-width:2px
+    style plant42 fill:#c8e6c9,stroke:#2e7d32,stroke-width:2px
+    style effect7 fill:#f3e5f5,stroke:#6a1b9a,stroke-width:2px
 ```
 
 #### 3.2.5 Diagramme de cas d’utilisation
 
 ```mermaid
 flowchart LR
-	Operator[Opérateur serre]
-	Manager[Responsable agronomique]
-	Dev[Équipe technique]
+    Operator[Opérateur serre]
+    Manager[Responsable agronomique]
+    Dev[Équipe technique]
 
-	UC1((Gérer espèces))
-	UC2((Gérer plantes))
-	UC3((Gérer forêts/saisons))
-	UC4((Appliquer effets/stimuli))
-	UC5((Suivre alertes/simulation))
-	UC6((Analyser KPI/ROI))
-	UC7((Intégrer API REST))
+    UC1((Gérer espèces))
+    UC2((Gérer plantes))
+    UC3((Gérer forêts/saisons))
+    UC4((Appliquer effets/stimuli))
+    UC5((Suivre alertes/simulation))
+    UC6((Analyser KPI/ROI))
+    UC7((Intégrer API REST))
 
-	Operator --> UC1
-	Operator --> UC2
-	Operator --> UC3
-	Operator --> UC4
-	Operator --> UC5
-	Manager --> UC5
-	Manager --> UC6
-	Dev --> UC7
+    Operator --> UC1
+    Operator --> UC2
+    Operator --> UC3
+    Operator --> UC4
+    Operator --> UC5
+    Manager --> UC5
+    Manager --> UC6
+    Dev --> UC7
+    
+    style Operator fill:#bbdefb,stroke:#1565c0,stroke-width:2px
+    style Manager fill:#fff9c4,stroke:#f57f17,stroke-width:2px
+    style Dev fill:#ffccbc,stroke:#d84315,stroke-width:2px
+    style UC1 fill:#c8e6c9,stroke:#2e7d32,stroke-width:2px
+    style UC2 fill:#c8e6c9,stroke:#2e7d32,stroke-width:2px
+    style UC3 fill:#c8e6c9,stroke:#2e7d32,stroke-width:2px
+    style UC4 fill:#c8e6c9,stroke:#2e7d32,stroke-width:2px
+    style UC5 fill:#f3e5f5,stroke:#6a1b9a,stroke-width:2px
+    style UC6 fill:#f3e5f5,stroke:#6a1b9a,stroke-width:2px
+    style UC7 fill:#b2dfdb,stroke:#00695c,stroke-width:2px
 ```
 
 #### 3.2.6 Diagramme d’activité
 
 ```mermaid
 flowchart TD
-	start([Debut]) --> kpi[Lire KPI]
-	kpi --> alert{Alertes critiques ?}
-	alert -->|Oui| treat[Traiter alertes]
-	alert -->|Non| normal[Controle standard]
-	treat --> action[Appliquer actions]
-	normal --> action
-	action --> tick[Executer tick ou simulation]
-	tick --> measure[Mesurer evolution]
-	measure --> goal{Objectif atteint ?}
-	goal -->|Non| action
-	goal -->|Oui| finish([Fin])
+    start([Debut]) --> kpi[Lire KPI]
+    kpi --> alert{Alertes critiques ?}
+    alert -->|Oui| treat[Traiter alertes]
+    alert -->|Non| normal[Controle standard]
+    treat --> action[Appliquer actions]
+    normal --> action
+    action --> tick[Executer tick ou simulation]
+    tick --> measure[Mesurer evolution]
+    measure --> goal{Objectif atteint ?}
+    goal -->|Non| action
+    goal -->|Oui| finish([Fin])
+    
+    classDef startEndStyle fill:#c8e6c9,stroke:#2e7d32,stroke-width:3px
+    classDef processStyle fill:#bbdefb,stroke:#1565c0,stroke-width:2px
+    classDef decisionStyle fill:#fff9c4,stroke:#f57f17,stroke-width:2px
+    classDef alertStyle fill:#ffccbc,stroke:#d84315,stroke-width:2px
+    
+    class start,finish startEndStyle
+    class kpi,normal,action,tick,measure processStyle
+    class alert,goal decisionStyle
+    class treat alertStyle
 ```
 
 #### 3.2.7 Diagramme d’état
 
 ```mermaid
 stateDiagram-v2
-	[*] --> HEALTHY
-	HEALTHY --> STRESSED: stress >= 0.3
-	STRESSED --> DORMANT: stress >= 0.6
-	DORMANT --> DISEASED: stress >= 0.9
-	STRESSED --> HEALTHY: amélioration
-	DORMANT --> STRESSED: récupération
-	DISEASED --> STRESSED: traitement
+    [*] --> HEALTHY
+    HEALTHY --> STRESSED: stress >= 0.3
+    STRESSED --> DORMANT: stress >= 0.6
+    DORMANT --> DISEASED: stress >= 0.9
+    STRESSED --> HEALTHY: amélioration
+    DORMANT --> STRESSED: récupération
+    DISEASED --> STRESSED: traitement
+    
+    classDef healthyStyle fill:#c8e6c9,stroke:#2e7d32,stroke-width:3px
+    classDef stressedStyle fill:#fff9c4,stroke:#f57f17,stroke-width:2px
+    classDef dormantStyle fill:#ffccbc,stroke:#d84315,stroke-width:2px
+    classDef diseasedStyle fill:#ffcdd2,stroke:#c62828,stroke-width:3px
+    
+    class HEALTHY healthyStyle
+    class STRESSED stressedStyle
+    class DORMANT dormantStyle
+    class DISEASED diseasedStyle
 ```
 
 ---
@@ -611,24 +700,7 @@ stateDiagram-v2
 
 ## 5. Matrice de Responsabilités & Réalisations
 
-| Fonctionnalité / Domaine | Hadi ISSA | Fatima SAIDI | Lydia AMROUCHE | Misasoa ROBINSON | Mamadou DIALLO |
-|---|---:|---:|---:|---:|---:|
-| Architecture backend | Oui | Oui | Oui | Oui | Oui |
-| Gestion des espèces et plantes CRUD |  |  |  | Oui |  |
-| Simulation évolutive d’une plante |  |  |  |  | Oui |
-| Forêts & saisons |  |  | Oui |  |  |
-| Effets & stimuli |  |  | Oui |  |  |
-| Alertes | Oui |  |  |  |  |
-| Écosystème | Oui |  |  | Oui |  |
-| Documentation |  |  | Oui |  |  |
-| UML (classes, séquence, activité, état, objet) |  |  | Oui |  |  |
-| Gestion BDD |  |  |  | Oui |  |
-| Tests (unitaires / intégration) | Oui |  |  |  |  |
-| CI/CD & qualité pipeline | Oui | Oui |  |  |  |
-| Organisation & gestion de projet |  | Oui |  |  |  |
-| Releases (versions) |  | Oui |  |  |  |
-| Tags du projet |  |  |  |  | Oui |
-| Workflow | Oui |  |  |  |  |
+![Matrice de Responsabilités et Réalisations](assets/images/martrice_responsabilite.png)
 
 ---
 
