@@ -157,29 +157,12 @@ Membres du groupe :
 - **Misasoa ROBISON**
 - **Mamadou DIALLO**
 
-Répartition des contributions :
+**Répartition des contributions** :
 
-- Produit & cadrage : vision, backlog, priorités métier.
-- Backend & API : contrôleurs, services, persistance.
-- Qualité & CI : tests, couverture, validation pipeline.
-- Documentation : dossier unique, annexes, export PDF.
-
-#### Répartition par langage et par membre
-
-| Langage / Technologie | Hadi ISSA | Fatima SAIDI | Lydia AMROUCHE | Misasoa ROBISON | Mamadou DIALLO |
-|---|:---:|:---:|:---:|:---:|:---:|
-| **Java** | 3 | 2 | 3 | 4 | 3 |
-| **Spring Boot** | 3 | 2 | 3 | 4 | 3 |
-| **MongoDB** | 2 | 1 | 2 | 4 | 2 |
-| **JUnit / Tests** | 4 | 2 | 2 | 2 | 2 |
-| **Gradle / Build** | 3 | 3 | 2 | 2 | 1 |
-| **HTML / CSS / JS** | 1 | 1 | 3 | 2 | 1 |
-| **Markdown / Docs** | 2 | 2 | 4 | 1 | 1 |
-| **Mermaid / UML** | 2 | 1 | 4 | 2 | 1 |
-| **Git / CI-CD** | 3 | 3 | 2 | 2 | 2 |
-| **Architecture** | 3 | 2 | 3 | 3 | 3 |
-
-**Légende** : 1 = Faible | 2 = Moyen | 3 = Fort | 4 = Très fort
+- **Produit & cadrage** : vision, backlog, priorités métier.
+- **Backend & API** : contrôleurs, services, persistance.
+- **Qualité & CI** : tests, couverture, validation pipeline.
+- **Documentation** : dossier unique, annexes, export PDF.
 
 ### 1.3 Gestion de Projet & DevOps
 
