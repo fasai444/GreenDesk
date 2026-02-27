@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plant Placement Optimizer - GreenDesk</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 30px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            color: #2d3748;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #718096;
+            font-size: 1.1em;
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 30px;
+        }
+
+        .control-panel {
+            background: #f7fafc;
+            border-radius: 12px;
+            padding: 20px;
+            height: fit-content;
+        }
+
+        .section {
+            margin-bottom: 25px;
+        }
+
+        .section h3 {
+            color: #2d3748;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section h3::before {
+            content: '▶';
+            color: #667eea;
+            font-size: 0.8em;
+        }
+
+        select, input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+
+        select:focus, input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-bottom: 10px;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        button.secondary {
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+        }
+
+        button.tertiary {
+            background: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%);
+        }
+
+        .forest-canvas-container {
+            background: #f7fafc;
+            border-radius: 12px;
+            padding: 20px;
+            min-height: 600px;
+        }
+
+        .canvas-wrapper {
+            position: relative;
+            display: inline-block;
+        }
+
+        #forestCanvas {
+            border: 3px solid #e2e8f0;
+            border-radius: 8px;
+            cursor: crosshair;
+            background: linear-gradient(45deg, #f0fff4 25%, #c6f6d5 25%, #c6f6d5 50%, #f0fff4 50%, #f0fff4 75%, #c6f6d5 75%, #c6f6d5);
+            background-size: 20px 20px;
+        }
+
+        .stats-panel {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .stat-row:last-child {
+            border-bottom: none;
+        }
+
+        .stat-label {
+            font-weight: 600;
+            color: #4a5568;
+        }
+
+        .stat-value {
+            color: #2d3748;
+            font-weight: 700;
+        }
+
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 15px;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            border: 2px solid #e2e8f0;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+            border: 2px solid #2d3748;
+        }
+
+        .plant-list {
+            max-height: 200px;
+            overflow-y: auto;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 10px;
+        }
+
+        .plant-item {
+            display: flex;
+            align-items: center;
+            padding: 8px;
+            margin-bottom: 5px;
+            background: white;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .plant-item:hover {
+            background: #edf2f7;
+        }
+
+        .plant-item input[type="checkbox"] {
+            width: auto;
+            margin-right: 10px;
+        }
+
+        .heatmap-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .heatmap-controls select {
+            flex: 1;
+        }
+
+        .heatmap-controls button {
+            flex: 0 0 auto;
+            width: auto;
+            padding: 12px 20px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #718096;
+        }
+
+        .loading::after {
+            content: '...';
+            animation: dots 1.5s infinite;
+        }
+
+        @keyframes dots {
+            0%, 20% { content: '.'; }
+            40% { content: '..'; }
+            60%, 100% { content: '...'; }
+        }
+
+        .message {
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .message.success {
+            background: #c6f6d5;
+            color: #22543d;
+            border: 2px solid #48bb78;
+        }
+
+        .message.error {
+            background: #fed7d7;
+            color: #742a2a;
+            border: 2px solid #f56565;
+        }
+    </style>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .gd-navbar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin-bottom: 0;
+        }
+        body {
+            padding-top: 0;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark gd-navbar">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="dashboard.html"><i class="fas fa-leaf"></i> GreenDesk</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarOptimizer">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarOptimizer">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="dashboard.html">Vue d'ensemble</a></li>
+                    <li class="nav-item"><a class="nav-link" href="index.html">Simulation</a></li>
+                    <li class="nav-item"><a class="nav-link" href="species.html">Espèces</a></li>
+                    <li class="nav-item"><a class="nav-link" href="effects.html">Effets</a></li>
+                    <li class="nav-item"><a class="nav-link" href="disease.html">Maladies</a></li>
+                    <li class="nav-item"><a class="nav-link active fw-bold text-success" href="placement-optimizer.html">Optimizer</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <header>
+            <h1>Plant Placement Optimizer</h1>
+            <p class="subtitle">AI-powered optimal plant placement using genetic algorithms</p>
+        </header>
+
+        <div class="main-grid">
+            <!-- Control Panel -->
+            <div class="control-panel">
+                <div class="section">
+                    <h3>Forest Selection</h3>
+                    <select id="forestSelect">
+                        <option value="">-- Select Forest --</option>
+                    </select>
+                    <button onclick="createNewForest()">+ Create New Forest</button>
+                </div>
+
+                <div class="section">
+                    <h3>Plants to Optimize</h3>
+                    <div id="plantList" class="plant-list">
+                        <div class="loading">Loading plants</div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h3>Optimization</h3>
+                    <button onclick="runOptimization()" id="optimizeBtn">
+                        Run Genetic Algorithm
+                    </button>
+                    <button class="secondary" onclick="applyOptimization()" id="applyBtn" disabled>
+                        Apply to Forest
+                    </button>
+                </div>
+
+                <div class="section">
+                    <h3>Heatmap Visualization</h3>
+                    <div class="heatmap-controls">
+                        <select id="heatmapSpecies">
+                            <option value="">-- Select Species --</option>
+                        </select>
+                        <button class="tertiary" onclick="showHeatmap()" style="width: auto;">
+                            Show
+                        </button>
+                    </div>
+                </div>
+
+                <div id="statsPanel" class="stats-panel" style="display: none;">
+                    <h3 style="margin-bottom: 10px;">Optimization Stats</h3>
+                    <div class="stat-row">
+                        <span class="stat-label">Fitness Score:</span>
+                        <span class="stat-value" id="fitnessScore">-</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">Plants Placed:</span>
+                        <span class="stat-value" id="plantsPlaced">-</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">Generation:</span>
+                        <span class="stat-value">200</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Canvas Area -->
+            <div class="forest-canvas-container">
+                <div id="messageArea"></div>
+                <div class="canvas-wrapper">
+                    <canvas id="forestCanvas" width="800" height="600"></canvas>
+                </div>
+
+                <div class="legend">
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #4299e1;"></div>
+                        <span>Tomato</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #48bb78;"></div>
+                        <span>Basil</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #ed8936;"></div>
+                        <span>Carrot</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #9f7aea;"></div>
+                        <span>Other Species</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: linear-gradient(to right, #48bb78, #f56565);"></div>
+                        <span>Heatmap (Good → Bad)</span>
+                    </div>
+                </div>
+
+                <div class="stats-panel">
+                    <h3>Canvas Info</h3>
+                    <div class="stat-row">
+                        <span class="stat-label">Grid Size:</span>
+                        <span class="stat-value" id="gridSize">-</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">Occupied Cells:</span>
+                        <span class="stat-value" id="occupiedCells">-</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:8080/api';
+        const canvas = document.getElementById('forestCanvas');
+        const ctx = canvas.getContext('2d');
+
+        let currentForest = null;
+        let allPlants = [];
+        let selectedPlantIds = [];
+        let optimizationResult = null;
+        let forestPlants = [];
+        let heatmapData = null;
+
+        const SPECIES_COLORS = {
+            'Tomato': '#4299e1',
+            'Basil': '#48bb78',
+            'Carrot': '#ed8936',
+            'Potato': '#f6ad55',
+            'Pepper': '#fc8181',
+            'Onion': '#d69e2e'
+        };
+
+        // Initialize
+        async function init() {
+            await loadForests();
+            await loadAllPlants();
+            await loadSpeciesForHeatmap();
+        }
+
+        async function loadForests() {
+            try {
+                const response = await fetch(`${API_BASE}/forests`);
+                const forests = await response.json();
+
+                const select = document.getElementById('forestSelect');
+                forests.forEach(forest => {
+                    const option = document.createElement('option');
+                    option.value = forest.id;
+                    option.textContent = `${forest.name} (${forest.width}x${forest.height})`;
+                    select.appendChild(option);
+                });
+
+                select.addEventListener('change', onForestSelected);
+            } catch (error) {
+                showMessage('Error loading forests: ' + error.message, 'error');
+            }
+        }
+
+        async function loadAllPlants() {
+            try {
+                const response = await fetch(`${API_BASE}/../plants`);
+                allPlants = await response.json();
+                renderPlantList();
+            } catch (error) {
+                showMessage('Error loading plants: ' + error.message, 'error');
+            }
+        }
+
+        async function loadSpeciesForHeatmap() {
+            try {
+                const response = await fetch(`${API_BASE}/species`);
+                const species = await response.json();
+
+                const select = document.getElementById('heatmapSpecies');
+                species.forEach(s => {
+                    const option = document.createElement('option');
+                    option.value = s.name;
+                    option.textContent = s.name;
+                    select.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Error loading species:', error);
+            }
+        }
+
+        function renderPlantList() {
+            const container = document.getElementById('plantList');
+            container.innerHTML = '';
+
+            allPlants.forEach(plant => {
+                const item = document.createElement('div');
+                item.className = 'plant-item';
+
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.id = `plant-${plant.id}`;
+                checkbox.checked = selectedPlantIds.includes(plant.id);
+                checkbox.onchange = (e) => {
+                    if (e.target.checked) {
+                        selectedPlantIds.push(plant.id);
+                    } else {
+                        selectedPlantIds = selectedPlantIds.filter(id => id !== plant.id);
+                    }
+                };
+
+                const label = document.createElement('label');
+                label.htmlFor = `plant-${plant.id}`;
+                label.textContent = `${plant.name} (${plant.species.name})`;
+
+                item.appendChild(checkbox);
+                item.appendChild(label);
+                container.appendChild(item);
+            });
+        }
+
+        async function onForestSelected(event) {
+            const forestId = event.target.value;
+            if (!forestId) return;
+
+            try {
+                const response = await fetch(`${API_BASE}/forests/${forestId}`);
+                currentForest = await response.json();
+
+                // Load plants in this forest
+                const plantsResponse = await fetch(`${API_BASE}/../plants`);
+                const allPlantsData = await plantsResponse.json();
+                forestPlants = allPlantsData.filter(p => p.forestId === forestId);
+
+                drawForest();
+                updateCanvasStats();
+            } catch (error) {
+                showMessage('Error loading forest: ' + error.message, 'error');
+            }
+        }
+
+        function drawForest() {
+            if (!currentForest) return;
+
+            const width = currentForest.width;
+            const height = currentForest.height;
+            const cellSize = Math.min(canvas.width / width, canvas.height / height);
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Draw grid
+            ctx.strokeStyle = '#e2e8f0';
+            ctx.lineWidth = 1;
+            for (let x = 0; x <= width; x++) {
+                ctx.beginPath();
+                ctx.moveTo(x * cellSize, 0);
+                ctx.lineTo(x * cellSize, height * cellSize);
+                ctx.stroke();
+            }
+            for (let y = 0; y <= height; y++) {
+                ctx.beginPath();
+                ctx.moveTo(0, y * cellSize);
+                ctx.lineTo(width * cellSize, y * cellSize);
+                ctx.stroke();
+            }
+
+            // Draw heatmap if active
+            if (heatmapData) {
+                heatmapData.forEach(cell => {
+                    const color = getHeatmapColor(cell.score);
+                    ctx.fillStyle = color;
+                    ctx.globalAlpha = 0.6;
+                    ctx.fillRect(cell.x * cellSize, cell.y * cellSize, cellSize, cellSize);
+                    ctx.globalAlpha = 1.0;
+                });
+            }
+
+            // Draw plants
+            forestPlants.forEach(plant => {
+                if (plant.x != null && plant.y != null) {
+                    const color = SPECIES_COLORS[plant.species.name] || '#9f7aea';
+                    ctx.fillStyle = color;
+                    ctx.beginPath();
+                    ctx.arc(
+                        (plant.x + 0.5) * cellSize,
+                        (plant.y + 0.5) * cellSize,
+                        cellSize * 0.35,
+                        0,
+                        2 * Math.PI
+                    );
+                    ctx.fill();
+                    ctx.strokeStyle = '#2d3748';
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+
+                    // Draw label
+                    ctx.fillStyle = '#2d3748';
+                    ctx.font = `${cellSize * 0.2}px Arial`;
+                    ctx.textAlign = 'center';
+                    ctx.fillText(
+                        plant.species.name.substring(0, 3),
+                        (plant.x + 0.5) * cellSize,
+                        (plant.y + 0.5) * cellSize + cellSize * 0.08
+                    );
+                }
+            });
+
+            // Draw optimization result if exists
+            if (optimizationResult && !document.getElementById('applyBtn').disabled) {
+                optimizationResult.placements.forEach(pos => {
+                    const plant = allPlants.find(p => p.id === pos.plantId);
+                    if (plant) {
+                        const color = SPECIES_COLORS[plant.species.name] || '#9f7aea';
+                        ctx.strokeStyle = color;
+                        ctx.lineWidth = 3;
+                        ctx.setLineDash([5, 5]);
+                        ctx.strokeRect(
+                            pos.x * cellSize + 2,
+                            pos.y * cellSize + 2,
+                            cellSize - 4,
+                            cellSize - 4
+                        );
+                        ctx.setLineDash([]);
+                    }
+                });
+            }
+        }
+
+        function getHeatmapColor(score) {
+            // Green (good) to Red (bad)
+            const r = Math.floor(255 * (1 - score));
+            const g = Math.floor(255 * score);
+            return `rgb(${r}, ${g}, 0)`;
+        }
+
+        async function runOptimization() {
+            if (!currentForest) {
+                showMessage('Please select a forest first', 'error');
+                return;
+            }
+
+            if (selectedPlantIds.length === 0) {
+                showMessage('Please select plants to optimize', 'error');
+                return;
+            }
+
+            const btn = document.getElementById('optimizeBtn');
+            btn.disabled = true;
+            btn.textContent = 'Optimizing...';
+
+            try {
+                const response = await fetch(`${API_BASE}/placement/optimize`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        plantIds: selectedPlantIds,
+                        forestWidth: currentForest.width,
+                        forestHeight: currentForest.height
+                    })
+                });
+
+                optimizationResult = await response.json();
+
+                document.getElementById('fitnessScore').textContent = optimizationResult.fitnessScore.toFixed(2);
+                document.getElementById('plantsPlaced').textContent = optimizationResult.placements.length;
+                document.getElementById('statsPanel').style.display = 'block';
+                document.getElementById('applyBtn').disabled = false;
+
+                showMessage('Optimization completed successfully! (' + optimizationResult.placements.length + ' plants)', 'success');
+                drawForest();
+
+            } catch (error) {
+                showMessage('Optimization failed: ' + error.message, 'error');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Run Genetic Algorithm';
+            }
+        }
+
+        async function applyOptimization() {
+            if (!optimizationResult || !currentForest) return;
+
+            const btn = document.getElementById('applyBtn');
+            btn.disabled = true;
+            btn.textContent = 'Applying...';
+
+            try {
+                const response = await fetch(`${API_BASE}/placement/optimize-and-apply/${currentForest.id}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(selectedPlantIds)
+                });
+
+                const result = await response.json();
+                showMessage('Placement applied successfully!', 'success');
+
+                // Reload forest
+                await onForestSelected({ target: { value: currentForest.id } });
+                optimizationResult = null;
+
+            } catch (error) {
+                showMessage('Failed to apply placement: ' + error.message, 'error');
+                btn.disabled = false;
+            } finally {
+                btn.textContent = 'Apply to Forest';
+            }
+        }
+
+        async function showHeatmap() {
+            const species = document.getElementById('heatmapSpecies').value;
+            if (!species || !currentForest) {
+                showMessage('Please select a species and forest', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/placement/heatmap/${currentForest.id}?species=${species}`);
+                const data = await response.json();
+                heatmapData = data.heatmap;
+
+                showMessage(`Heatmap for ${species} displayed`, 'success');
+                drawForest();
+
+            } catch (error) {
+                showMessage('Failed to load heatmap: ' + error.message, 'error');
+            }
+        }
+
+        function createNewForest() {
+            const name = prompt('Forest name:');
+            const width = parseInt(prompt('Width (cells):', '10'));
+            const height = parseInt(prompt('Height (cells):', '10'));
+
+            if (!name || !width || !height) return;
+
+            fetch(`${API_BASE}/forests`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, width, height })
+            })
+            .then(response => response.json())
+            .then(forest => {
+                showMessage('Forest created successfully!', 'success');
+                location.reload();
+            })
+            .catch(error => {
+                showMessage('Failed to create forest: ' + error.message, 'error');
+            });
+        }
+
+        function updateCanvasStats() {
+            if (currentForest) {
+                document.getElementById('gridSize').textContent =
+                    `${currentForest.width} x ${currentForest.height}`;
+                document.getElementById('occupiedCells').textContent = forestPlants.length;
+            }
+        }
+
+        function showMessage(text, type) {
+            const area = document.getElementById('messageArea');
+            const msg = document.createElement('div');
+            msg.className = `message ${type}`;
+            msg.textContent = text;
+            area.appendChild(msg);
+
+            setTimeout(() => msg.remove(), 5000);
+        }
+
+        // Initialize on load
+        init();
+    </script>
+
+    <!-- Bootstrap JS for navbar toggle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

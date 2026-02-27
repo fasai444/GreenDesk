@@ -29,7 +29,7 @@
 
 ## Version
 
-**v3.0** - *Livraison 3 (L3) implémentée*
+**v4.0** - *Livraison 3 (L3) + Plant Placement Optimizer (AI-powered)*
 
 ## Technologies
 
@@ -176,6 +176,53 @@ Validation stimulus (`POST /api/stimuli`) :
 - `type` requis
 - `durationHours > 0` requis
 - Retour `400` avec un message d'erreur explicite en cas de payload invalide
+
+### Livraison 4 (L4) - Plant Placement Optimizer (NEW!)
+
+#### L4-F1: AI-Powered Optimal Plant Placement
+
+- **Algorithme génétique** pour l'optimisation de placement
+  - Population: 100 solutions
+  - Générations: 200 itérations
+  - Mutation: 15%, Crossover: 70%
+  - Élitisme: Top 5 solutions préservées
+
+- **Facteurs d'optimisation**:
+  - **Companion planting**: Tomato + Basil (+0.8), Tomato + Potato (-0.7)
+  - **Espacement maladie**: Même espèce < 3 cellules (pénalité)
+  - **Compétition ressources**: Distance < 2 cellules (pénalité)
+  - **Position centrale**: Bonus pour microclimate
+
+- **Visualisation heatmap**:
+  - Zones optimales colorées (vert = bon, rouge = mauvais)
+  - Spécifique par espèce
+  - Mise à jour temps réel
+
+- **Interface interactive**:
+  - Grille de forêt drag-and-drop
+  - Sélection multi-plantes
+  - Score de fitness en direct
+  - Prévisualisation avant application
+
+**Points d'entrée L4** :
+
+- `POST /api/placement/optimize` - Exécuter l'optimisation GA
+- `POST /api/placement/optimize-and-apply/{forestId}` - Optimiser et appliquer
+- `GET /api/placement/heatmap/{forestId}?species=X` - Générer heatmap
+- `GET /api/placement/suggest/{forestId}?species=X` - Meilleure position unique
+
+**Documentation complète** :
+- [PLACEMENT_OPTIMIZER_GUIDE.md](PLACEMENT_OPTIMIZER_GUIDE.md) - Tutoriel complet
+- [docs/PLACEMENT_OPTIMIZER.md](docs/PLACEMENT_OPTIMIZER.md) - Référence API
+- [IMPLEMENTATION_SUMMARY.md](IMPLEMENTATION_SUMMARY.md) - Résumé technique
+
+**Démo rapide** :
+```bash
+./scripts/demo-placement-optimizer.bat  # Windows
+./scripts/demo-placement-optimizer.sh   # Linux/Mac
+```
+
+**Interface Web** : [http://localhost:8080/placement-optimizer.html](http://localhost:8080/placement-optimizer.html)
 
 ## Structure du projet
 
