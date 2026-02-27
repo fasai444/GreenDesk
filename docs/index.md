@@ -13,9 +13,11 @@
 
 **Auteurs / Équipe**
 
-| Membre | Rôle | Scope principal |
-|---|---|---|
-| Équipe GreenDesk | Développement Fullstack / DevOps | Architecture, API, QA, Documentation |
+- Hadi ISSA
+- Fatima SAIDI
+- Lydia AMROUCHE
+- Misasoa ROBINSON
+- Mamadou DIALLO
 
 <div class="doc-callout">
 <strong>Export PDF :</strong> le bouton <em>Exporter en PDF</em> en haut de page déclenche l’impression PDF (style A4 optimisé).
@@ -28,7 +30,7 @@
 	- 1.2 [Équipe & Contributeurs](#12-équipe--contributeurs)
 	- 1.3 [Gestion de Projet & DevOps](#13-gestion-de-projet--devops)
 
-- **2. [Analyse Concurrentielle & UX](#2-analyse-concurrentielle--ux)**
+- **2. [Concurrence](#2-concurrence)**
 	- 2.1 [Étude de la concurrence](#21-étude-de-la-concurrence)
 	- 2.2 [Utilisabilité & Design](#22-utilisabilité--design)
 
@@ -37,23 +39,21 @@
 	- 3.2 [Modélisation (UML) & Structure des Données](#32-modélisation-uml--structure-des-données)
 
 - **4. [Fonctionnalités Détaillées (User Guide)](#4-fonctionnalités-détaillées-user-guide)**
-	- 4.1 [Feature 1 — Gestion des espèces](#41-feature-1--gestion-des-espèces)
-	- 4.2 [Feature 2 — Gestion des plantes](#42-feature-2--gestion-des-plantes)
+	- 4.1 [Feature 1 — Gestion des espèces et plantes CRUD](#41-feature-1--gestion-des-espèces-et-plantes-crud)
+	- 4.2 [Feature 2 — Simulation évolutive d’une plante](#42-feature-2--simulation-évolutive-dune-plante)
 	- 4.3 [Feature 3 — Forêts & saisons](#43-feature-3--forêts--saisons)
 	- 4.4 [Feature 4 — Effets & stimuli](#44-feature-4--effets--stimuli)
 	- 4.5 [Feature 5 — Simulation & alertes](#45-feature-5--simulation--alertes)
-	- 4.6 [Feature 6 — Greenhouse Ops (KPI / ROI)](#46-feature-6--greenhouse-ops-kpi--roi)
-	- 4.7 [Scénarios d’usage (end-to-end)](#47-scénarios-dusage-end-to-end)
+	- 4.6 [Feature 6 — Simulation écosystème](#46-feature-6--simulation-écosystème)
+	- 4.7 [Feature 7 — Greenhouse Ops (KPI / ROI)](#47-feature-7--greenhouse-ops-kpi--roi)
+	- 4.8 [Feature 8 — Capteurs (Sensor Readings)](#48-feature-8--capteurs-sensor-readings)
 
 - **5. [Matrice de Responsabilités & Réalisations](#5-matrice-de-responsabilités--réalisations)**
 
 - **6. [Tests effectués](#6-tests-effectués)**
 	- 6.1 [Couverture](#61-couverture)
-	- 6.2 [Couverture — Qui ?](#62-couverture--qui-)
-	- 6.3 [Couverture — Quoi ? / Pourquoi ?](#63-couverture--quoi--pourquoi-)
-	- 6.4 [Seuils qualité imposés](#64-seuils-qualité-imposés)
-	- 6.5 [CI/CD (Documentation complète + CI)](#65-cicd-documentation-complète--ci)
-	- 6.6 [Captures qualité](#66-captures-qualité)
+	- 6.2 [CI/CD (Documentation complète + CI)](#62-cicd-documentation-complète--ci)
+	- 6.3 [Captures qualité](#63-captures-qualité)
 
 - **7. [Guide d’Installation & Déploiement](#7-guide-dinstallation--déploiement)**
 	- 7.1 [Prérequis](#71-prérequis)
@@ -83,14 +83,73 @@ Le projet GreenDesk vise à centraliser les opérations clés de gestion agronom
 
 L’objectif est de fournir une base décisionnelle fiable, testée et documentée, utilisable autant par les opérateurs métiers que par l’équipe technique.
 
+**Qui ?**
+
+- Opérateurs serre : utilisent les fonctions terrain (espèces, plantes, forêts, interventions).
+- Responsables agronomiques : pilotent les alertes, la simulation et les décisions KPI/ROI.
+- Équipe technique : maintient l’API, la qualité logicielle et l’exploitation.
+
+**Quoi ?**
+
+- Une plateforme unique pour gérer les données agronomiques, simuler les évolutions et suivre la performance.
+- Un socle API documenté et testable pour intégrer des interfaces et automatisations.
+
+**Pourquoi ?**
+
+- Réduire la dispersion des informations et améliorer la traçabilité opérationnelle.
+- Accélérer la prise de décision grâce à des indicateurs consolidés.
+- Limiter les régressions via une approche qualité/CI continue.
+
+**Scénario d’usage (application actuelle)**
+
+**Objectif**
+
+Décrire le flux opérationnel réel de l’application GreenDesk, de la création de plante jusqu’au pilotage par indicateurs.
+
+**Quoi ?**
+
+Un scénario métier concret qui combine création, simulation, alertes, corrections et suivi KPI dans le fonctionnement actuel.
+
+**Contexte** : exploitation quotidienne d’une serre simulée dans GreenDesk.
+
+**Acteurs**
+
+- Opérateur serre
+- Responsable agronomique
+- Manager exploitation
+
+**Déroulé du scénario**
+
+1. L’opérateur crée une espèce puis une plante (`/api/species`, `/api/plants/create`).
+2. Il crée une forêt et positionne la plante dans la grille (`/api/forests`, `/api/forests/{forestId}/plants`).
+3. Le responsable lance une simulation (`/api/ecosystem/tick` ou `/api/ecosystem/simulate/{n}`) pour observer l’évolution.
+4. L’équipe consulte l’état et les alertes de la plante (`/status`, `/plants/{plantId}/alerts`).
+5. Si besoin, elle applique des effets/stimuli correctifs (`/api/plants/{plantId}/effects/{effectId}`, `/api/stimuli`).
+6. Les alertes traitées sont acquittées (`/alerts/{alertId}/ack`) et un nouveau cycle est relancé.
+7. Le manager vérifie les KPI opérationnels (`/api/greenhouse/overview`, `/api/greenhouse/roi`) pour décider des actions suivantes.
+
+**Résultat attendu**
+
+- Cycle complet de gestion plante → forêt → simulation → correction.
+- Diminution du stress/alertes après intervention.
+- Décision pilotée par indicateurs Greenhouse Ops.
+
 ### 1.2 Équipe & Contributeurs
 
-| Domaine | Responsables | Livrables |
-|---|---|---|
-| Produit & cadrage | Équipe projet | Vision, backlog, priorités métier |
-| Backend & API | Équipe dev | Contrôleurs, services, persistance |
-| Qualité & CI | Référent QA/CI | Tests, couverture, validation pipeline |
-| Documentation | Référent documentation | Dossier unique, annexes, export PDF |
+Membres du groupe :
+
+- Hadi ISSA
+- Fatima SAIDI
+- Lydia AMROUCHE
+- Misasoa ROBINSON
+- Mamadou DIALLO
+
+Répartition des contributions :
+
+- Produit & cadrage : vision, backlog, priorités métier.
+- Backend & API : contrôleurs, services, persistance.
+- Qualité & CI : tests, couverture, validation pipeline.
+- Documentation : dossier unique, annexes, export PDF.
 
 ### 1.3 Gestion de Projet & DevOps
 
@@ -110,32 +169,59 @@ L’organisation suit une approche itérative inspirée Agile/Scrum :
 
 ---
 
-## 2. Analyse Concurrentielle & UX
+## 2. Concurrence
 
 ### 2.1 Étude de la concurrence
 
-| Type d’outil | Forces | Limites |
-|---|---|---|
-| Tableurs/scripts | Mise en place rapide | Faible robustesse, faible traçabilité |
-| Plateformes IoT capteurs | Excellente télémétrie | Modèle métier agronomique limité |
-| Simulateurs spécialisés | Simulation poussée | Coût élevé, intégration plus complexe |
+L’analyse concurrentielle est réalisée sur trois familles de solutions utilisées dans des contextes proches de GreenDesk.
 
-**Positionnement GreenDesk** : compromis API-first entre simplicité opérationnelle, modélisation métier et fiabilité logicielle.
+| Type d’outil | Forces | Limites | Écart couvert par GreenDesk |
+|---|---|---|---|
+| Tableurs / scripts | Démarrage très rapide, peu de friction | Données dispersées, faible traçabilité, logique difficile à maintenir | Référentiel centralisé + API versionnable + règles métier explicites |
+| Plateformes IoT orientées capteurs | Excellente télémétrie temps réel | Faible profondeur métier agronomique, faible simulation native | Intègre capteurs + états plante + alertes + simulation dans un même modèle |
+| Simulateurs spécialisés | Moteurs avancés de simulation | Coûts/licences élevés, intégration SI plus lourde | Approche pragmatique API-first, plus légère à intégrer et exploiter |
+
+**Lecture stratégique**
+
+- Les outils simples sont rapides, mais deviennent coûteux en maintenance quand le périmètre grandit.
+- Les outils très spécialisés sont puissants, mais peuvent être surdimensionnés pour un usage opérationnel quotidien.
+- GreenDesk cible une zone d’équilibre : suffisamment structuré pour durer, suffisamment simple pour rester exploitable.
+
+**Positionnement GreenDesk**
+
+- Architecture API-first pour faciliter intégration et automatisation.
+- Couplage métier + qualité (tests, couverture, CI) pour fiabilité continue.
+- Vision opérationnelle complète : espèces → plantes → forêts → alertes/simulation → KPI/ROI.
 
 ### 2.2 Utilisabilité & Design
 
-Principes UX retenus :
+L’utilisabilité est pensée pour réduire le temps entre observation et action.
 
-- navigation claire orientée tâches,
-- accès rapide aux modules critiques,
-- lisibilité des états/alertes,
-- documentation mono-page pour lecture continue.
+**Principes UX retenus**
 
-Éléments design :
+- Navigation orientée tâches métier (créer, diagnostiquer, corriger, vérifier).
+- Accès rapide aux points critiques (état plante, alertes, KPI, ROI).
+- Lisibilité forte des signaux (stress, sévérité, tendances).
+- Documentation mono-page pour lecture continue et export PDF instantané.
 
-- interface responsive,
-- cohérence visuelle entre modules,
-- diagrammes et captures intégrés pour compréhension rapide.
+**Décisions de design**
+
+- Interface responsive pour usage sur postes variés.
+- Hiérarchie visuelle stable (titres, blocs, tableaux, callouts).
+- Cohérence de vocabulaire entre UI, API et documentation.
+- Diagrammes Mermaid + captures réelles pour accélérer la compréhension.
+
+**Critères d’utilisabilité visés**
+
+- Comprendre les informations clés en moins de 30 secondes sur un écran de synthèse.
+- Retrouver une action principale en moins de 3 clics.
+- Identifier un état anormal sans ambiguïté grâce aux alertes et statuts.
+
+**Bénéfice attendu**
+
+- Moins d’erreurs d’interprétation.
+- Décisions plus rapides côté exploitation.
+- Meilleure adoption par les profils non techniques.
 
 ---
 
@@ -180,54 +266,54 @@ flowchart LR
 ```mermaid
 classDiagram
 	class Species {
-		+id: String
-		+name: String
-		+optimalWaterNeeds: double
-		+optimalTemperature: double
-		+optimalHumidity: double
-		+optimalLuxNeeds: double
+		+String id
+		+String name
+		+double optimalWaterNeeds
+		+double optimalTemperature
+		+double optimalHumidity
+		+double optimalLuxNeeds
 	}
 
 	class Plant {
-		+id: String
-		+name: String
-		+forestId: String
-		+stressIndex: double
-		+plantState: PlantState
+		+String id
+		+String name
+		+String forestId
+		+double stressIndex
+		+PlantState plantState
 	}
 
 	class Forest {
-		+id: String
-		+name: String
-		+width: int
-		height: int
+		+String id
+		+String name
+		+int width
+		+int height
 	}
 
 	class Effect {
-		+id: String
-		+name: String
-		durationHours: int
+		+String id
+		+String name
+		+int durationHours
 	}
 
 	class PlantEffect {
-		+id: String
-		+plantId: String
-		effectId: String
-		+active: boolean
+		+String id
+		+String plantId
+		+String effectId
+		+boolean active
 	}
 
 	class SensorReading {
-		+id: String
-		+plantId: String
-		timestamp: LocalDateTime
+		+String id
+		+String plantId
+		+LocalDateTime timestamp
 	}
 
 	class PlantAlert {
-		+id: String
-		+plantId: String
-		type: AlertType
-		severity: AlertSeverity
-		acknowledged: boolean
+		+String id
+		+String plantId
+		+AlertType type
+		+AlertSeverity severity
+		+boolean acknowledged
 	}
 
 	Species "1" <-- "*" Plant : species
@@ -243,77 +329,65 @@ classDiagram
 
 ```mermaid
 sequenceDiagram
-	participant C as Client
-	participant P as PlantController
-	participant S as PlantService
-	participant R as PlantRepository
+	participant client as Client
+	participant controller as PlantController
+	participant service as PlantService
+	participant repository as PlantRepository
 
-	C->>P: POST /api/plants/create
-	P->>S: createPlant(...)
-	S->>R: save(plant)
-	R-->>S: plant
-	S-->>P: plant
-	P-->>C: 200 JSON
+	client->>controller: POST /api/plants/create
+	controller->>service: createPlant(name, speciesId, ...)
+	service->>repository: save(plant)
+	repository-->>service: plantPersisted
+	service-->>controller: plant
+	controller-->>client: 200 JSON
 ```
 
 **Application d’un effet**
 
 ```mermaid
 sequenceDiagram
-	participant U as Opérateur
-	participant E as EffectController
-	participant ES as EffectService
-	participant PR as PlantRepository
-	participant PER as PlantEffectRepository
+	participant user as Operateur
+	participant controller as EffectController
+	participant service as EffectService
+	participant plantRepo as PlantRepository
+	participant effectRepo as PlantEffectRepository
 
-	U->>E: POST /api/plants/{plantId}/effects/{effectId}
-	E->>ES: applyEffectToPlant(...)
-	ES->>PR: findById(plantId)
-	ES->>PER: save(PlantEffect)
-	ES-->>E: result
-	E-->>U: 200 JSON
+	user->>controller: POST /api/plants/{plantId}/effects/{effectId}
+	controller->>service: applyEffectToPlant(plantId, effectId)
+	service->>plantRepo: findById(plantId)
+	service->>effectRepo: save(plantEffect)
+	service-->>controller: result
+	controller-->>user: 200 JSON
 ```
 
 **Consultation ROI**
 
 ```mermaid
 sequenceDiagram
-	participant M as Responsable
-	participant G as GreenhouseOpsController
-	participant GS as GreenhouseOpsService
-	participant PRepo as PlantRepository
-	participant ARepo as PlantAlertRepository
+	participant manager as Responsable
+	participant controller as GreenhouseOpsController
+	participant service as GreenhouseOpsService
+	participant plantRepo as PlantRepository
+	participant alertRepo as PlantAlertRepository
 
-	M->>G: GET /api/greenhouse/roi?hours=24
-	G->>GS: getRoiInsights(24)
-	GS->>PRepo: findAll()
-	GS->>ARepo: findByAcknowledgedFalse...
-	GS-->>G: ROI payload
-	G-->>M: 200 JSON
+	manager->>controller: GET /api/greenhouse/roi?hours=24
+	controller->>service: getRoiInsights(24)
+	service->>plantRepo: findAll()
+	service->>alertRepo: findActiveAlerts(24h)
+	service-->>controller: roiPayload
+	controller-->>manager: 200 JSON
 ```
 
 #### 3.2.4 Diagramme d’objet (back)
 
 ```mermaid
-classDiagram
-	class forest_1 {
-		id = "f-1"
-		name = "Serre Nord"
-	}
+flowchart LR
+	forest1["forest_1<br/>id=f-1<br/>name=Serre Nord"]
+	plant42["plant_42<br/>id=p-42<br/>state=HEALTHY<br/>stressIndex=0.18"]
+	effect7["effect_7<br/>id=e-7<br/>name=Shade"]
 
-	class plant_42 {
-		id = "p-42"
-		state = "HEALTHY"
-		stressIndex = 0.18
-	}
-
-	class effect_7 {
-		id = "e-7"
-		name = "Shade"
-	}
-
-	forest_1 --> plant_42 : contains
-	plant_42 --> effect_7 : activeEffect
+	forest1 -->|contains| plant42
+	plant42 -->|activeEffect| effect7
 ```
 
 #### 3.2.5 Diagramme de cas d’utilisation
@@ -346,16 +420,17 @@ flowchart LR
 
 ```mermaid
 flowchart TD
-	A[Lire KPI] --> B{Alertes critiques ?}
-	B -->|Oui| C[Traiter alertes]
-	B -->|Non| D[Contrôle standard]
-	C --> E[Appliquer actions]
-	D --> E
-	E --> F[Tick / simulation]
-	F --> G[Mesurer évolution]
-	G --> H{Objectif atteint ?}
-	H -->|Non| E
-	H -->|Oui| I[Fin du cycle]
+	start([Debut]) --> kpi[Lire KPI]
+	kpi --> alert{Alertes critiques ?}
+	alert -->|Oui| treat[Traiter alertes]
+	alert -->|Non| normal[Controle standard]
+	treat --> action[Appliquer actions]
+	normal --> action
+	action --> tick[Executer tick ou simulation]
+	tick --> measure[Mesurer evolution]
+	measure --> goal{Objectif atteint ?}
+	goal -->|Non| action
+	goal -->|Oui| finish([Fin])
 ```
 
 #### 3.2.7 Diagramme d’état
@@ -377,7 +452,7 @@ stateDiagram-v2
 
 > Exigence stricte : 6 fonctionnalités, chacune avec **But feature**, **Scénarios/Personas**, **Wireframes/Screenshots**, **Résumé NVF**.
 
-### 4.1 Feature 1 — Gestion des espèces
+### 4.1 Feature 1 — Gestion des espèces et plantes CRUD
 
 **But feature** : centraliser le référentiel agronomique.
 
@@ -396,7 +471,7 @@ stateDiagram-v2
 - V : valeur forte sur la cohérence des diagnostics.
 - F : faisable via endpoints CRUD déjà exposés.
 
-### 4.2 Feature 2 — Gestion des plantes
+### 4.2 Feature 2 — Simulation évolutive d’une plante
 
 **But feature** : suivre les plantes à granularité individuelle.
 
@@ -426,7 +501,9 @@ stateDiagram-v2
 
 **Wireframe / screenshot**
 
-![Dashboard](assets/images/site-dashboard.png)
+**Capture — Forêt & saisons (test terrain)**
+
+![Forêt & saisons](assets/images/site-forest-feature43.png)
 
 **Résumé NVF**
 
@@ -472,85 +549,85 @@ stateDiagram-v2
 - V : priorisation par sévérité.
 - F : module simulation + module alertes testés.
 
-### 4.6 Feature 6 — Greenhouse Ops (KPI / ROI)
+### 4.6 Feature 6 — Simulation écosystème
 
-**But feature** : fournir des indicateurs décisionnels consolidés.
+**But feature** : piloter une simulation globale multi-plantes/multi-forêts.
+
+**Scénarios / Personas**
+
+- Persona : Responsable agronomique / opérateur simulation
+- Scénario : lancer `tick`, `simulate/{n}` ou `simulate/{forestId}/{n}`, puis analyser l’état des cellules (`cells`).
+
+**Wireframe / screenshot**
+
+![Simulation écosystème](assets/images/site-simulation.png)
+
+**Résumé NVF**
+
+- N : nécessaire pour simuler l’évolution à l’échelle système.
+- V : permet d’anticiper les dérives et d’ajuster la stratégie.
+- F : endpoints `EcosystemController` disponibles et testables.
+
+### 4.7 Feature 7 — Greenhouse Ops (KPI / ROI)
+
+**But feature** : fournir des indicateurs décisionnels consolidés pour le pilotage.
 
 **Scénarios / Personas**
 
 - Persona : Responsable exploitation / Tech lead
-- Scénario : lire `overview`, `roi`, `roi/forests`, déclencher `sensor-stream/tick`.
+- Scénario : consulter `overview`, `alerts`, `roi`, `roi/forests` puis déclencher `sensor-stream/tick`.
 
 **Wireframe / screenshot**
 
-![Simulation](assets/images/site-simulation.png)
+![Greenhouse Ops](assets/images/site-simulation.png)
 
 **Résumé NVF**
 
-- N : nécessaire pour pilotage par la donnée.
-- V : améliore arbitrage coût/risque/performance.
-- F : GreenhouseOpsService et tests ciblés disponibles.
+- N : nécessaire pour le pilotage data-driven.
+- V : améliore l’arbitrage coût/risque/performance.
+- F : endpoints `GreenhouseOpsController` opérationnels.
 
-### 4.7 Scénarios d’usage (end-to-end)
+### 4.8 Feature 8 — Capteurs (Sensor Readings)
 
-#### Scénario A — Mise en service d’une nouvelle zone
+**But feature** : historiser et exploiter les mesures capteurs des plantes.
 
-**Objectif** : créer un cycle opérationnel complet de zéro (espèce → plante → forêt).
+**Scénarios / Personas**
 
-1. Créer une espèce de référence (ex : Basilic).
-2. Créer une plante rattachée à cette espèce.
-3. Créer une forêt (grille).
-4. Positionner la plante dans la forêt.
-5. Vérifier l’état initial de la plante et l’occupation de la forêt.
+- Persona : Opérateur technique
+- Scénario : injecter une mesure capteur, puis lire la dernière valeur (`latest`) pour une plante.
 
-**Résultat attendu** : la plante est traçable, positionnée sans conflit et prête pour simulation.
+**Wireframe / screenshot**
 
-#### Scénario B — Diagnostic et correction d’une dérive
+![Dashboard](assets/images/site-dashboard.png)
 
-**Objectif** : détecter un stress, appliquer une action, puis mesurer l’effet.
+**Résumé NVF**
 
-1. Lire le statut d’une plante (`/status`) et ses alertes actives.
-2. Appliquer un effet (`Shade`, `Extra Watering` ou autre).
-3. Déclencher un stimulus si nécessaire (ex : `RAIN`, `HEATWAVE`).
-4. Lancer un tick de simulation.
-5. Relire stress, état et alertes pour comparer avant/après.
-
-**Résultat attendu** : diminution du stress ou stabilisation de l’état, avec alertes mieux maîtrisées.
-
-#### Scénario C — Pilotage décisionnel journalier (manager)
-
-**Objectif** : prioriser les actions quotidiennes via KPI/ROI.
-
-1. Consulter `GET /api/greenhouse/overview`.
-2. Analyser `GET /api/greenhouse/alerts?hours=24&limit=20`.
-3. Comparer `GET /api/greenhouse/roi` et `GET /api/greenhouse/roi/forests`.
-4. Identifier les forêts à risque / à faible rendement.
-5. Définir un plan d’action (effets, fréquence capteurs, ajustements de cycle).
-
-**Résultat attendu** : plan priorisé avec justification chiffrée et suivi continu.
-
-#### Scénario D — Validation technique avant livraison
-
-**Objectif** : garantir la qualité d’une release.
-
-1. Exécuter `./gradlew clean check`.
-2. Vérifier les seuils JaCoCo (LINE/BRANCH/CLASS).
-3. Contrôler Swagger et les endpoints critiques (espèces, plantes, ROI).
-4. Exporter la documentation en PDF.
-
-**Résultat attendu** : build valide, couverture conforme, API vérifiée et documentation prête à diffusion.
+- N : nécessaire pour relier simulation et données observées.
+- V : améliore la détection précoce des anomalies.
+- F : `SensorReadingController` et service dédiés implémentés.
 
 ---
 
 ## 5. Matrice de Responsabilités & Réalisations
 
-| Axe | Responsable principal | Réalisation |
-|---|---|---|
-| Modèle métier | Dev backend | Entités espèces/plantes/forêts/effets/alertes |
-| API REST | Dev backend | Endpoints CRUD + KPI Greenhouse |
-| Qualité logicielle | QA/CI | Tests unitaires + WebMvc + couverture |
-| Documentation | Référent doc | Dossier unique + diagrammes + annexe API |
-| Exploitation locale | DevOps/tech | Runbook local + Docker + diagnostic rapide |
+| Fonctionnalité / Domaine | Hadi ISSA | Fatima SAIDI | Lydia AMROUCHE | Misasoa ROBINSON | Mamadou DIALLO |
+|---|---:|---:|---:|---:|---:|
+| Architecture backend | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Gestion des espèces et plantes CRUD |  |  |  | ✅ |  |
+| Simulation évolutive d’une plante |  |  |  |  | ✅ |
+| Forêts & saisons |  |  | ✅ |  |  |
+| Effets & stimuli |  |  | ✅ |  |  |
+| Alertes | ✅ |  |  |  |  |
+| Écosystème | ✅ |  |  | ✅ |  |
+| Documentation |  |  | ✅ |  |  |
+| UML (classes, séquence, activité, état, objet) |  |  | ✅ |  |  |
+| Gestion BDD |  |  |  | ✅ |  |
+| Tests (unitaires / intégration) | ✅ |  |  |  |  |
+| CI/CD & qualité pipeline | ✅ | ✅ |  |  |  |
+| Organisation & gestion de projet |  | ✅ |  |  |  |
+| Releases (versions) |  | ✅ |  |  |  |
+| Tags du projet |  |  |  |  | ✅ |
+| Workflow | ✅ |  |  |  |  |
 
 ---
 
@@ -558,36 +635,44 @@ stateDiagram-v2
 
 ### 6.1 Couverture
 
-- LINE: `81.04%`
-- BRANCH: `52.47%`
-- CLASS: `98.18%`
+#### 6.1.1 Taux de couverture
 
-### 6.2 Couverture — Qui ?
+| Indicateur | Taux actuel | Seuil cible |
+|---|---:|---:|
+| LINE | `81.04%` | `>= 70%` |
+| BRANCH | `52.47%` | `>= 45%` |
+| CLASS | `98.18%` | `>= 90%` |
 
-- Développeur backend : implémente et maintient les tests.
-- Référent QA/CI : valide les seuils et la stabilité.
-- Reviewer PR : vérifie la non-régression avant merge.
+#### 6.1.2 Tableau des tests effectués (54 suites)
 
-### 6.3 Couverture — Quoi ? / Pourquoi ?
+| Suites de tests exécutées | Type | Description | Objectif |
+|---|---|---|---|
+| **Contrôleurs API (12)**<br>`PlantAlertControllerTest`<br>`EcosystemControllerTest`<br>`EffectControllerTest`<br>`SeasonControllerTest`<br>`ForestControllerTest`<br>`ForestSeasonControllerTest`<br>`GreenhouseOpsControllerTest`<br>`HomeControllerTest`<br>`PlantControllerTest`<br>`SensorReadingControllerTest`<br>`SpeciesControllerTest`<br>`StimulusControllerTest` | Intégration API (MockMvc) | Vérifie les routes REST, codes HTTP, payloads, validations et gestion d’erreurs côté contrôleurs. | Garantir que les endpoints exposés sont conformes au contrat API et stables en régression. |
+| **Services métier (9)**<br>`EcosystemServiceTest`<br>`EffectServiceTest`<br>`ForestServiceTest`<br>`GreenhouseOpsServiceTest`<br>`NotFoundTests`<br>`PlantAlertServiceTest`<br>`SeasonServiceTest`<br>`SensorReadingServiceTest`<br>`StimulusServiceTest` | Unitaire métier | Teste les règles de gestion, calculs, transitions d’état et scénarios d’exception dans la couche service. | Valider la logique fonctionnelle centrale indépendamment du transport HTTP. |
+| **Repositories (8)**<br>`EffectRepositoryTest`<br>`ForestRepositoryTest`<br>`PlantEffectRepositoryTest`<br>`PlantRepositoryTest`<br>`SeasonCycleRepositoryTest`<br>`SensorReadingRepositoryTest`<br>`SpeciesRepositoryTest`<br>`StimulusRepositoryTest` | Intégration persistance | Contrôle les opérations de lecture/écriture, requêtes et mapping avec la couche de persistance. | Sécuriser l’accès aux données et éviter les régressions de stockage/recherche. |
+| **Entités & modèle domaine (17)**<br>`PlantAlertTest`<br>`DiseasesTest`<br>`EcosystemCellTest`<br>`EcosystemTest`<br>`EnvironmentDataTest`<br>`SeasonCycleTest`<br>`SeasonTest`<br>`SeasonTypeTest`<br>`ForestTest`<br>`InterventionTest`<br>`PlantEffectTest`<br>`PlantStateTest`<br>`PlantTest`<br>`SensorReadingTest`<br>`SpeciesTest`<br>`StimulusTest`<br>`TestEffects` | Unitaire modèle | Vérifie invariants, comportements, transitions internes et cohérence des objets métier. | Assurer la robustesse du modèle de données utilisé par les services et simulations. |
+| **Scénarios transverses / legacy (8)**<br>`TestEcosystemServices`<br>`TestEffects`<br>`TestForestAndSeasons`<br>`TestPlantLifecycle`<br>`TestPlantServices`<br>`TestSensorReadingsAndAlerts`<br>`TestSimulationEnvironment`<br>`TestSpeciesServices` | Intégration fonctionnelle | Exécute des scénarios bout-en-bout couvrant plusieurs composants en chaîne (services + domaine + API). | Valider les parcours métier complets et la cohérence globale de l’application. |
 
-**Quoi ?**
+#### 6.1.3 Outils utilisés
 
-- Mesurer objectivement la part de code exécutée en tests.
-- Couvrir cas nominal + cas d’erreur + branches critiques.
+- **JUnit 5** : exécution des tests unitaires et d’intégration.
+- **Spring MockMvc** : tests contrôleurs/API.
+- **JaCoCo** : mesure de couverture (LINE/BRANCH/CLASS).
+- **Gradle Wrapper** : orchestration build + tests + rapport.
 
-**Pourquoi ?**
+Commandes principales :
 
-- Réduire les bugs de régression.
-- Sécuriser les évolutions de logique métier.
-- Garantir un niveau de confiance minimal avant intégration.
+```bash
+./gradlew test
+./gradlew test jacocoTestReport
+./gradlew clean check
+```
 
-### 6.4 Seuils qualité imposés
+#### 6.1.4 Capture JaCoCo
 
-- LINE `>= 70%`
-- BRANCH `>= 45%`
-- CLASS `>= 90%`
+![JaCoCo - Taux de couverture](assets/images/site-jacoco-coverage.png)
 
-### 6.5 CI/CD (Documentation complète + CI)
+### 6.2 CI/CD (Documentation complète + CI)
 
 ```mermaid
 flowchart TD
@@ -607,11 +692,13 @@ Commandes standard :
 ./gradlew test jacocoTestReport
 ```
 
-### 6.6 Captures qualité
+### 6.3 Captures qualité
 
 ![Swagger](assets/images/site-swagger-ui.png)
 
-![JaCoCo](assets/images/site-jacoco-coverage.png)
+**Capture test forêt**
+
+![Test forêt](assets/images/site-forest-test.png)
 
 ---
 
@@ -728,17 +815,4 @@ curl -s http://localhost:8080/api/greenhouse/overview
 }
 ```
 
----
 
-## Vérification finale de conformité (exigences demandées)
-
-| Exigence | Statut |
-|---|---|
-| Documentation complète + CI | ✅ |
-| Couverture + Qui + Quoi/Pourquoi | ✅ |
-| Concurrence | ✅ |
-| Architecture & technos | ✅ |
-| Éléments de gestion de projet | ✅ |
-| Diagrammes classes + séquence + objet (back) | ✅ |
-| 6 fonctionnalités complètes (objectif/personas/screenshots/NVF) | ✅ |
-| Annexe API REST | ✅ |

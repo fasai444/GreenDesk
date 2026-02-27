@@ -27,44 +27,40 @@
 
   <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
   <script>
-    function initMermaid() {
-      mermaid.initialize({
-        startOnLoad: false,
-        securityLevel: 'loose',
-        theme: 'default',
-        flowchart: { htmlLabels: true, curve: 'basis' }
-      });
-    }
-
-    initMermaid();
-
-    const docsifyMermaidPlugin = (hook) => {
+    const docsifyUiPlugin = (hook) => {
       hook.doneEach(() => {
-        const mermaidBlocks = document.querySelectorAll('pre[data-lang="mermaid"]');
-        mermaidBlocks.forEach((block, index) => {
-          const code = block.querySelector('code');
-          if (!code) {
+        const summaryLinks = document.querySelectorAll('.markdown-section a[href^="#"]');
+        summaryLinks.forEach((link) => {
+          if (link.dataset.anchorBound) {
             return;
           }
 
-          const graphDefinition = code.textContent || '';
-          const container = document.createElement('div');
-          container.className = 'mermaid';
-          container.id = `mermaid-${Date.now()}-${index}`;
-          container.textContent = graphDefinition;
-          block.parentNode.replaceChild(container, block);
+          const href = link.getAttribute('href') || '';
+          if (!href || href.startsWith('#/') || href.startsWith('#?')) {
+            return;
+          }
+
+          link.dataset.anchorBound = 'true';
+          link.addEventListener('click', (event) => {
+            const rawId = href.slice(1);
+            if (!rawId) {
+              return;
+            }
+
+            const targetId = decodeURIComponent(rawId);
+            const target = document.getElementById(targetId);
+            if (!target) {
+              return;
+            }
+
+            event.preventDefault();
+            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            if (history && history.replaceState) {
+              history.replaceState(null, '', `${location.pathname}${location.search}${location.hash}`);
+            }
+          });
         });
 
-        const mermaidElements = document.querySelectorAll('.mermaid');
-        mermaidElements.forEach((element) => {
-          element.removeAttribute('data-processed');
-        });
-        mermaid.run({ querySelector: '.mermaid' });
-      });
-    };
-
-    const docsifyUiPlugin = (hook) => {
-      hook.doneEach(() => {
         const exportBtn = document.getElementById('exportPdfBtn');
         const topBtn = document.getElementById('scrollTopBtn');
 
@@ -115,10 +111,17 @@
         errorText: 'Erreur',
         successText: 'Copié'
       },
-      plugins: [docsifyMermaidPlugin, docsifyUiPlugin]
+      mermaidConfig: {
+        startOnLoad: true,
+        securityLevel: 'loose',
+        theme: 'default',
+        flowchart: { htmlLabels: true, curve: 'basis' }
+      },
+      plugins: [docsifyUiPlugin]
     };
   </script>
 
+  <script src="https://cdn.jsdelivr.net/npm/docsify-mermaid@2/dist/docsify-mermaid.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/docsify@4"></script>
   <script src="https://cdn.jsdelivr.net/npm/docsify/lib/plugins/search.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/docsify-pagination/dist/docsify-pagination.min.js"></script>
