@@ -1,4 +1,4 @@
-# Cahier des charges — GreenDesk
+# Cahier des charges - GreenDesk
 
 ## 1. Contexte et vision
 
@@ -190,17 +190,17 @@ Seuils JaCoCo imposés:
 
 ## 11. Plan de livraison recommandé
 
-### Lot 1 — Stabilisation qualité
+### Lot 1 - Stabilisation qualité
 
 - Renforcer tests sur `StimulusService` et `EcosystemController`.
 - Uniformiser les formats d’erreur JSON.
 
-### Lot 2 — Robustesse opérationnelle
+### Lot 2 - Robustesse opérationnelle
 
 - Externaliser toutes les configs sensibles via secrets/env.
 - Ajouter healthchecks d’intégration.
 
-### Lot 3 — Produit
+### Lot 3 - Produit
 
 - Ajouter authentification et rôles.
 - Ajouter tableaux de bord utilisateur orientés métier.

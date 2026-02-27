@@ -1,4 +1,4 @@
-# Usage — Effets, stimulus, alertes, simulation
+# Usage - Effets, stimulus, alertes, simulation
 
 ## Effets
 

@@ -1,8 +1,8 @@
-# API — Endpoints complets
+# API - Endpoints complets
 
 ## Home
 
-- `GET /` → redirection vers `home.html`
+- `GET /` -> redirection vers `home.html`
 
 ## Espèces (`/api/species`)
 

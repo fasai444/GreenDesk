@@ -1,4 +1,4 @@
-# Usage — Forêts et saisons
+# Usage - Forêts et saisons
 
 ## Créer une forêt
 

@@ -6,7 +6,7 @@
 - Docker (optionnel, recommandé pour MongoDB local)
 - Port `8080` libre pour l'application
 
-## Option A — Exécution locale (MongoDB Atlas déjà configuré)
+## Option A - Exécution locale (MongoDB Atlas déjà configuré)
 
 ```bash
 ./gradlew clean bootRun
@@ -17,7 +17,7 @@ Puis:
 - API: `http://localhost:8080`
 - Swagger: `http://localhost:8080/swagger-ui/index.html`
 
-## Option B — Exécution full Docker
+## Option B - Exécution full Docker
 
 ```bash
 docker compose up -d --build

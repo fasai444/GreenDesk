@@ -1,4 +1,4 @@
-# Usage — Plantes
+# Usage - Plantes
 
 ## Créer une plante
 

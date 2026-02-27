@@ -1,4 +1,4 @@
-# Usage — Espèces
+# Usage - Espèces
 
 ## Créer une espèce
 

@@ -1,6 +1,6 @@
-# API — Exemples de scénarios
+# API - Exemples de scénarios
 
-## Scénario 1 — Créer une espèce puis une plante
+## Scénario 1 - Créer une espèce puis une plante
 
 ```bash
 # 1) créer espèce
@@ -15,7 +15,7 @@ curl -s http://localhost:8080/api/species
 curl -X POST "http://localhost:8080/api/plants/create?name=Basilic-A&speciesId=<SPECIES_ID>&water=44&temperature=23&humidity=54&lux=290"
 ```
 
-## Scénario 2 — Créer forêt et y placer une plante
+## Scénario 2 - Créer forêt et y placer une plante
 
 ```bash
 # 1) créer forêt
@@ -29,7 +29,7 @@ curl -X POST http://localhost:8080/api/forests/<FOREST_ID>/plants \
   -d '{"plantId":"<PLANT_ID>","x":2,"y":4}'
 ```
 
-## Scénario 3 — Effets et KPI greenhouse
+## Scénario 3 - Effets et KPI greenhouse
 
 ```bash
 # 1) voir effets
@@ -48,7 +48,7 @@ curl -s "http://localhost:8080/api/greenhouse/roi?hours=24"
 curl -s "http://localhost:8080/api/greenhouse/roi/forests?limit=10&hours=24"
 ```
 
-## Scénario 4 — Tick capteurs greenhouse
+## Scénario 4 - Tick capteurs greenhouse
 
 ```bash
 curl -X POST http://localhost:8080/api/greenhouse/sensor-stream/tick \
@@ -56,14 +56,14 @@ curl -X POST http://localhost:8080/api/greenhouse/sensor-stream/tick \
   -d '{"forestId":"<FOREST_ID>","profile":"normal"}'
 ```
 
-## Scénario 5 — Simulation écosystème
+## Scénario 5 - Simulation écosystème
 
 ```bash
 curl -X POST http://localhost:8080/api/ecosystem/simulate/5
 curl -s http://localhost:8080/api/ecosystem/cells
 ```
 
-## Scénario 6 — Alertes
+## Scénario 6 - Alertes
 
 ```bash
 # 1) lire alertes actives d'une plante

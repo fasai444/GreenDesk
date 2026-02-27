@@ -1,4 +1,4 @@
-# API — Vue d'ensemble
+# API - Vue d'ensemble
 
 ## Base URL
 

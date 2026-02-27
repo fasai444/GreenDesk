@@ -1,8 +1,8 @@
 # Dossier Technique & Manuel Utilisateur
-## Projet DevOps — Application GreenDesk
+## Projet DevOps - Application GreenDesk
 
 <div class="doc-hero">
-  <h2 style="margin:0;">GreenDesk — Documentation officielle</h2>
+  <h2 style="margin:0;">GreenDesk - Documentation officielle</h2>
   <p style="margin:8px 0 0;">Version strictement alignée sur le plan du document de référence, adaptée au contexte GreenDesk.</p>
   <div class="doc-meta">
     <span class="doc-chip">Version : v1.1.0</span>
@@ -39,14 +39,14 @@
 	- 3.2 [Modélisation (UML) & Structure des Données](#32-modélisation-uml--structure-des-données)
 
 - **4. [Fonctionnalités Détaillées (User Guide)](#4-fonctionnalités-détaillées-user-guide)**
-	- 4.1 [Feature 1 — Gestion des espèces et plantes CRUD](#41-feature-1--gestion-des-espèces-et-plantes-crud)
-	- 4.2 [Feature 2 — Simulation évolutive d’une plante](#42-feature-2--simulation-évolutive-dune-plante)
-	- 4.3 [Feature 3 — Forêts & saisons](#43-feature-3--forêts--saisons)
-	- 4.4 [Feature 4 — Effets & stimuli](#44-feature-4--effets--stimuli)
-	- 4.5 [Feature 5 — Simulation & alertes](#45-feature-5--simulation--alertes)
-	- 4.6 [Feature 6 — Simulation écosystème](#46-feature-6--simulation-écosystème)
-	- 4.7 [Feature 7 — Greenhouse Ops (KPI / ROI)](#47-feature-7--greenhouse-ops-kpi--roi)
-	- 4.8 [Feature 8 — Capteurs (Sensor Readings)](#48-feature-8--capteurs-sensor-readings)
+	- 4.1 [Feature 1 - Gestion des espèces et plantes CRUD](#41-feature-1--gestion-des-espèces-et-plantes-crud)
+	- 4.2 [Feature 2 - Simulation évolutive d’une plante](#42-feature-2--simulation-évolutive-dune-plante)
+	- 4.3 [Feature 3 - Forêts & saisons](#43-feature-3--forêts--saisons)
+	- 4.4 [Feature 4 - Effets & stimuli](#44-feature-4--effets--stimuli)
+	- 4.5 [Feature 5 - Simulation & alertes](#45-feature-5--simulation--alertes)
+	- 4.6 [Feature 6 - Simulation écosystème](#46-feature-6--simulation-écosystème)
+	- 4.7 [Feature 7 - Greenhouse Ops (KPI / ROI)](#47-feature-7--greenhouse-ops-kpi--roi)
+	- 4.8 [Feature 8 - Capteurs (Sensor Readings)](#48-feature-8--capteurs-sensor-readings)
 
 - **5. [Matrice de Responsabilités & Réalisations](#5-matrice-de-responsabilités--réalisations)**
 
@@ -452,7 +452,7 @@ stateDiagram-v2
 
 > Exigence stricte : 6 fonctionnalités, chacune avec **But feature**, **Scénarios/Personas**, **Wireframes/Screenshots**, **Résumé NVF**.
 
-### 4.1 Feature 1 — Gestion des espèces et plantes CRUD
+### 4.1 Feature 1 - Gestion des espèces et plantes CRUD
 
 **But feature** : centraliser le référentiel agronomique.
 
@@ -471,7 +471,7 @@ stateDiagram-v2
 - V : valeur forte sur la cohérence des diagnostics.
 - F : faisable via endpoints CRUD déjà exposés.
 
-### 4.2 Feature 2 — Simulation évolutive d’une plante
+### 4.2 Feature 2 - Simulation évolutive d’une plante
 
 **But feature** : suivre les plantes à granularité individuelle.
 
@@ -490,7 +490,7 @@ stateDiagram-v2
 - V : visibilité sur stress/état par individu.
 - F : endpoints disponibles + logique métier stable.
 
-### 4.3 Feature 3 — Forêts & saisons
+### 4.3 Feature 3 - Forêts & saisons
 
 **But feature** : organiser la plantation dans l’espace et le temps.
 
@@ -501,7 +501,7 @@ stateDiagram-v2
 
 **Wireframe / screenshot**
 
-**Capture — Forêt & saisons (test terrain)**
+**Capture - Forêt & saisons (test terrain)**
 
 ![Forêt & saisons](assets/images/site-forest-feature43.png)
 
@@ -511,7 +511,7 @@ stateDiagram-v2
 - V : améliore la planification des interventions.
 - F : mécanismes de grille et season cycle implémentés.
 
-### 4.4 Feature 4 — Effets & stimuli
+### 4.4 Feature 4 - Effets & stimuli
 
 **But feature** : agir sur l’environnement simulé et observer les impacts.
 
@@ -530,7 +530,7 @@ stateDiagram-v2
 - V : accélère l’optimisation des conditions culturales.
 - F : services et endpoints dédiés déjà présents.
 
-### 4.5 Feature 5 — Simulation & alertes
+### 4.5 Feature 5 - Simulation & alertes
 
 **But feature** : anticiper les dérives et gérer les incidents.
 
@@ -549,7 +549,7 @@ stateDiagram-v2
 - V : priorisation par sévérité.
 - F : module simulation + module alertes testés.
 
-### 4.6 Feature 6 — Simulation écosystème
+### 4.6 Feature 6 - Simulation écosystème
 
 **But feature** : piloter une simulation globale multi-plantes/multi-forêts.
 
@@ -568,7 +568,7 @@ stateDiagram-v2
 - V : permet d’anticiper les dérives et d’ajuster la stratégie.
 - F : endpoints `EcosystemController` disponibles et testables.
 
-### 4.7 Feature 7 — Greenhouse Ops (KPI / ROI)
+### 4.7 Feature 7 - Greenhouse Ops (KPI / ROI)
 
 **But feature** : fournir des indicateurs décisionnels consolidés pour le pilotage.
 
@@ -587,7 +587,7 @@ stateDiagram-v2
 - V : améliore l’arbitrage coût/risque/performance.
 - F : endpoints `GreenhouseOpsController` opérationnels.
 
-### 4.8 Feature 8 — Capteurs (Sensor Readings)
+### 4.8 Feature 8 - Capteurs (Sensor Readings)
 
 **But feature** : historiser et exploiter les mesures capteurs des plantes.
 

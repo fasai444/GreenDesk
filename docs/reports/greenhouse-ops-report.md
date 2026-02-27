@@ -1,4 +1,4 @@
-# Rapport d'amélioration — Greenhouse Ops
+# Rapport d'amélioration - Greenhouse Ops
 
 Date: 2026-02-25
 
