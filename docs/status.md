@@ -31,7 +31,7 @@ Il exécute:
 
 ## Rapport intégré
 
-- Rapport d'amélioration Greenhouse Ops: [reports/greenhouse-ops-report.md](reports/greenhouse-ops-report.md)
+- Rapport d'amélioration **Greenhouse Ops**: [reports/greenhouse-ops-report.md](reports/greenhouse-ops-report.md)
 - Points clés: normalisation des paramètres (`limit`, `hours`), validation/normalisation `forestId/profile`, erreurs `400` JSON structurées
 - Validation ciblée: `8 tests passés / 0 échec` sur `GreenhouseOpsControllerTest`
 

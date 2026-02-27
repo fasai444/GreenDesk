@@ -186,7 +186,7 @@ L’analyse concurrentielle est réalisée sur trois familles de solutions utili
 
 - Les outils simples sont rapides, mais deviennent coûteux en maintenance quand le périmètre grandit.
 - Les outils très spécialisés sont puissants, mais peuvent être surdimensionnés pour un usage opérationnel quotidien.
-- GreenDesk cible une zone d’équilibre : suffisamment structuré pour durer, suffisamment simple pour rester exploitable.
+- **GreenDesk** cible une zone d’équilibre : suffisamment structuré pour durer, suffisamment simple pour rester exploitable.
 
 **Positionnement GreenDesk**
 
