@@ -1,4 +1,5 @@
 # Dossier Technique & Manuel Utilisateur
+
 ## Projet DevOps - Application GreenDesk
 
 <div class="doc-hero">
@@ -13,17 +14,17 @@
 
 **Auteurs / Équipe**
 
-- Hadi ISSA
-- Fatima SAIDI
-- Lydia AMROUCHE
-- Misasoa ROBINSON
-- Mamadou DIALLO
+- *Hadi ISSA*
+- *Fatima SAIDI*
+- *Lydia AMROUCHE*
+- *Misasoa ROBINSON*
+- *Mamadou DIALLO*
 
 <div class="doc-callout">
 <strong>Export PDF :</strong> le bouton <em>Exporter en PDF</em> en haut de page déclenche l’impression PDF (style A4 optimisé).
 </div>
 
-## 📑 Sommaire
+## Sommaire
 
 - **1. [Présentation Générale](#1-présentation-générale)**
 	- 1.1 [Objectif du Projet](#11-objectif-du-projet)
@@ -74,25 +75,25 @@
 
 ### 1.1 Objectif du Projet
 
-Le projet GreenDesk vise à centraliser les opérations clés de gestion agronomique dans une application unique. Le système permet :
+**Le projet GreenDesk vise à centraliser les opérations clés de gestion agronomique dans une application unique. Le système permet** :
 
 - la gestion des espèces et des plantes,
-- la simulation d’environnements (forêts, saisons, effets, stimuli),
+- la simulation d’environnements **(forêts, saisons, effets, stimuli)**,
 - la supervision des alertes,
-- l’analyse de KPI et d’indicateurs ROI.
+- l’analyse de KPI et d’indicateurs **ROI**.
 
 L’objectif est de fournir une base décisionnelle fiable, testée et documentée, utilisable autant par les opérateurs métiers que par l’équipe technique.
 
 **Qui ?**
 
-- Opérateurs serre : utilisent les fonctions terrain (espèces, plantes, forêts, interventions).
-- Responsables agronomiques : pilotent les alertes, la simulation et les décisions KPI/ROI.
-- Équipe technique : maintient l’API, la qualité logicielle et l’exploitation.
+- **Opérateurs serre** : utilisent les fonctions terrain (espèces, plantes, forêts, interventions).
+- **Responsables agronomiques** : pilotent les alertes, la simulation et les décisions **KPI/ROI**.
+- **Équipe technique** : maintient l’**API**, la qualité logicielle et l’exploitation.
 
 **Quoi ?**
 
 - Une plateforme unique pour gérer les données agronomiques, simuler les évolutions et suivre la performance.
-- Un socle API documenté et testable pour intégrer des interfaces et automatisations.
+- Un socle **API** documenté et testable pour intégrer des interfaces et automatisations.
 
 **Pourquoi ?**
 
@@ -138,11 +139,11 @@ Un scénario métier concret qui combine création, simulation, alertes, correct
 
 Membres du groupe :
 
-- Hadi ISSA
-- Fatima SAIDI
-- Lydia AMROUCHE
-- Misasoa ROBINSON
-- Mamadou DIALLO
+- **Hadi ISSA**
+- **Fatima SAIDI**
+- **Lydia AMROUCHE**
+- **Misasoa ROBINSON**
+- **Mamadou DIALLO**
 
 Répartition des contributions :
 
@@ -612,22 +613,22 @@ stateDiagram-v2
 
 | Fonctionnalité / Domaine | Hadi ISSA | Fatima SAIDI | Lydia AMROUCHE | Misasoa ROBINSON | Mamadou DIALLO |
 |---|---:|---:|---:|---:|---:|
-| Architecture backend | ✅ | ✅ | ✅ | ✅ | ✅ |
-| Gestion des espèces et plantes CRUD |  |  |  | ✅ |  |
-| Simulation évolutive d’une plante |  |  |  |  | ✅ |
-| Forêts & saisons |  |  | ✅ |  |  |
-| Effets & stimuli |  |  | ✅ |  |  |
-| Alertes | ✅ |  |  |  |  |
-| Écosystème | ✅ |  |  | ✅ |  |
-| Documentation |  |  | ✅ |  |  |
-| UML (classes, séquence, activité, état, objet) |  |  | ✅ |  |  |
-| Gestion BDD |  |  |  | ✅ |  |
-| Tests (unitaires / intégration) | ✅ |  |  |  |  |
-| CI/CD & qualité pipeline | ✅ | ✅ |  |  |  |
-| Organisation & gestion de projet |  | ✅ |  |  |  |
-| Releases (versions) |  | ✅ |  |  |  |
-| Tags du projet |  |  |  |  | ✅ |
-| Workflow | ✅ |  |  |  |  |
+| Architecture backend | Oui | Oui | Oui | Oui | Oui |
+| Gestion des espèces et plantes CRUD |  |  |  | Oui |  |
+| Simulation évolutive d’une plante |  |  |  |  | Oui |
+| Forêts & saisons |  |  | Oui |  |  |
+| Effets & stimuli |  |  | Oui |  |  |
+| Alertes | Oui |  |  |  |  |
+| Écosystème | Oui |  |  | Oui |  |
+| Documentation |  |  | Oui |  |  |
+| UML (classes, séquence, activité, état, objet) |  |  | Oui |  |  |
+| Gestion BDD |  |  |  | Oui |  |
+| Tests (unitaires / intégration) | Oui |  |  |  |  |
+| CI/CD & qualité pipeline | Oui | Oui |  |  |  |
+| Organisation & gestion de projet |  | Oui |  |  |  |
+| Releases (versions) |  | Oui |  |  |  |
+| Tags du projet |  |  |  |  | Oui |
+| Workflow | Oui |  |  |  |  |
 
 ---
 
