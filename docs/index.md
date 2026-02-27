@@ -232,22 +232,22 @@ L’utilisabilité est pensée pour réduire le temps entre observation et actio
 
 **Backend**
 
-- Langage : Java 21
-- Framework : Spring Boot 3.3.3
-- Architecture : MVC/REST (`Controller` → `Service` → `Repository`)
-- Persistance : MongoDB (Spring Data)
+- **Langage** : Java 21
+- **Framework** : Spring Boot 3.3.3
+- **Architecture** : MVC/REST (`Controller` -> `Service` -> `Repository`)
+- **Persistance** : MongoDB (Spring Data)
 
 **Frontend / Documentation**
 
-- UI app : HTML5/CSS3/JavaScript
-- Documentation : Docsify + Mermaid
+- **UI app** : HTML5/CSS3/JavaScript
+- **Documentation** : Docsify + Mermaid
 
 **Build & Qualité**
 
-- Build : Gradle Wrapper
-- Tests : JUnit + MockMvc
-- Couverture : JaCoCo
-- API interactive : Swagger/OpenAPI
+- **Build** : Gradle Wrapper
+- **Tests** : JUnit + MockMvc
+- **Couverture** : JaCoCo
+- **API interactive** : Swagger/OpenAPI
 
 ### 3.2 Modélisation (UML) & Structure des Données
 
