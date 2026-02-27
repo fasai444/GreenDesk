@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="fr">
 
 <head>
@@ -27,59 +27,58 @@
 
   <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
   <script>
-    mermaid.initialize({ 
-      startOnLoad: false, 
-      theme: 'default', 
+    mermaid.initialize({
+      startOnLoad: false,
+      theme: 'default',
       securityLevel: 'loose',
       flowchart: { useMaxWidth: true, htmlLabels: true }
     });
 
+    const decodeBase64Utf8 = (base64) => {
+      const binary = atob(base64);
+      const bytes = Uint8Array.from(binary, (char) => char.charCodeAt(0));
+      return new TextDecoder('utf-8').decode(bytes);
+    };
+
     const docsifyUiPlugin = (hook) => {
-      hook.afterEach((html, next) => {
-        // Transform mermaid code blocks to divs before rendering
-        html = html.replace(/<pre[^>]*data-lang="mermaid"[^>]*><code[^>]*>([\s\S]*?)<\/code><\/pre>/g, 
-          (match, code) => {
-            const decodedCode = code
-              .replace(/&lt;/g, '<')
-              .replace(/&gt;/g, '>')
-              .replace(/&amp;/g, '&')
-              .replace(/&quot;/g, '"')
-              .replace(/&#39;/g, "'");
-            return '<div class="mermaid">' + decodedCode + '</div>';
-          });
-        next(html);
-      });
-      
       hook.doneEach(() => {
-        // Render all mermaid diagrams
-        const mermaidElements = document.querySelectorAll('.mermaid');
-        if (mermaidElements.length > 0) {
-          mermaid.run({ nodes: mermaidElements });
+        const pendingDiagrams = document.querySelectorAll('.mermaid:not([data-processed="true"])');
+        if (pendingDiagrams.length > 0) {
+          pendingDiagrams.forEach((node) => {
+            try {
+              const encoded = node.getAttribute('data-mermaid') || '';
+              if (encoded) {
+                const source = decodeBase64Utf8(encoded);
+                const renderId = `mmd_${Date.now()}_${Math.random().toString(36).slice(2, 10)}`;
+                mermaid.render(renderId, source).then(({ svg }) => {
+                  node.innerHTML = svg;
+                  node.setAttribute('data-processed', 'true');
+                }).catch((error) => {
+                  console.error('Mermaid render error:', error);
+                  node.textContent = source;
+                });
+              }
+            } catch (error) {
+              console.error('Mermaid render error:', error);
+            }
+          });
         }
 
         const summaryLinks = document.querySelectorAll('.markdown-section a[href^="#"]');
         summaryLinks.forEach((link) => {
-          if (link.dataset.anchorBound) {
-            return;
-          }
+          if (link.dataset.anchorBound) return;
 
           const href = link.getAttribute('href') || '';
-          if (!href || href.startsWith('#/') || href.startsWith('#?')) {
-            return;
-          }
+          if (!href || href.startsWith('#/') || href.startsWith('#?')) return;
 
           link.dataset.anchorBound = 'true';
           link.addEventListener('click', (event) => {
             const rawId = href.slice(1);
-            if (!rawId) {
-              return;
-            }
+            if (!rawId) return;
 
             const targetId = decodeURIComponent(rawId);
             const target = document.getElementById(targetId);
-            if (!target) {
-              return;
-            }
+            if (!target) return;
 
             event.preventDefault();
             target.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -94,16 +93,12 @@
 
         if (exportBtn && !exportBtn.dataset.bound) {
           exportBtn.dataset.bound = 'true';
-          exportBtn.addEventListener('click', () => {
-            window.print();
-          });
+          exportBtn.addEventListener('click', () => window.print());
         }
 
         if (topBtn && !topBtn.dataset.bound) {
           topBtn.dataset.bound = 'true';
-          topBtn.addEventListener('click', () => {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-          });
+          topBtn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
         }
       });
     };
@@ -121,6 +116,17 @@
       coverpage: false,
       mergeNavbar: false,
       topMargin: 70,
+      markdown: {
+        renderer: {
+          code(code, lang) {
+            if (lang === 'mermaid') {
+              const encoded = btoa(unescape(encodeURIComponent(String(code))));
+              return `<div class="mermaid" data-mermaid="${encoded}"></div>`;
+            }
+            return this.origin.code.apply(this, arguments);
+          }
+        }
+      },
       pagination: {
         previousText: 'Précédent',
         nextText: 'Suivant',
