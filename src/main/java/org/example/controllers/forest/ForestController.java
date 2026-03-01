@@ -108,7 +108,7 @@ public class ForestController {
      * DELETE /api/forests/{forestId}/plants
      * Retire une plante d'une position dans la forêt.
      *
-     * Query params: ?x=3&y=5
+     * Query params: ?x=3&amp;y=5
      */
     @DeleteMapping("/{forestId}/plants")
     public ResponseEntity<?> removePlantFromForest(

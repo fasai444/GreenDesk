@@ -117,7 +117,7 @@ public class PlantController {
     }
 
     /**
-     * GET /plants/compare?leftId=...&rightId=...
+     * GET /plants/compare?leftId=...&amp;rightId=...
      * Compare deux plantes (souvent clone vs clone) avec un résumé de divergence.
      */
     @GetMapping("/compare")
@@ -157,7 +157,7 @@ public class PlantController {
     }
 
     /**
-     * POST /plants/{plantId}/clone?forestId=...&x=...&y=...
+     * POST /plants/{plantId}/clone?forestId=...&amp;x=...&amp;y=...
      * Clone une plante vers une forêt cible à une position donnée.
      */
     @PostMapping("/{plantId}/clone")
