@@ -79,7 +79,8 @@
 	- 8.1 [Base URL](#81-base-url)
 	- 8.2 [Endpoints principaux](#82-endpoints-principaux)
 	- 8.3 [Exemples payload](#83-exemples-payload)
-	- 8.4 [Format d'erreur structuré](#84-format-derreur-structuré)
+	- 8.4 [Captures API (CLI)](#84-captures-api-cli)
+	- 8.5 [Format d'erreur structuré](#85-format-derreur-structuré)
 
 ---
 
@@ -989,6 +990,10 @@ Ce mécanisme est robuste : il fonctionne aussi bien avec `+1` mois qu'avec un g
 
 ### 4.4 Feature 4 - Effets & stimuli
 
+Effects (interventions) : actions temporaires appliquées à une plante (ombrage, engrais, arrosage, chauffage) qui modifient ses paramètres pendant une durée.
+
+Stimuli (événements) : événements globaux appliqués à une forêt (ex : canicule, pluie intense) qui influencent le contexte environnemental sur une période.
+
 **But feature** : agir sur l'environnement simulé et observer les impacts.
 
 **Objectif**
@@ -1107,6 +1112,12 @@ Cela montre que `Extra Watering` est bien pris en compte, mais que le score fina
 - F : services et endpoints dédiés déjà présents.
 
 ### 4.5 Feature 5 - Simulation & alertes
+
+Capteurs (Sensor Readings) : collectent et historisent les mesures (température, humidité, lux, pluie) pour une plante.
+
+Readings → Mise à jour : chaque lecture met à jour les valeurs courantes de la plante (`sensors`) et alimente la simulation.
+
+Alertes : déclenchées automatiquement quand une mesure s'éloigne trop des valeurs optimales de l'espèce (`WARNING`/`CRITICAL`).
 
 **1) Objectif (fonctionnel)**
 
@@ -1612,41 +1623,37 @@ Lecture opérationnelle :
 - V : améliore la détection précoce des anomalies.
 - F : `SensorReadingController` et service dédiés implémentés.
 
-### 4.9 Feature 9 - Optimiseur de placement des plantes
+### 4.9 Feature 9 - Optimiseur de placement des plantes (Prototype / extension)
 
-**But feature** : générer automatiquement un placement optimal des plantes sur la grille d'une forêt.
+**But** : proposer automatiquement un placement recommandé des plantes sur la grille d'une forêt afin de réduire le placement manuel.
 
-**Description fonctionnelle (ce que l'utilisateur voit)**
+**Description fonctionnelle**
 
-Cette feature permet à l'utilisateur de générer automatiquement un placement optimal des plantes sur la grille d'une forêt, au lieu de les placer manuellement une par une.
+Cette fonctionnalité vise à assister l'utilisateur en générant des propositions de placement (`x,y`) basées sur les contraintes métier et les besoins des espèces.
+L'utilisateur peut comparer une proposition automatique à un placement manuel et décider de l'appliquer.
 
-**Parcours utilisateur**
+**Parcours utilisateur (cible)**
 
 - L'utilisateur choisit la forêt et sélectionne les plantes à organiser.
-- Il clique sur `Run Genetic Algorithm` : l'application propose un placement et un score (`fitness`).
-- S'il valide la proposition, il clique sur `Apply to Forest` pour enregistrer les positions en base.
-- Optionnel : il peut afficher une `Heatmap` qui indique, pour une espèce, les zones recommandées / neutres / déconseillées.
+- Il lance l'optimisation (`Run Optimizer`) : l'application calcule un placement proposé et un score (`fitness`).
+- Il peut valider la proposition et l'appliquer à la forêt (`Apply to Forest`).
+- Optionnel : affichage d'une heatmap des zones recommandées/neutres/déconseillées pour une espèce.
 
-**Info technique (comment ça marche)**
+**Info technique (approche)**
 
-Le moteur repose sur un algorithme génétique :
+Le module s'appuie sur une logique d'optimisation inspirée d'un algorithme génétique :
 
-- génération de plusieurs placements candidats,
-- évaluation de chaque candidat via une fonction de `fitness`,
-- conservation des meilleurs placements,
-- croisement des solutions retenues,
-- application de mutations contrôlées,
-- répétition sur plusieurs générations jusqu'à obtenir une solution globalement meilleure qu'un placement aléatoire.
+- génération de placements candidats,
+- évaluation via une fonction de fitness,
+- sélection des meilleurs candidats,
+- croisement + mutation contrôlée,
+- itérations sur plusieurs générations.
 
-**Capture - Test feature 9**
+**Statut d'implémentation**
 
-![Optimiseur de placement](assets/images/site-feature9-placement-optimizer-test.png)
+Les fondations nécessaires sont déjà présentes : modèle de forêt (grille), placement (`x,y`), contraintes (position occupée, diversité/anti-clones), données espèces/plantes.
 
-**Résumé NVF**
-
-- N : nécessaire pour réduire le temps de placement manuel dans les forêts denses.
-- V : améliore la qualité de disposition et la performance globale de simulation.
-- F : implémentable via un service dédié (`optimizer`) couplé aux entités forêt/plantes.
+L'algorithme d'optimisation automatique complet (GA + heatmap + endpoints dédiés) est une extension prévue.
 
 ---
 
@@ -1781,19 +1788,41 @@ curl -s http://localhost:8080/api/greenhouse/overview
 |---|---|---|
 | Espèces | GET | `/api/species` |
 | Espèces | POST | `/api/species` |
+| Espèces | GET | `/api/species/{name}` |
+| Espèces | PUT | `/api/species/{id}` |
+| Espèces | DELETE | `/api/species/{id}` |
+| Plantes | GET | `/api/plants` |
 | Plantes | POST | `/api/plants/create` |
-| Plantes | GET | `/api/plants/{id}/status` |
+| Plantes | GET | `/plants/{plantId}` |
+| Plantes | GET | `/api/plants/{plantId}/state` |
+| Plantes | GET | `/api/plants/{plantId}/status` |
 | Forêts | POST | `/api/forests` |
+| Forêts | GET | `/api/forests/{forestId}` |
+| Forêts | DELETE | `/api/forests/{forestId}` |
 | Forêts | POST | `/api/forests/{forestId}/plants` |
-| Saisons | POST | `/api/forests/{id}/season-cycle/advance` |
+| Forêts | DELETE | `/api/forests/{forestId}/plants` (params requis : `x`/`y` ou `plantId`) |
+| Saisons | GET | `/api/seasons` |
+| Saisons | GET | `/api/forests/{forestId}/season-cycle` |
+| Saisons | POST | `/api/forests/{forestId}/season-cycle` |
+| Saisons | DELETE | `/api/forests/{forestId}/season-cycle` |
+| Saisons | POST | `/api/forests/{forestId}/season-cycle/advance` |
+| Effets | GET | `/api/effects` |
+| Effets | POST | `/api/effects` |
 | Effets | POST | `/api/plants/{plantId}/effects/{effectId}` |
-| Stimulus | POST | `/api/stimuli` |
+| Effets | GET | `/api/plants/{plantId}/effects` |
+| Effets | GET | `/api/plants/{plantId}/effects/active` |
+| Effets | DELETE | `/api/plants/effects/{plantEffectId}` |
+| Stimuli | POST | `/api/stimuli` |
+| Capteurs (sensor-readings) | GET | `/plants/{plantId}/sensor-readings` |
+| Capteurs (sensor-readings) | POST | `/plants/{plantId}/sensor-readings` |
 | Alertes | GET | `/plants/{plantId}/alerts` |
 | Alertes | POST | `/alerts/{alertId}/ack` |
 | Écosystème | POST | `/api/ecosystem/simulate/{n}` |
+| Écosystème | POST | `/api/ecosystem/tick` |
 | Greenhouse | GET | `/api/greenhouse/overview` |
 | Greenhouse | GET | `/api/greenhouse/roi` |
-| Greenhouse | POST | `/api/greenhouse/sensor-stream/tick` |
+| Greenhouse | GET | `/api/greenhouse/roi/forests` |
+| Greenhouse | GET | `/api/greenhouse/roi/forests/export.csv` |
 
 ### 8.3 Exemples payload
 
@@ -1830,7 +1859,53 @@ curl -s http://localhost:8080/api/greenhouse/overview
 }
 ```
 
-### 8.4 Format d'erreur structuré
+### 8.4 Captures API (CLI)
+
+#### Espèces
+
+| Capture 1 | Capture 2 |
+|---|---|
+| ![Capture API - bootstrap espèces/plantes/forêts](assets/images/api-capture-bootstrap-species-plants-forests.png) | ![Capture API - species list + get by name](assets/images/api-capture-species-list-get-by-name.png) |
+
+#### Plantes
+
+| Capture 1 | Capture 2 |
+|---|---|
+| ![Capture API - plants list](assets/images/api-capture-plants-list.png) | ![Capture API - plant status and state](assets/images/api-capture-plant-status-state.png) |
+
+#### Forêts
+
+| Capture 1 | Capture 2 |
+|---|---|
+| ![Capture API - forest get by id](assets/images/api-capture-forest-get-by-id.png) | ![Capture API - forest delete plant and forest](assets/images/api-capture-forest-delete-plant-and-forest.png) |
+
+#### Saisons
+
+| Capture 1 | Capture 2 |
+|---|---|
+| ![Capture API - seasons list](assets/images/api-capture-seasons-list.png) | ![Capture API - season-cycle create-delete](assets/images/api-capture-season-cycle-create-delete.png) |
+
+#### Effets
+
+| Capture 1 | Capture 2 |
+|---|---|
+| ![Capture API - effects list and create](assets/images/api-capture-effects-list-create.png) | ![Capture API - plant effects apply and active](assets/images/api-capture-plant-effects-apply-active.png) |
+
+#### Stimuli
+
+![Capture API - stimuli create](assets/images/api-capture-stimuli-create.png)
+
+#### Capteurs (sensor-readings)
+
+| Capture 1 | Capture 2 |
+|---|---|
+| ![Capture API - sensor-readings post and list](assets/images/api-capture-sensor-readings-post-list.png) | ![Capture API - sensor-readings list](assets/images/api-capture-sensor-readings-list.png) |
+
+#### Alertes
+
+![Capture API - alerts list](assets/images/api-capture-alerts-list.png)
+
+### 8.5 Format d'erreur structuré
 
 ```json
 {
