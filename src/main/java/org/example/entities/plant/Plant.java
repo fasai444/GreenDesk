@@ -8,6 +8,8 @@
 
     import jakarta.validation.constraints.NotBlank;
 
+    import org.example.entities.plant.GrowthStage; 
+
 
 @Document(collection ="plants")
 public class Plant {
@@ -226,4 +228,17 @@ public class Plant {
     public void setId(String id) {
         this.id = id;
     }
+
+
+    // 
+    private GrowthStage growthStage = GrowthStage.VEGETATIVE;
+
+    public GrowthStage getGrowthStage() {
+        return growthStage;
+    }
+
+    public void setGrowthStage(GrowthStage growthStage) {
+        this.growthStage = growthStage;
+    }
+    
 }

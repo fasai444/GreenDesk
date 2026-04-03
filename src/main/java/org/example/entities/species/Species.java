@@ -21,6 +21,12 @@ public class Species {
     private double baseGrowthRate; // cm par cycle
     private double seedProductionRate;
 
+    private boolean sensitiveToFrost = true;
+    private boolean sensitiveToHeat = true;
+    private boolean sensitiveToHeavyRain = true;
+    private boolean sensitiveToWind = true;
+    private boolean sensitiveToUV = true;
+
     //--------------CONSTRUCTEURS--------------
 
     // Constructeur vide (Modifié en Public pour que Spring/DataInitializer puisse l'utiliser librement)
@@ -131,5 +137,45 @@ public class Species {
     @Override
     public String toString() {
         return "Species{name='" + name + "', temp=" + optimalTemperature + "}";
+    }
+
+    public boolean isSensitiveToFrost() {
+    return sensitiveToFrost;
+}
+
+    public void setSensitiveToFrost(boolean sensitiveToFrost) {
+        this.sensitiveToFrost = sensitiveToFrost;
+    }
+
+    public boolean isSensitiveToHeat() {
+        return sensitiveToHeat;
+    }
+
+    public void setSensitiveToHeat(boolean sensitiveToHeat) {
+        this.sensitiveToHeat = sensitiveToHeat;
+    }
+
+    public boolean isSensitiveToHeavyRain() {
+        return sensitiveToHeavyRain;
+    }
+
+    public void setSensitiveToHeavyRain(boolean sensitiveToHeavyRain) {
+        this.sensitiveToHeavyRain = sensitiveToHeavyRain;
+    }
+
+    public boolean isSensitiveToWind() {
+        return sensitiveToWind;
+    }
+
+    public void setSensitiveToWind(boolean sensitiveToWind) {
+        this.sensitiveToWind = sensitiveToWind;
+    }
+
+    public boolean isSensitiveToUV() {
+        return sensitiveToUV;
+    }
+
+    public void setSensitiveToUV(boolean sensitiveToUV) {
+        this.sensitiveToUV = sensitiveToUV;
     }
 }

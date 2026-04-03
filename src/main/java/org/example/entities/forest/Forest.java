@@ -34,25 +34,27 @@ public class Forest {
     // On utilise ici l'approche "embedded cells" (ForestCell)
     // On supprime la liste @DBRef plants pour éviter la duplication
     // ────────────────────────────────────────────────
-// Liste pour compatibilité avec DataInitializer et ancien frontend
-private List<Plant> plants = new ArrayList<>();
-
-
+    // Liste pour compatibilité avec DataInitializer et ancien frontend
+    private List<Plant> plants = new ArrayList<>();
+    
     private List<ForestCell> cells = new ArrayList<>();
 
-    // Constructeurs
-public Forest() {
-    this.cells = new ArrayList<>();
-    this.plants = new ArrayList<>();
-    this.createdAt = LocalDateTime.now();
-}
+    // ⬇️⬇️⬇️ CORRECTION : l'attribut coords doit être au niveau de Forest, pas de ForestCell ⬇️⬇️⬇️
+    private double[] coords;  // [latitude, longitude]
 
-public Forest(String name, int width, int height) {
-    this();
-    this.name = name;
-    this.width = width;
-    this.height = height;
-}
+    // Constructeurs
+    public Forest() {
+        this.cells = new ArrayList<>();
+        this.plants = new ArrayList<>();
+        this.createdAt = LocalDateTime.now();
+    }
+
+    public Forest(String name, int width, int height) {
+        this();
+        this.name = name;
+        this.width = width;
+        this.height = height;
+    }
     
 
     // ────────────────────────────────────────────────
@@ -122,16 +124,20 @@ public Forest(String name, int width, int height) {
     // ────────────────────────────────────────────────
     // Getters / Setters
     // ────────────────────────────────────────────────
-public List<Plant> getPlants() {
-    return plants;
-}
+    public List<Plant> getPlants() {
+        return plants;
+    }
 
-public void setPlants(List<Plant> plants) {
-    this.plants = (plants != null) ? plants : new ArrayList<>();
-}
+    public void setPlants(List<Plant> plants) {
+        this.plants = (plants != null) ? plants : new ArrayList<>();
+    }
 
     public String getId() {
         return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getName() {
@@ -162,12 +168,25 @@ public void setPlants(List<Plant> plants) {
         return createdAt;
     }
 
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
     public List<ForestCell> getCells() {
         return cells;
     }
 
     public void setCells(List<ForestCell> cells) {
         this.cells = (cells != null) ? cells : new ArrayList<>();
+    }
+
+    // ⬇️⬇️⬇️ CORRECTION : Getter et Setter pour coords ⬇️⬇️⬇️
+    public double[] getCoords() {
+        return coords;
+    }
+
+    public void setCoords(double[] coords) {
+        this.coords = coords;
     }
 
     // ────────────────────────────────────────────────
@@ -211,8 +230,6 @@ public void setPlants(List<Plant> plants) {
         public void setPlantId(String plantId) {
             this.plantId = plantId;
         }
-
-        
 
         @Override
         public boolean equals(Object o) {

@@ -98,4 +98,12 @@ public interface PlantRepository extends MongoRepository<Plant, String> {
      * [cite: 144, 164]
      */
     List<Plant> findByForestId(String forestId);
+    // ⬇️⬇️⬇️ NOUVEAU POUR LA FEATURE 1 (Jumeau numérique météo) ⬇️⬇️⬇️
+    /**
+     * Trouve toutes les plantes appartenant à une liste d'IDs de forêts.
+     * Utilisé pour identifier les plantes impactées par une alerte météo.
+     * @param forestIds Liste des IDs de forêts
+     * @return Liste des plantes dans ces forêts
+     */
+    List<Plant> findByForestIdIn(List<String> forestIds);
 }

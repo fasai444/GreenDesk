@@ -499,6 +499,8 @@ async function emitSensorReading() {
             `;
         }
         await loadDashboardData();
+        // inclure le chargement des alertes météo
+        await loadWeatherAlerts();
     } catch (error) {
         stopSensorStream();
         showDashboardFeedback(`Stream capteur arrêté: ${error.message}`, 'danger');
@@ -576,6 +578,69 @@ async function sendStimulus(type) {
     } catch (error) {
         console.error('Erreur stimulus:', error);
         showDashboardFeedback(`Erreur stimulus: ${error.message}`, 'danger');
+    }
+}
+
+// ==================== NOUVEAU : ALERTES MÉTÉO ====================
+
+async function loadWeatherAlerts() {
+    const tbody = document.getElementById('weatherAlertsTable');
+    if (!tbody) return;
+    
+    tbody.innerHTML = '<tr><td colspan="6" class="text-muted text-center">Chargement des alertes...</td></tr>';
+    
+    try {
+        const response = await fetch('/api/weather/alerts');
+        const alerts = await response.json();
+        
+        if (!alerts.length) {
+            tbody.innerHTML = '<tr><td colspan="6" class="text-muted text-center">Aucune alerte météo</td></tr>';
+            return;
+        }
+        
+        tbody.innerHTML = alerts.map(alert => {
+            const severityClass = alert.severity === 'high' ? 'bg-danger' : 
+                                  alert.severity === 'medium' ? 'bg-warning text-dark' : 'bg-info';
+            const severityText = alert.severity === 'high' ? 'CRITIQUE' :
+                                 alert.severity === 'medium' ? 'ÉLEVÉE' : 'INFO';
+            
+            const typeIcon = alert.type === 'heatwave' ? '🔥' :
+                             alert.type === 'frost' ? '❄️' :
+                             alert.type === 'heavy_rain' ? '🌧️' : '⚠️';
+            
+            return `
+                <tr>
+                    <td><small>${new Date(alert.timestamp).toLocaleString()}</small></td>
+                    <td><span class="badge bg-light text-dark">${typeIcon} ${alert.type}</span></td>
+                    <td><span class="badge ${severityClass}">${severityText}</span></td>
+                    <td><small>${alert.coords ? `${alert.coords[0].toFixed(4)}, ${alert.coords[1].toFixed(4)}` : 'N/A'}</small></td>
+                    <td><span class="badge bg-secondary">${alert.affectedPlants || 0}</span></td>
+                    <td>
+                        ${!alert.processed ? 
+                            `<button class="btn btn-sm btn-outline-success" onclick="acknowledgeWeatherAlert('${alert.id}')">
+                                <i class="fas fa-check"></i> Acquitter
+                            </button>` : 
+                            `<span class="badge bg-success">Traité</span>`
+                        }
+                    </td>
+                </tr>
+            `;
+        }).join('');
+        
+    } catch (error) {
+        console.error('Erreur chargement alertes météo:', error);
+        tbody.innerHTML = '<tr><td colspan="6" class="text-danger text-center">Erreur de chargement</td></tr>';
+    }
+}
+
+async function acknowledgeWeatherAlert(alertId) {
+    try {
+        const response = await fetch(`/api/weather/alerts/${alertId}/ack`, { method: 'POST' });
+        if (response.ok) {
+            await loadWeatherAlerts();
+        }
+    } catch (error) {
+        console.error('Erreur acquittement:', error);
     }
 }
 
