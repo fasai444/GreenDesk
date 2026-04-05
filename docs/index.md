@@ -57,6 +57,7 @@
 	- 4.3 [Feature 3 - Forêts & saisons](#43-feature-3--forêts--saisons)
 	- 4.4 [Feature 4 - Effets & stimuli](#44-feature-4--effets--stimuli)
 	- 4.5 [Feature 5 - Simulation & alertes](#45-feature-5--simulation--alertes)
+	- 4.5.1 [Feature V2.1 - Alertes météo](#451-feature-v21---alertes-météo)
 	- 4.6 [Feature 6 - Simulation écosystème](#46-feature-6--simulation-écosystème)
 	- 4.7 [Feature 7 - Greenhouse Ops (KPI / ROI)](#47-feature-7--greenhouse-ops-kpi--roi)
 	- 4.8 [Feature 8 - Capteurs (Sensor Readings)](#48-feature-8--capteurs-sensor-readings)
@@ -83,6 +84,16 @@
 	- 8.5 [Format d'erreur structuré](#85-format-derreur-structuré)
 
 ---
+
+## 4.5.1 Feature V2.1 - Alertes météo
+
+Cette section décrit la **Partie 2 de la feature V2.1**, réalisée pour l'ajout du traitement et de l'affichage des alertes météo.
+
+- Intégration de l'endpoint `POST /api/weather/webhook` pour la réception des alertes météo.
+- Vérification et validation des payloads reçus avant persistance.
+- Correction du traitement des coordonnées de forêts pour permettre le calcul du rayon d'impact des alertes.
+- Mise à jour de la documentation et du README pour refléter l'avancement de la fonctionnalité.
+- Ajout de scripts de test locaux : `test-weather.sh` et `test-weather.bat`.
 
 ## 1. Présentation Générale
 

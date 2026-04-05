@@ -20,6 +20,8 @@ public class WeatherAlert {
     private Map<String, Object> details;
     private boolean processed;
     private LocalDateTime processedAt;
+    private boolean acknowledged;
+    private LocalDateTime acknowledgedAt;
 
     // Constructeur par défaut (obligatoire pour MongoDB)
     public WeatherAlert() {}
@@ -108,5 +110,21 @@ public class WeatherAlert {
 
     public void setProcessedAt(LocalDateTime processedAt) {
         this.processedAt = processedAt;
+    }
+
+    public boolean isAcknowledged() {
+        return acknowledged;
+    }
+
+    public void setAcknowledged(boolean acknowledged) {
+        this.acknowledged = acknowledged;
+    }
+
+    public LocalDateTime getAcknowledgedAt() {
+        return acknowledgedAt;
+    }
+
+    public void setAcknowledgedAt(LocalDateTime acknowledgedAt) {
+        this.acknowledgedAt = acknowledgedAt;
     }
 }

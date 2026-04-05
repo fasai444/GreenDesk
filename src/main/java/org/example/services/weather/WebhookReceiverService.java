@@ -43,6 +43,8 @@ public class WebhookReceiverService {
     
     @Transactional
     public void processWebhook(TomorrowWebhookPayload payload) {
+        validatePayload(payload);
+
         // 1. Vérifier doublon
         if (weatherAlertRepository.findByEventId(payload.getEvent_id()).isPresent()) {
             return;
@@ -67,7 +69,10 @@ public class WebhookReceiverService {
             double sps = impactCalculator.calculateSPS(plant, isr, history);
             double previousStress = plant.getStressIndex();
             String previousState = plant.getPlantState().name();
-            
+
+            // Ajustements dynamiques selon phase de croissance (FLOWERING / FRUITING)
+            stateUpdater.applyDynamicAdjustments(plant, alert);
+
             stateUpdater.updatePlantState(plant, isr, sps);
             
             PlantImpact impact = new PlantImpact(
@@ -101,6 +106,16 @@ public class WebhookReceiverService {
         return weatherAlertRepository.save(alert);
     }
     
+    private void validatePayload(TomorrowWebhookPayload payload) {
+        if (payload == null
+                || payload.getEvent_id() == null || payload.getEvent_id().isBlank()
+                || payload.getType() == null || payload.getType().isBlank()
+                || payload.getCoords() == null || payload.getCoords().length != 2
+                || payload.getTimestamp() == null || payload.getTimestamp().isBlank()) {
+            throw new IllegalArgumentException("Payload webhook météo invalide");
+        }
+    }
+
     private List<Plant> findImpactedPlants(double[] coords) {
         List<Forest> forests = forestRepository.findAll();
         List<String> forestIds = new ArrayList<>();

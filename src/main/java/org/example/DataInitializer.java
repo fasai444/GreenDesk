@@ -68,11 +68,11 @@ public class DataInitializer implements CommandLineRunner {
         Species oak = speciesRepository.findByName("Oak").orElseThrow();
         Species pine = speciesRepository.findByName("Pine").orElseThrow();
 
-        Forest baseline = ensureForest("SCN-01 Baseline Jardin", 8, 8);
-        Forest heatwave = ensureForest("SCN-02 Canicule", 10, 10);
-        Forest rain = ensureForest("SCN-03 Pluie Intense", 10, 10);
-        Forest drought = ensureForest("SCN-04 Secheresse", 10, 10);
-        Forest mixed = ensureForest("SCN-05 Mixte Controle", 12, 8);
+        Forest baseline = ensureForest("SCN-01 Baseline Jardin", 8, 8, 48.8566, 2.3522);
+        Forest heatwave = ensureForest("SCN-02 Canicule", 10, 10, 48.8600, 2.3500);
+        Forest rain = ensureForest("SCN-03 Pluie Intense", 10, 10, 48.8500, 2.3400);
+        Forest drought = ensureForest("SCN-04 Secheresse", 10, 10, 48.8600, 2.3600);
+        Forest mixed = ensureForest("SCN-05 Mixte Controle", 12, 8, 48.8550, 2.3600);
 
         ensurePlantInForest("Baseline-Tomato-A", tomato, baseline, 2, 2);
         ensurePlantInForest("Baseline-Oak-B", oak, baseline, 5, 3);
@@ -120,9 +120,20 @@ public class DataInitializer implements CommandLineRunner {
         effectRepository.save(source);
     }
 
-    private Forest ensureForest(String name, int width, int height) {
+    private Forest ensureForest(String name, int width, int height, double lat, double lon) {
         return forestRepository.findByName(name)
-                .orElseGet(() -> forestRepository.save(new Forest(name, width, height)));
+                .map(forest -> {
+                    if (forest.getCoords() == null || forest.getCoords().length < 2) {
+                        forest.setCoords(new double[]{lat, lon});
+                        return forestRepository.save(forest);
+                    }
+                    return forest;
+                })
+                .orElseGet(() -> {
+                    Forest forest = new Forest(name, width, height);
+                    forest.setCoords(new double[]{lat, lon});
+                    return forestRepository.save(forest);
+                });
     }
 
     private void ensurePlantInForest(String plantName, Species species, Forest forest, int x, int y) {

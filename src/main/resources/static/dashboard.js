@@ -581,52 +581,75 @@ async function sendStimulus(type) {
     }
 }
 
-// ==================== NOUVEAU : ALERTES MÉTÉO ====================
+// ==================== ALERTES MÉTÉO ====================
+
+async function loadWeatherForestFilter() {
+    const select = document.getElementById('weatherForestFilter');
+    if (!select) return;
+    try {
+        const forests = await fetch('/api/forests').then(r => r.json());
+        forests.forEach(f => {
+            const opt = document.createElement('option');
+            opt.value = f.id;
+            opt.textContent = f.name;
+            select.appendChild(opt);
+        });
+    } catch (e) {
+        console.error('Erreur chargement forêts (filtre alertes):', e);
+    }
+}
 
 async function loadWeatherAlerts() {
     const tbody = document.getElementById('weatherAlertsTable');
     if (!tbody) return;
-    
+
     tbody.innerHTML = '<tr><td colspan="6" class="text-muted text-center">Chargement des alertes...</td></tr>';
-    
+
+    const forestId   = document.getElementById('weatherForestFilter')?.value || '';
+    const activeOnly = document.getElementById('activeOnlyCheck')?.checked || false;
+
+    let url = '/api/weather/alerts?';
+    if (forestId)   url += `forestId=${encodeURIComponent(forestId)}&`;
+    if (activeOnly) url += `activeOnly=true&`;
+
     try {
-        const response = await fetch('/api/weather/alerts');
-        const alerts = await response.json();
-        
+        const alerts = await fetch(url).then(r => r.json());
+
         if (!alerts.length) {
             tbody.innerHTML = '<tr><td colspan="6" class="text-muted text-center">Aucune alerte météo</td></tr>';
             return;
         }
-        
+
+        const typeIcon = t => t === 'heatwave' ? '🔥' : t === 'frost' ? '❄️' :
+                              t === 'heavy_rain' ? '🌧️' : t === 'high_wind' ? '💨' : '⚠️';
+
         tbody.innerHTML = alerts.map(alert => {
-            const severityClass = alert.severity === 'high' ? 'bg-danger' : 
+            const severityClass = alert.severity === 'high'   ? 'bg-danger' :
                                   alert.severity === 'medium' ? 'bg-warning text-dark' : 'bg-info';
-            const severityText = alert.severity === 'high' ? 'CRITIQUE' :
-                                 alert.severity === 'medium' ? 'ÉLEVÉE' : 'INFO';
-            
-            const typeIcon = alert.type === 'heatwave' ? '🔥' :
-                             alert.type === 'frost' ? '❄️' :
-                             alert.type === 'heavy_rain' ? '🌧️' : '⚠️';
-            
+            const severityText  = alert.severity === 'high'   ? 'CRITIQUE' :
+                                  alert.severity === 'medium' ? 'ÉLEVÉE' : 'INFO';
+
+            const statusBadge = alert.acknowledged
+                ? `<span class="badge bg-success">Acquitté</span>`
+                : `<span class="badge bg-secondary">En attente</span>`;
+
+            const actionBtn = !alert.acknowledged
+                ? `<button class="btn btn-sm btn-outline-success" onclick="acknowledgeWeatherAlert('${alert.id}')">
+                       <i class="fas fa-check"></i> Acquitter
+                   </button>`
+                : `<span class="text-muted small">${alert.acknowledgedAt ? new Date(alert.acknowledgedAt).toLocaleString() : '—'}</span>`;
+
             return `
                 <tr>
-                    <td><small>${new Date(alert.timestamp).toLocaleString()}</small></td>
-                    <td><span class="badge bg-light text-dark">${typeIcon} ${alert.type}</span></td>
+                    <td><small>${alert.timestamp ? new Date(alert.timestamp).toLocaleString() : '—'}</small></td>
+                    <td><span class="badge bg-light text-dark">${typeIcon(alert.type)} ${alert.type}</span></td>
                     <td><span class="badge ${severityClass}">${severityText}</span></td>
                     <td><small>${alert.coords ? `${alert.coords[0].toFixed(4)}, ${alert.coords[1].toFixed(4)}` : 'N/A'}</small></td>
-                    <td><span class="badge bg-secondary">${alert.affectedPlants || 0}</span></td>
-                    <td>
-                        ${!alert.processed ? 
-                            `<button class="btn btn-sm btn-outline-success" onclick="acknowledgeWeatherAlert('${alert.id}')">
-                                <i class="fas fa-check"></i> Acquitter
-                            </button>` : 
-                            `<span class="badge bg-success">Traité</span>`
-                        }
-                    </td>
-                </tr>
-            `;
+                    <td>${statusBadge}</td>
+                    <td>${actionBtn}</td>
+                </tr>`;
         }).join('');
-        
+
     } catch (error) {
         console.error('Erreur chargement alertes météo:', error);
         tbody.innerHTML = '<tr><td colspan="6" class="text-danger text-center">Erreur de chargement</td></tr>';
@@ -636,12 +659,13 @@ async function loadWeatherAlerts() {
 async function acknowledgeWeatherAlert(alertId) {
     try {
         const response = await fetch(`/api/weather/alerts/${alertId}/ack`, { method: 'POST' });
-        if (response.ok) {
-            await loadWeatherAlerts();
-        }
+        if (response.ok) await loadWeatherAlerts();
     } catch (error) {
         console.error('Erreur acquittement:', error);
     }
 }
 
-document.addEventListener('DOMContentLoaded', loadDashboardData);
+document.addEventListener('DOMContentLoaded', async () => {
+    await loadDashboardData();
+    await loadWeatherForestFilter();
+});

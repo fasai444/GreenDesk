@@ -34,6 +34,14 @@
 
 **v4.0** - *Livraison 3 (L3) + Plant Placement Optimizer (AI-powered)*
 
+### Feature V2.1 - Partie 2
+
+- Ajout de la prise en charge des alertes météo via webhook (`/api/weather/webhook`).
+- Correction du traitement des coordonnées de forêts pour le calcul des zones impactées.
+- Validation des payloads webhook avant persistance pour éviter les erreurs silencieuses.
+- Mise à jour de la documentation et du README pour refléter l'avancement de la fonctionnalité.
+- Ajout de scripts de test locaux : `test-weather.bat` et `test-weather.sh`.
+
 ## Technologies
 
 - **Back-end**: *Java 21, Spring Boot 3.3.3*

@@ -1,8 +1,6 @@
 package org.example.controllers.weather;
 
 import org.example.dto.weather.TomorrowWebhookPayload;
-import org.example.entities.weather.PlantImpact;
-import org.example.entities.weather.WeatherAlert;
 import org.example.repositories.PlantImpactRepository;
 import org.example.repositories.WeatherAlertRepository;
 import org.example.services.weather.WebhookReceiverService;
@@ -13,9 +11,6 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -123,46 +118,11 @@ class WeatherWebhookControllerTest {
     @Test
     @DisplayName("GET /alerts - Retourne 200 OK")
     void testGetAlerts_ReturnsOk() {
-        // Passer null pour plantId pour utiliser findAll()
-        ResponseEntity<?> response = weatherWebhookController.getAlerts(null, true);
+        // Passer null pour forestId et plantId pour utiliser findAll()
+        ResponseEntity<?> response = weatherWebhookController.getAlerts(null, null, true);
         
         assertEquals(HttpStatus.OK, response.getStatusCode());
         verify(weatherAlertRepository, times(1)).findAll();
-    }
-
-    @GetMapping("/alerts")
-    public ResponseEntity<?> getAlerts(@RequestParam(required = false) String plantId,
-                                    @RequestParam(defaultValue = "true") boolean activeOnly) {
-        try {
-            List<WeatherAlert> alerts = new ArrayList<>();  // Initialiser avec une liste vide
-            if (plantId != null && !plantId.isEmpty()) {
-                List<PlantImpact> impacts = plantImpactRepository.findByPlantIdOrderByTimestampDesc(plantId);
-                List<String> alertIds = impacts.stream()
-                        .map(PlantImpact::getAlertId)
-                        .distinct()
-                        .toList();
-                if (!alertIds.isEmpty()) {
-                    alerts = weatherAlertRepository.findAllById(alertIds);
-                }
-            } else {
-                alerts = weatherAlertRepository.findAll();
-                if (alerts == null) {
-                    alerts = new ArrayList<>();
-                }
-            }
-            
-            if (activeOnly && alerts != null) {
-                alerts = alerts.stream().filter(a -> !a.isProcessed()).toList();
-            }
-            
-            if (alerts != null && !alerts.isEmpty()) {
-                alerts.sort((a, b) -> b.getTimestamp().compareTo(a.getTimestamp()));
-            }
-            
-            return ResponseEntity.ok(alerts != null ? alerts : new ArrayList<>());
-        } catch (Exception e) {
-            return ResponseEntity.status(500).body(Map.of("error", e.getMessage()));
-        }
     }
 
     // ==================== TESTS DE SÉCURITÉ ====================
@@ -206,12 +166,13 @@ class WeatherWebhookControllerTest {
     void testDebugGetAlertsResponse() {
         when(weatherAlertRepository.findAll()).thenReturn(new ArrayList<>());
         
-        ResponseEntity<?> response = weatherWebhookController.getAlerts(null, true);
+        ResponseEntity<?> response = weatherWebhookController.getAlerts(null, null, true);
         
         System.err.println("=== RÉPONSE ===");
         System.err.println("Status: " + response.getStatusCode());
         System.err.println("Body: " + response.getBody());
-        System.err.println("Body class: " + (response.getBody() != null ? response.getBody().getClass() : "null"));
+        Object body = response.getBody();
+        System.err.println("Body class: " + (body != null ? body.getClass() : "null"));
         
         assertEquals(HttpStatus.OK, response.getStatusCode());
     }
