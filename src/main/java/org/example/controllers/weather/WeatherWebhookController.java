@@ -7,6 +7,7 @@ import org.example.entities.weather.WeatherAlert;
 import org.example.repositories.PlantImpactRepository;
 import org.example.repositories.PlantRepository;
 import org.example.repositories.WeatherAlertRepository;
+import org.example.services.NotificationService;
 import org.example.services.weather.WeatherAlertConfigService;
 import org.example.services.weather.WebhookReceiverService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +39,9 @@ public class WeatherWebhookController {
 
     @Autowired
     private WeatherAlertConfigService weatherAlertConfigService;
+
+    @Autowired
+    private NotificationService notificationService;
 
     // ⬇️⬇️⬇️ AJOUTER CES SETTERS POUR LES TESTS ⬇️⬇️⬇️
     public void setWebhookReceiverService(WebhookReceiverService webhookReceiverService) {
@@ -164,4 +168,43 @@ public class WeatherWebhookController {
             return ResponseEntity.status(500).body(Map.of("error", e.getMessage()));
         }
     }
+
+    // GET /api/notifications - Récupérer les notifications
+    @GetMapping("/notifications")
+    public ResponseEntity<?> getNotifications(@RequestParam(defaultValue = "false") boolean unreadOnly) {
+        try {
+            List<NotificationService.Notification> notifications;
+            if (unreadOnly) {
+                notifications = notificationService.getUnreadNotifications();
+            } else {
+                notifications = notificationService.getAllNotifications();
+            }
+            return ResponseEntity.ok(notifications);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    // POST /api/notifications/{id}/read - Marquer une notification comme lue
+    @PostMapping("/notifications/{id}/read")
+    public ResponseEntity<?> markNotificationAsRead(@PathVariable String id) {
+        try {
+            notificationService.markAsRead(id);
+            return ResponseEntity.ok(Map.of("message", "Notification marquée comme lue"));
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    // POST /api/notifications/read-all - Marquer toutes les notifications comme lues
+    @PostMapping("/notifications/read-all")
+    public ResponseEntity<?> markAllAsRead() {
+        try {
+            notificationService.markAllAsRead();
+            return ResponseEntity.ok(Map.of("message", "Toutes les notifications marquées comme lues"));
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(Map.of("error", e.getMessage()));
+        }
+    }
+
 }

@@ -1,10 +1,13 @@
 package org.example.controllers.plant;
 
 import org.example.entities.plant.Plant;
+import org.example.entities.plant.PlantMeasurement;
+import org.example.entities.plant.PlantState;
 import org.example.entities.species.Species;
 import org.example.entities.Stimulus;
 import org.example.repositories.EffectRepository;
 import org.example.repositories.PlantEffectRepository;
+import org.example.repositories.PlantRepository;
 import org.example.repositories.StimulusRepository;
 import org.example.services.ForestService;
 import org.example.services.PlantService;
@@ -19,6 +22,9 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import org.example.services.weather.PlantCalibrationService;
+import org.example.repositories.PlantRepository;
 
 @RestController
 @RequestMapping({ "/plants", "/api/plants" })
@@ -41,6 +47,12 @@ public class PlantController {
 
     @Autowired
     private StimulusRepository stimulusRepository;
+
+    @Autowired
+    private PlantCalibrationService calibrationService;
+
+    @Autowired
+    private PlantRepository plantRepository;
 
     // --- Créer une plante ---
     @PostMapping("/create")
@@ -340,4 +352,59 @@ public class PlantController {
                         "y", posY)));
         return report;
     }
+
+    // POST /plants/{id}/measure - Saisie manuelle
+    @PostMapping("/{id}/measure")
+    public ResponseEntity<?> recordManualMeasurement(
+            @PathVariable String id,
+            @RequestBody Map<String, Object> body) {
+        try {
+            Double height = body.containsKey("heightCm") ? ((Number) body.get("heightCm")).doubleValue() : null;
+            Double water = body.containsKey("waterAddedMl") ? ((Number) body.get("waterAddedMl")).doubleValue() : null;
+            String state = (String) body.get("observedState");
+            String notes = (String) body.get("notes");
+
+            PlantMeasurement measurement = calibrationService.recordMeasurement(id, height, water, state, notes);
+            return ResponseEntity.ok(measurement);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    // GET /plants/{id}/measurements - Historique des mesures
+    @GetMapping("/{id}/measurements")
+    public ResponseEntity<?> getMeasurementHistory(@PathVariable String id) {
+        try {
+            List<PlantMeasurement> measurements = calibrationService.getMeasurementHistory(id);
+            return ResponseEntity.ok(measurements);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    @PutMapping("/{id}/force-state")
+    public ResponseEntity<?> forcePlantState(@PathVariable String id, 
+                                            @RequestParam double stressIndex,
+                                            @RequestParam String plantState,
+                                            @RequestParam(required = false) Double waterLevel,
+                                            @RequestParam(required = false) Double temperature,
+                                            @RequestParam(required = false) Double humidity,
+                                            @RequestParam(required = false) Double lux) {
+        try {
+            Plant plant = plantRepository.findById(id).orElseThrow();
+            
+            if (waterLevel != null) plant.setWaterLevel(waterLevel);
+            if (temperature != null) plant.setTemperature(temperature);
+            if (humidity != null) plant.setHumidity(humidity);
+            if (lux != null) plant.setLux(lux);
+            
+            plant.setStressIndex(stressIndex);
+            plant.setPlantState(PlantState.valueOf(plantState.toUpperCase()));
+            plantRepository.save(plant);
+            return ResponseEntity.ok(plant);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(Map.of("error", e.getMessage()));
+        }
+    }
+
 }

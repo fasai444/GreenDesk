@@ -346,6 +346,7 @@ async function loadDashboardData() {
 
         await loadForestsForSelect(forests);
         fillPlantSelectors(plants);
+        fillPredictPlantSelector();
         await loadLiveEffectsImpact();
         await loadGreenhouseAlerts();
         await loadRoiPanels();
@@ -669,3 +670,155 @@ document.addEventListener('DOMContentLoaded', async () => {
     await loadDashboardData();
     await loadWeatherForestFilter();
 });
+
+// ==================== PRÉDICTIONS ====================
+
+let predictionChart = null;
+
+async function loadPredictions() {
+    const plantId = document.getElementById('predictPlantSelect')?.value;
+    const days = document.getElementById('predictDaysSelect')?.value || 7;
+    
+    if (!plantId) {
+        showDashboardFeedback('Veuillez sélectionner une plante', 'warning');
+        return;
+    }
+    
+    const alertDiv = document.getElementById('predictionAlert');
+    const alertMessage = document.getElementById('predictionAlertMessage');
+    
+    try {
+        const response = await fetch(`/api/predictions/plant/${plantId}?days=${days}`);
+        const data = await response.json();
+        
+        if (data.error) {
+            showDashboardFeedback(data.error, 'danger');
+            return;
+        }
+        
+        if (data.alert) {
+            alertMessage.textContent = data.alert.message;
+            alertDiv.classList.remove('d-none');
+        } else {
+            alertDiv.classList.add('d-none');
+        }
+        
+        const labels = data.stressPredictions.map(p => {
+            const date = new Date(p.date);
+            return date.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' });
+        });
+        
+        const stressValues = data.stressPredictions.map(p => (p.value * 100).toFixed(1));
+        const heightValues = data.heightPredictions.map(p => p.value.toFixed(1));
+        
+        labels.unshift('Aujourd\'hui');
+        stressValues.unshift((data.currentStress * 100).toFixed(1));
+        heightValues.unshift(data.currentHeight.toFixed(1));
+        
+        if (predictionChart) {
+            predictionChart.destroy();
+        }
+        
+        const ctx = document.getElementById('predictionChart').getContext('2d');
+        predictionChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                        label: 'Stress (%)',
+                        data: stressValues,
+                        borderColor: 'rgb(255, 99, 132)',
+                        backgroundColor: 'rgba(255, 99, 132, 0.1)',
+                        borderWidth: 2,
+                        borderDash: [5, 5],
+                        tension: 0.3,
+                        fill: true,
+                        yAxisID: 'y'
+                    },
+                    {
+                        label: 'Hauteur (cm)',
+                        data: heightValues,
+                        borderColor: 'rgb(75, 192, 192)',
+                        backgroundColor: 'rgba(75, 192, 192, 0.1)',
+                        borderWidth: 2,
+                        borderDash: [],
+                        tension: 0.3,
+                        fill: true,
+                        yAxisID: 'y1'
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                interaction: {
+                    mode: 'index',
+                    intersect: false,
+                },
+                plugins: {
+                    title: {
+                        display: true,
+                        text: `Prédictions pour ${data.plantName}`
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                let label = context.dataset.label || '';
+                                let value = context.raw;
+                                let unit = context.dataset.label.includes('Stress') ? '%' : ' cm';
+                                return `${label}: ${value}${unit}`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Stress (%)'
+                        },
+                        min: 0,
+                        max: 100,
+                        ticks: {
+                            callback: function(value) {
+                                return value + '%';
+                            }
+                        }
+                    },
+                    y1: {
+                        position: 'right',
+                        title: {
+                            display: true,
+                            text: 'Hauteur (cm)'
+                        },
+                        min: 0,
+                        grid: {
+                            drawOnChartArea: false,
+                        },
+                    }
+                }
+            }
+        });
+        
+        showDashboardFeedback('Prédictions chargées', 'success');
+    } catch (error) {
+        console.error('Erreur chargement prédictions:', error);
+        showDashboardFeedback(`Erreur: ${error.message}`, 'danger');
+    }
+}
+
+function fillPredictPlantSelector() {
+    const select = document.getElementById('predictPlantSelect');
+    if (!select || !cachedPlants) return;
+    
+    const options = ['<option value="" selected disabled>-- Choisir une plante --</option>']
+        .concat(
+            [...cachedPlants]
+                .sort((a, b) => String(a.name || '').localeCompare(String(b.name || '')))
+                .map(plant => `<option value="${plant.id}">${escapeHtml(plant.name)} · ${escapeHtml(plant.species?.name || 'N/A')}</option>`)
+        )
+        .join('');
+    
+    select.innerHTML = options;
+} 

@@ -27,6 +27,8 @@ public class Species {
     private boolean sensitiveToWind = true;
     private boolean sensitiveToUV = true;
 
+    private double maxHeight = 100.0;  // Hauteur maximale en cm (valeur par défaut)
+
     //--------------CONSTRUCTEURS--------------
 
     // Constructeur vide (Modifié en Public pour que Spring/DataInitializer puisse l'utiliser librement)
@@ -177,5 +179,13 @@ public class Species {
 
     public void setSensitiveToUV(boolean sensitiveToUV) {
         this.sensitiveToUV = sensitiveToUV;
+    }
+
+    public double getMaxHeight() {
+        return maxHeight;
+    }
+
+    public void setMaxHeight(double maxHeight) {
+        this.maxHeight = maxHeight;
     }
 }

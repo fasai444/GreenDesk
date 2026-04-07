@@ -23,6 +23,9 @@ public class PlantAlertService {
     private static final int DEDUP_MINUTES = 30;
 
     @Autowired
+    private NotificationService notificationService;    
+
+    @Autowired
     private PlantAlertRepository plantAlertRepository;
 
     public List<PlantAlert> getAlertsForPlant(String plantId, boolean activeOnly) {
@@ -114,5 +117,17 @@ public class PlantAlertService {
         PlantAlert alert = new PlantAlert(plantId, now, type, severity, message);
         PlantAlert saved = plantAlertRepository.save(alert);
         created.add(saved);
+
+        // Envoyer une notification pour les alertes CRITICAL
+        if (severity == AlertSeverity.CRITICAL) {
+            notificationService.sendNotification(
+                "PLANT_CRITICAL",
+                "Alerte critique - Plante",
+                message,
+                plantId,
+                null
+            );
+        }
     }
 }
+

@@ -38,6 +38,13 @@ public class Plant {
     private Integer x;            // Position X dans la forêt (optionnel)
     private Integer y;            // Position Y dans la forêt (optionnel)
     private int variationSeed;    // Graine de variation pour R2 (diversité)
+
+    // Paramètres de calage individuel (Partie 3)
+    private double waterSensitivity = 1.0;
+    private double tempSensitivity = 1.0;
+    private double lightSensitivity = 1.0;
+    private double growthFactor = 1.0;
+
     //--------------CONSTRCUTEURS--------------
     //Constructeur à utiliser lorsque l'on créè une plante avec des données de l'environnement
     public Plant(String name, Species species, double waterLevel, double temperature, double humidity, double lux) {
@@ -239,6 +246,30 @@ public class Plant {
 
     public void setGrowthStage(GrowthStage growthStage) {
         this.growthStage = growthStage;
+    }
+
+    public double getWaterSensitivity() { 
+        return waterSensitivity; 
+    }
+    public void setWaterSensitivity(double waterSensitivity) {
+        this.waterSensitivity = waterSensitivity; 
+    }
+    public double getTempSensitivity() { 
+        return tempSensitivity; 
+    }
+    public void setTempSensitivity(double tempSensitivity) { 
+        this.tempSensitivity = tempSensitivity; 
+    }
+    public double getLightSensitivity() { 
+        return lightSensitivity; 
+    }
+    public void setLightSensitivity(double lightSensitivity) { 
+        this.lightSensitivity = lightSensitivity; 
+    }
+    public double getGrowthFactor() { 
+        return growthFactor; }
+    public void setGrowthFactor(double growthFactor) { 
+        this.growthFactor = growthFactor; 
     }
     
 }
