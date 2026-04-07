@@ -30,17 +30,7 @@
 
 **GreenDesk** est une application **Spring Boot** + **MongoDB** dédiée à la gestion et à la simulation de plantes et d'espèces végétales. L'application permet de gérer les espèces, les plantes, d'évaluer leur état **(stress, santé)** et d'exposer ces informations via une **API REST**.
 
-## Version
 
-**v4.0** - *Livraison 3 (L3) + Plant Placement Optimizer (AI-powered)*
-
-### Feature V2.1 - Partie 2
-
-- Ajout de la prise en charge des alertes météo via webhook (`/api/weather/webhook`).
-- Correction du traitement des coordonnées de forêts pour le calcul des zones impactées.
-- Validation des payloads webhook avant persistance pour éviter les erreurs silencieuses.
-- Mise à jour de la documentation et du README pour refléter l'avancement de la fonctionnalité.
-- Ajout de scripts de test locaux : `test-weather.bat` et `test-weather.sh`.
 
 ## Technologies
 
@@ -221,6 +211,59 @@ Validation stimulus (`POST /api/stimuli`) :
 - `POST /api/placement/optimize-and-apply/{forestId}` - Optimiser et appliquer
 - `GET /api/placement/heatmap/{forestId}?species=X` - Générer heatmap
 - `GET /api/placement/suggest/{forestId}?species=X` - Meilleure position unique
+
+
+## Version
+
+**v5.0** - *Jumeau numérique météo + Assistant prédictif (Parties 1, 2 et 3)*
+
+### Feature V1 - Jumeau numérique météo (Partie 1)
+
+- Webhook météo (`POST /api/weather/webhook`) pour recevoir les alertes Tomorrow.io (canicule, gel, pluie intense, vent fort, UV).
+- Calcul de l’**Indice de Stress des Plantes (ISR)** et du **Score de Priorité des Soins (SPS)**.
+- Mise à jour automatique du `stressIndex` et de l’état des plantes (`HEALTHY`, `STRESSED`, `DISEASED`).
+- Historisation des alertes (`WeatherAlert`) et des impacts (`PlantImpact`).
+- Endpoints REST : 
+  - `GET /api/weather/alerts` (filtrage par forêt, alertes non acquittées)
+  - `POST /api/weather/alerts/{id}/ack` (acquittement)
+  - `GET /api/weather/impact/{plantId}` (historique des impacts)
+  - `POST /api/weather/alert-config` (configuration des seuils sur Tomorrow.io)
+- Interface dashboard : section “Alertes météo” avec filtres et bouton d’acquittement.
+
+### Feature V2 - Améliorations des alertes météo (Partie 2)
+
+- Correction du traitement des coordonnées de forêts pour le calcul des zones impactées.
+- Validation des payloads webhook avant persistance pour éviter les erreurs silencieuses.
+- Mise à jour de la documentation et du README pour refléter l'avancement de la fonctionnalité.
+- Ajout de scripts de test locaux : `test-weather.bat` et `test-weather.sh`.
+
+### Feature V3 - Vrai jumeau numérique (Partie 3)
+
+#### 1. Saisie manuelle (Pull)
+- L’utilisateur peut enregistrer l’état réel de sa plante (hauteur mesurée, eau apportée, état observé).
+- Stockage dans `PlantMeasurement`.
+- Endpoints : `POST /plants/{id}/measure`, `GET /plants/{id}/measurements`.
+
+#### 2. Calage individuel (apprentissage)
+- Chaque plante possède des sensibilités personnalisées : `waterSensitivity`, `tempSensitivity`, `lightSensitivity`, `growthFactor`.
+- À chaque mesure, le système compare le simulé avec le réel et ajuste automatiquement ces paramètres (pas d’apprentissage `LEARNING_RATE = 0.2`).
+- Bornes : [0,5 – 1,5].
+
+#### 3. Notifications (Push)
+- Les alertes de sévérité `CRITICAL` déclenchent une notification visible dans le dashboard.
+- Stockage des notifications (consultables via API).
+- Endpoints : `GET /api/weather/notifications`, `POST /api/weather/notifications/{id}/read`, `POST /api/weather/notifications/read-all`.
+
+#### 4. Prédictions (courbes en pointillés)
+- Prédiction de l’évolution du stress et de la hauteur sur 3, 7, 14 ou 30 jours (modèle croissance logistique + tendance du stress).
+- Affichage graphique dans le dashboard via **Chart.js** (courbe de stress en rouge pointillé, hauteur en vert).
+- Alerte prédictive si le stress maximal prévu dépasse 70 %.
+- Endpoint : `GET /api/predictions/plant/{plantId}?days=7`.
+
+#### 5. Forçage d’état (debug)
+- `PUT /plants/{id}/force-state` pour modifier directement le stress et l’état d’une plante sans recalcul.
+
+
 
 **Documentation complète** :
 - [PLACEMENT_OPTIMIZER_GUIDE.md](PLACEMENT_OPTIMIZER_GUIDE.md) - Tutoriel complet

@@ -34,4 +34,5 @@ public class PlantAlertController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+    
 }
