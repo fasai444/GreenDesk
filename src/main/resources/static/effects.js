@@ -3,7 +3,10 @@ const API_GREENHOUSE_OVERVIEW = '/api/greenhouse/overview';
 
 let effectsCache = [];
 
-document.addEventListener('DOMContentLoaded', loadEffects);
+document.addEventListener('DOMContentLoaded', async () => {
+    if (!await AUTH.requireAuth()) return;
+    loadEffects();
+});
 
 function showEffectsFeedback(message, variant = 'info') {
     const feedback = document.getElementById('effectsFeedback');

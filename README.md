@@ -215,6 +215,55 @@ Validation stimulus (`POST /api/stimuli`) :
 
 ## Version
 
+**v6.0** - *Système d'authentification + Protection des pages*
+
+### Feature V6 - Authentification & Sécurité
+
+#### Nouvelles fonctionnalités
+
+- **Système d'authentification complet** basé sur Spring Security (sessions HTTP)
+  - Inscription (`POST /api/auth/register`) avec validation des champs
+  - Connexion (`POST /api/auth/login`) avec gestion de session
+  - Déconnexion (`POST /api/auth/logout`)
+  - Profil utilisateur courant (`GET /api/auth/me`)
+
+- **Gestion des rôles** : `USER` et `ADMIN`
+  - Espace administration protégé (`/api/admin/**`) accessible uniquement aux admins
+  - Contrôleur dédié `AdminController` pour la gestion des utilisateurs
+
+- **Nouvelles pages frontend**
+  - `login.html` — Page de connexion (point d'entrée de l'application)
+  - `register.html` — Page d'inscription
+  - `admin.html` — Tableau de bord administrateur (rôle ADMIN requis)
+
+- **Protection de toutes les pages**
+  - `auth-guard.js` — Script de garde d'authentification côté frontend
+  - Toutes les pages protégées redirigent vers `/login.html` si non connecté
+  - Correction du bug de chargement dans `placement-optimizer.html` (auth-guard chargé avant le script inline)
+
+- **Comptes de démonstration** (initialisés automatiquement au démarrage)
+  - `admin` / `admin123` (rôle ADMIN)
+  - `demo` / `demo123` (rôle USER)
+
+#### Nouveaux fichiers
+
+| Fichier | Rôle |
+|---|---|
+| `config/SecurityConfig.java` | Configuration Spring Security |
+| `controllers/auth/AuthController.java` | Endpoints login/register/logout/me |
+| `controllers/auth/AdminController.java` | Endpoints gestion utilisateurs (admin) |
+| `entities/user/User.java` | Entité utilisateur MongoDB |
+| `repositories/UserRepository.java` | Accès MongoDB pour User |
+| `services/UserService.java` | Logique métier utilisateurs |
+| `services/CustomUserDetailsService.java` | Intégration Spring Security |
+| `dto/auth/` | DTOs LoginRequest, CreateUserRequest, UserResponseDto… |
+| `static/login.html` | Page de connexion |
+| `static/register.html` | Page d'inscription |
+| `static/admin.html` | Interface d'administration |
+| `static/auth-guard.js` | Protection frontend des pages |
+
+---
+
 **v5.0** - *Jumeau numérique météo + Assistant prédictif (Parties 1, 2 et 3)*
 
 ### Feature V1 - Jumeau numérique météo (Partie 1)
@@ -276,7 +325,7 @@ Validation stimulus (`POST /api/stimuli`) :
 ./scripts/demo-placement-optimizer.sh   # Linux/Mac
 ```
 
-**Interface Web** : [http://localhost:8080/placement-optimizer.html](http://localhost:8080/placement-optimizer.html)
+**Interface Web** : [http://localhost:8081/placement-optimizer.html](http://localhost:8081/placement-optimizer.html)
 
 ## Structure du projet
 
@@ -378,7 +427,7 @@ spring.data.mongodb.database=greendesk
 # SPRING_DATA_MONGODB_URI=mongodb+srv://USER:PASSWORD@cluster.mongodb.net/greendesk
 # SPRING_DATA_MONGODB_DATABASE=greendesk
 
-server.port=8080
+server.port=8081
 ```
 
 3. **Lancer l'application**
@@ -387,20 +436,17 @@ server.port=8080
 ./gradlew bootRun
 ```
 
-L'application démarre sur **http://localhost:8080**.
+L'application démarre sur **http://localhost:8081**.
 
 Accès recommandés :
 
-- **Accueil (parcours utilisateur)** : http://localhost:8080/home.html
-- **Tableau de bord (cockpit)** : http://localhost:8080/dashboard.html
-- **Simulation** : http://localhost:8080/index.html
-- **Swagger UI** : http://localhost:8080/swagger-ui.html
+- **Connexion (page de démarrage)** : http://localhost:8081/login.html
+- **Accueil (parcours utilisateur)** : http://localhost:8081/home.html
+- **Tableau de bord (cockpit)** : http://localhost:8081/dashboard.html
+- **Simulation** : http://localhost:8081/index.html
+- **Swagger UI** : http://localhost:8081/swagger-ui.html
 
-Si le port `8080` est déjà occupé, lancer sur un autre port :
-
-```bash
-./gradlew bootRun --args='--server.port=8081'
-```
+> **Note** : Le port par défaut de cette application est **8081** (configuré dans `application.properties`). En tapant `http://localhost:8081` dans votre navigateur, vous serez automatiquement redirigé vers la page de connexion.
 
 ### Option 2: Lancement avec Docker (recommandé)
 
@@ -417,7 +463,7 @@ docker compose up -d
 
 **Cette commande lance** :
 
-- **app**: Application **Spring Boot (port 8080)**
+- **app**: Application **Spring Boot (port 8081)**
 - **mongodb**: Base de données **MongoDB (port 27017)**
 - **mongo-express**: Interface web **MongoDB (port 8081)**
 
@@ -436,9 +482,9 @@ docker compose logs -f app
 
 4. **Accès aux services**
 
-- **Application API**: http://localhost:8080
-- **Swagger UI**: http://localhost:8080/swagger-ui.html
-- **OpenAPI Docs**: http://localhost:8080/v3/api-docs
+- **Application API**: http://localhost:8081
+- **Swagger UI**: http://localhost:8081/swagger-ui.html
+- **OpenAPI Docs**: http://localhost:8081/v3/api-docs
 - **Mongo Express**: http://localhost:8081 (admin/admin)
 - **MongoDB**: mongodb://localhost:27017
 
@@ -460,7 +506,7 @@ Voir [docs/docker.md](docs/docker.md) pour la documentation Docker complète.
 
 Accéder à **Swagger UI** pour une documentation interactive complète :
 
-- **URL**: http://localhost:8080/swagger-ui.html
+- **URL**: http://localhost:8081/swagger-ui.html
 - Tous les points d'entrée y sont documentés avec possibilité de test direct
 
 ### Exemples d'utilisation
@@ -470,7 +516,7 @@ Accéder à **Swagger UI** pour une documentation interactive complète :
 **Créer une espèce**
 
 ```bash
-curl -X POST http://localhost:8080/api/species \
+curl -X POST http://localhost:8081/api/species \
 -H "Content-Type: application/json" \
 -d '{
   "name": "Tomato",
@@ -486,19 +532,19 @@ curl -X POST http://localhost:8080/api/species \
 **Lister toutes les espèces**
 
 ```bash
-curl http://localhost:8080/api/species
+curl http://localhost:8081/api/species
 ```
 
 **Récupérer une espèce par nom**
 
 ```bash
-curl http://localhost:8080/api/species/Tomato
+curl http://localhost:8081/api/species/Tomato
 ```
 
 **Mettre à jour une espèce**
 
 ```bash
-curl -X PUT http://localhost:8080/api/species/SPECIES_ID \
+curl -X PUT http://localhost:8081/api/species/SPECIES_ID \
 -H "Content-Type: application/json" \
 -d '{"optimalWaterNeeds": 250}'
 ```
@@ -506,7 +552,7 @@ curl -X PUT http://localhost:8080/api/species/SPECIES_ID \
 **Supprimer une espèce**
 
 ```bash
-curl -X DELETE http://localhost:8080/api/species/SPECIES_ID
+curl -X DELETE http://localhost:8081/api/species/SPECIES_ID
 ```
 
 #### Gestion des plantes
@@ -514,25 +560,25 @@ curl -X DELETE http://localhost:8080/api/species/SPECIES_ID
 **Créer une plante**
 
 ```bash
-curl -X POST "http://localhost:8080/plants/create?name=Tomato_Plant_1&speciesId=SPECIES_ID"
+curl -X POST "http://localhost:8081/plants/create?name=Tomato_Plant_1&speciesId=SPECIES_ID"
 ```
 
 **Lister toutes les plantes**
 
 ```bash
-curl http://localhost:8080/plants
+curl http://localhost:8081/plants
 ```
 
 **Récupérer une plante par ID**
 
 ```bash
-curl http://localhost:8080/plants/PLANT_ID
+curl http://localhost:8081/plants/PLANT_ID
 ```
 
 **Consulter l'état d'une plante**
 
 ```bash
-curl http://localhost:8080/plants/PLANT_ID/state
+curl http://localhost:8081/plants/PLANT_ID/state
 ```
 
 **Réponse possible**: `HEALTHY`, `STRESSED`, `DORMANT`, `DISEASED`
@@ -540,13 +586,13 @@ curl http://localhost:8080/plants/PLANT_ID/state
 **Mettre à jour une plante**
 
 ```bash
-curl -X PUT "http://localhost:8080/plants/PLANT_ID?water=220&temperature=23"
+curl -X PUT "http://localhost:8081/plants/PLANT_ID?water=220&temperature=23"
 ```
 
 **Supprimer une plante**
 
 ```bash
-curl -X DELETE http://localhost:8080/plants/PLANT_ID
+curl -X DELETE http://localhost:8081/plants/PLANT_ID
 ```
 
 #### Gestion des forêts
@@ -554,7 +600,7 @@ curl -X DELETE http://localhost:8080/plants/PLANT_ID
 **Créer une forêt**
 
 ```bash
-curl -X POST http://localhost:8080/api/forests \
+curl -X POST http://localhost:8081/api/forests \
 -H "Content-Type: application/json" \
 -d '{
   "name": "Forest1",
@@ -566,19 +612,19 @@ curl -X POST http://localhost:8080/api/forests \
 **Ajouter une plante à une forêt**
 
 ```bash
-curl -X POST "http://localhost:8080/api/forests/FOREST_ID/plants/PLANT_ID?x=3&y=5"
+curl -X POST "http://localhost:8081/api/forests/FOREST_ID/plants/PLANT_ID?x=3&y=5"
 ```
 
 **Lister les plantes d'une forêt**
 
 ```bash
-curl http://localhost:8080/api/forests/FOREST_ID/plants
+curl http://localhost:8081/api/forests/FOREST_ID/plants
 ```
 
 **Supprimer une forêt**
 
 ```bash
-curl -X DELETE http://localhost:8080/api/forests/FOREST_ID
+curl -X DELETE http://localhost:8081/api/forests/FOREST_ID
 ```
 
 #### Gestion des saisons
@@ -586,25 +632,25 @@ curl -X DELETE http://localhost:8080/api/forests/FOREST_ID
 **Lister toutes les saisons disponibles**
 
 ```bash
-curl http://localhost:8080/api/seasons
+curl http://localhost:8081/api/seasons
 ```
 
 **Récupérer une saison par type**
 
 ```bash
-curl http://localhost:8080/api/seasons/WINTER
+curl http://localhost:8081/api/seasons/WINTER
 ```
 
 **Obtenir la saison actuelle d'une forêt**
 
 ```bash
-curl http://localhost:8080/api/forests/FOREST_ID/current-season
+curl http://localhost:8081/api/forests/FOREST_ID/current-season
 ```
 
 **Faire progresser la saison d'une forêt**
 
 ```bash
-curl -X POST http://localhost:8080/api/forests/FOREST_ID/advance-season
+curl -X POST http://localhost:8081/api/forests/FOREST_ID/advance-season
 ```
 
 #### Gestion des effets
@@ -612,31 +658,31 @@ curl -X POST http://localhost:8080/api/forests/FOREST_ID/advance-season
 **Lister tous les effets disponibles**
 
 ```bash
-curl http://localhost:8080/api/effects
+curl http://localhost:8081/api/effects
 ```
 
 **Récupérer un effet par nom**
 
 ```bash
-curl http://localhost:8080/api/effects/Shade
+curl http://localhost:8081/api/effects/Shade
 ```
 
 **Appliquer un effet à une plante**
 
 ```bash
-curl -X POST http://localhost:8080/api/plants/PLANT_ID/effects/EFFECT_ID
+curl -X POST http://localhost:8081/api/plants/PLANT_ID/effects/EFFECT_ID
 ```
 
 **Lister les effets actifs d'une plante**
 
 ```bash
-curl http://localhost:8080/api/plants/PLANT_ID/effects
+curl http://localhost:8081/api/plants/PLANT_ID/effects
 ```
 
 **Retirer un effet d'une plante**
 
 ```bash
-curl -X DELETE http://localhost:8080/api/plants/effects/PLANT_EFFECT_ID
+curl -X DELETE http://localhost:8081/api/plants/effects/PLANT_EFFECT_ID
 ```
 
 ## Tests
@@ -808,13 +854,13 @@ Voir [docs/docker.md](docs/docker.md) pour:
 **Lancer un tick unique** 
 
 ```bash
-curl -X POST http://localhost:8080/api/ecosystem/tick
+curl -X POST http://localhost:8081/api/ecosystem/tick
 ```
 
 **Simuler plusieurs ticks**
 
 ```bash
-curl -X POST http://localhost:8080/api/ecosystem/simulate/{n}
+curl -X POST http://localhost:8081/api/ecosystem/simulate/{n}
 ```
 **Consulter l'état des cellules:**
   - Coordonnées [x,y]
@@ -823,7 +869,7 @@ curl -X POST http://localhost:8080/api/ecosystem/simulate/{n}
   - Niveau de sévérité
 
 ```bash
-curl http://localhost:8080/api/ecosystem/cells
+curl http://localhost:8081/api/ecosystem/cells
 ```
 
 **Exemple de script complet**
@@ -832,7 +878,7 @@ curl http://localhost:8080/api/ecosystem/cells
 
 
 # 1. Récupérer l'ID de l'espèce Tomato qui est déjà présent en base de données
-SPECIES_ID=$(curl -s http://localhost:8080/api/species | jq -r '.[] | select(.name=="Tomato") | .id')
+SPECIES_ID=$(curl -s http://localhost:8081/api/species | jq -r '.[] | select(.name=="Tomato") | .id')
 echo "ID de l'espèce Tomato: $SPECIES_ID"
 
 # Créer une forêt
@@ -840,7 +886,7 @@ FOREST_NAME="SimulationForest"
 FOREST_WIDTH=10
 FOREST_HEIGHT=10
 
-FOREST_ID=$(curl -s -X POST http://localhost:8080/api/forests \
+FOREST_ID=$(curl -s -X POST http://localhost:8081/api/forests \
   -H "Content-Type: application/json" \
   -d "{\"name\":\"$FOREST_NAME\", \"width\":$FOREST_WIDTH, \"height\":$FOREST_HEIGHT}" \
   | jq -r '.id')
@@ -850,13 +896,13 @@ echo "ID de la forêt: $FOREST_ID"
 # créer des plantes et les ajouter dans la forêt
 for i in $(seq 1 10); do
   PLANT_NAME="Tomato_$i"
-  PLANT_ID=$(curl -s -X POST "http://localhost:8080/plants/create?name=$PLANT_NAME&speciesId=$SPECIES_ID" | jq -r '.id')
+  PLANT_ID=$(curl -s -X POST "http://localhost:8081/plants/create?name=$PLANT_NAME&speciesId=$SPECIES_ID" | jq -r '.id')
   echo "Plante $i créée: $PLANT_ID"
 
   X=$(( RANDOM % FOREST_WIDTH ))
   Y=$(( RANDOM % FOREST_HEIGHT ))
 
-  RESPONSE=$(curl -s -X POST "http://localhost:8080/api/forests/$FOREST_ID/plants" \
+  RESPONSE=$(curl -s -X POST "http://localhost:8081/api/forests/$FOREST_ID/plants" \
     -H "Content-Type: application/json" \
     -d "{\"plantId\":\"$PLANT_ID\",\"x\":$X,\"y\":$Y}")
   
@@ -864,24 +910,24 @@ for i in $(seq 1 10); do
 done
 
 # appliquer la simulation à cette forêt (le service initialise aussi l'écosystème)
-INIT_RESPONSE=$(curl -s -X POST "http://localhost:8080/api/ecosystem/simulate/$FOREST_ID/0")
+INIT_RESPONSE=$(curl -s -X POST "http://localhost:8081/api/ecosystem/simulate/$FOREST_ID/0")
 echo "Écosystème initialisé: $INIT_RESPONSE"
 
 for tick in $(seq 1 $NUM_TICKS); do
   echo "--------------------------------------"
   echo "Tick $tick..."
   
-  TICK_RESPONSE=$(curl -s -X POST "http://localhost:8080/api/ecosystem/tick/$FOREST_ID")
+  TICK_RESPONSE=$(curl -s -X POST "http://localhost:8081/api/ecosystem/tick/$FOREST_ID")
   echo "$TICK_RESPONSE"
 
   # Récupérer l'état détaillé des cellules
-  CELLS=$(curl -s "http://localhost:8080/api/ecosystem/cells/$FOREST_ID" | jq -r '.[]')
+  CELLS=$(curl -s "http://localhost:8081/api/ecosystem/cells/$FOREST_ID" | jq -r '.[]')
   echo "État des cellules après tick $tick:"
   echo "$CELLS"
 done 
 
 echo "suppression des plantes créées"
-DELETE_RESPONSE=$(curl -s -X DELETE "http://localhost:8080/plants")
+DELETE_RESPONSE=$(curl -s -X DELETE "http://localhost:8081/plants")
 echo "$DELETE_RESPONSE"
 
 ```
@@ -906,7 +952,7 @@ Au lieu de cibler chaque plante individuellement, le système peut désormais ap
 **Lancer une canicule sur une forêt :**
 
 ```bash
-curl -X POST http://localhost:8080/api/stimuli \
+curl -X POST http://localhost:8081/api/stimuli \
 -H "Content-Type: application/json" \
 -d '{
   "type": "HEATWAVE",
@@ -926,7 +972,7 @@ Pour garantir une comparaison rigoureuse, une fonction de clonage a été dével
 **Cloner une plante (Témoin) :**
 
 ```bash
-curl -X POST "http://localhost:8080/plants/ID_PLANTE/clone?forestId=ID_FORET_BETA&x=2&y=2"
+curl -X POST "http://localhost:8081/plants/ID_PLANTE/clone?forestId=ID_FORET_BETA&x=2&y=2"
 ```
 ### 3. Rapport d'État Détaillé (/status)
 
@@ -935,7 +981,7 @@ Un nouvel endpoint de diagnostic affiche le **Stress Index** calculé, les donn�
 **Consulter le diagnostic :**
 
 ```bash
-curl http://localhost:8080/plants/ID_PLANTE/status
+curl http://localhost:8081/plants/ID_PLANTE/status
 ```
 
 Le payload `/status` inclut notamment :
@@ -950,7 +996,7 @@ Le payload `/status` inclut notamment :
 **Comparer deux plantes (clone vs clone) :**
 
 ```bash
-curl "http://localhost:8080/plants/compare?leftId=PLANT_ID_A&rightId=PLANT_ID_B"
+curl "http://localhost:8081/plants/compare?leftId=PLANT_ID_A&rightId=PLANT_ID_B"
 ```
 
 Le bloc `comparison` retourne les deltas observables (`stressIndexDelta`, `heightCmDelta`, `sensorDelta`, `stateChanged`).
@@ -994,7 +1040,7 @@ Un script prêt à l'emploi exécute tout le protocole de validation en une seul
 
 Variables utiles :
 
-- `BASE` : URL de l'API (par défaut `http://localhost:8080`)
+- `BASE` : URL de l'API (par défaut `http://localhost:8081`)
 
 Exemple sur un autre port :
 
@@ -1034,5 +1080,5 @@ Pour toute question ou suggestion, veuillez ouvrir une issue sur le dépôt **Gi
 
 
 
-**Dernière mise à jour**: Février 2026
-**Statut**: Production-ready (API, UI et Docker)
+**Dernière mise à jour**: Avril 2026
+**Statut**: Production-ready (API, UI, Auth et Docker)

@@ -156,4 +156,7 @@ Plante ID : ${cell.plantId}
 Sévérité : ${cell.severity}`;
 }
 
-document.addEventListener('DOMContentLoaded', loadGrid);
+document.addEventListener('DOMContentLoaded', async () => {
+    if (!await AUTH.requireAuth()) return;
+    loadGrid();
+});

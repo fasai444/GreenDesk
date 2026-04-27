@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GreenDesk - Inscription</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        html, body { height: 100%; }
+
+        .register-page {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #0f766e 0%, #15803d 45%, #14532d 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+        }
+
+        .register-card {
+            width: 100%;
+            max-width: 460px;
+            background: #ffffff;
+            border-radius: 18px;
+            box-shadow: 0 24px 60px rgba(2, 44, 34, 0.30);
+            overflow: hidden;
+        }
+
+        .register-header {
+            background: linear-gradient(110deg, #0f766e 0%, #15803d 55%, #14532d 100%);
+            padding: 2rem 2rem 1.6rem;
+            text-align: center;
+            color: #fff;
+        }
+
+        .register-header .brand-icon {
+            width: 60px;
+            height: 60px;
+            background: rgba(255, 255, 255, 0.18);
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.6rem;
+            margin-bottom: 0.8rem;
+            border: 2px solid rgba(255,255,255,0.25);
+        }
+
+        .register-header h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 0;
+            letter-spacing: 0.01em;
+        }
+
+        .register-header p {
+            color: rgba(220, 252, 231, 0.88);
+            font-size: 0.85rem;
+            margin: 0.3rem 0 0;
+        }
+
+        .register-body {
+            padding: 2rem;
+        }
+
+        .register-body .form-label {
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: #475569;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.35rem;
+        }
+
+        .register-body .form-control {
+            border-color: rgba(15, 23, 42, 0.16);
+            border-radius: 10px;
+            padding: 0.6rem 0.85rem;
+            font-size: 0.95rem;
+            transition: border-color 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        .register-body .form-control:focus {
+            border-color: rgba(13, 148, 136, 0.55);
+            box-shadow: 0 0 0 0.18rem rgba(13, 148, 136, 0.16);
+        }
+
+        .register-body .input-group-text {
+            border-color: rgba(15, 23, 42, 0.16);
+            border-radius: 10px 0 0 10px;
+            background: #f8fbf9;
+            color: #0f766e;
+        }
+
+        .register-body .input-group .form-control {
+            border-radius: 0 10px 10px 0;
+        }
+
+        .btn-register {
+            background: linear-gradient(110deg, #0f766e 0%, #15803d 100%);
+            border: none;
+            border-radius: 10px;
+            color: #fff;
+            font-weight: 700;
+            font-size: 0.95rem;
+            padding: 0.65rem 1rem;
+            letter-spacing: 0.02em;
+            transition: opacity 0.15s ease, transform 0.12s ease;
+            box-shadow: 0 6px 18px rgba(21, 128, 61, 0.28);
+        }
+
+        .btn-register:hover {
+            opacity: 0.92;
+            color: #fff;
+            transform: translateY(-1px);
+        }
+
+        .btn-register:active { transform: translateY(0); }
+        .btn-register:disabled { opacity: 0.65; transform: none; }
+
+        .register-footer {
+            background: #f8fbf9;
+            border-top: 1px solid rgba(15, 23, 42, 0.07);
+            padding: 1rem 2rem;
+            text-align: center;
+            font-size: 0.87rem;
+            color: #64748b;
+        }
+
+        .register-footer a {
+            color: #0f766e;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .register-footer a:hover { text-decoration: underline; }
+
+        .password-strength {
+            height: 4px;
+            border-radius: 4px;
+            margin-top: 6px;
+            transition: all 0.3s ease;
+        }
+
+        #alertBox { border-radius: 10px; font-size: 0.87rem; }
+    </style>
+</head>
+<body>
+
+<div class="register-page">
+    <div class="register-card">
+
+        <div class="register-header">
+            <div class="brand-icon">
+                <i class="fas fa-seedling"></i>
+            </div>
+            <h1>GreenDesk</h1>
+            <p>Créer un nouveau compte</p>
+        </div>
+
+        <div class="register-body">
+            <div id="alertBox" class="alert d-none mb-3 py-2" role="alert">
+                <i class="fas me-2" id="alertIcon"></i>
+                <span id="alertMsg"></span>
+            </div>
+
+            <form id="registerForm" novalidate>
+                <!-- Nom d'utilisateur -->
+                <div class="mb-3">
+                    <label class="form-label" for="username">Nom d'utilisateur</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-user fa-sm"></i></span>
+                        <input type="text" class="form-control" id="username"
+                               placeholder="Choisissez un identifiant" autocomplete="username" required>
+                    </div>
+                </div>
+
+                <!-- Email -->
+                <div class="mb-3">
+                    <label class="form-label" for="email">Adresse email</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-envelope fa-sm"></i></span>
+                        <input type="email" class="form-control" id="email"
+                               placeholder="votre@email.com" autocomplete="email" required>
+                    </div>
+                </div>
+
+                <!-- Mot de passe -->
+                <div class="mb-3">
+                    <label class="form-label" for="password">Mot de passe</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-lock fa-sm"></i></span>
+                        <input type="password" class="form-control" id="password"
+                               placeholder="Minimum 6 caractères" autocomplete="new-password" required>
+                        <button class="btn btn-outline-secondary" type="button" id="togglePwd"
+                                style="border-radius:0 10px 10px 0;border-color:rgba(15,23,42,0.16);">
+                            <i class="fas fa-eye fa-sm"></i>
+                        </button>
+                    </div>
+                    <div id="strengthBar" class="password-strength bg-secondary opacity-25"></div>
+                    <small id="strengthLabel" class="text-muted" style="font-size:0.75rem;"></small>
+                </div>
+
+                <!-- Confirmation mot de passe -->
+                <div class="mb-4">
+                    <label class="form-label" for="confirmPassword">Confirmer le mot de passe</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-lock-open fa-sm"></i></span>
+                        <input type="password" class="form-control" id="confirmPassword"
+                               placeholder="Répétez votre mot de passe" autocomplete="new-password" required>
+                        <button class="btn btn-outline-secondary" type="button" id="toggleConfirmPwd"
+                                style="border-radius:0 10px 10px 0;border-color:rgba(15,23,42,0.16);">
+                            <i class="fas fa-eye fa-sm"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-register w-100" id="submitBtn">
+                    <i class="fas fa-user-plus me-2"></i>Créer mon compte
+                </button>
+            </form>
+        </div>
+
+        <div class="register-footer">
+            Déjà un compte ?
+            <a href="/login.html"><i class="fas fa-right-to-bracket me-1"></i>Se connecter</a>
+            &nbsp;&bull;&nbsp;
+            <a href="/home.html"><i class="fas fa-house me-1"></i>Accueil</a>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // Si déjà connecté, rediriger
+    fetch('/api/auth/me', { credentials: 'include' })
+        .then(r => { if (r.ok) window.location.href = '/home.html'; })
+        .catch(() => {});
+
+    // Afficher/masquer mot de passe
+    function togglePassword(btnId, inputId) {
+        document.getElementById(btnId).addEventListener('click', () => {
+            const field = document.getElementById(inputId);
+            const icon = document.querySelector('#' + btnId + ' i');
+            if (field.type === 'password') {
+                field.type = 'text';
+                icon.className = 'fas fa-eye-slash fa-sm';
+            } else {
+                field.type = 'password';
+                icon.className = 'fas fa-eye fa-sm';
+            }
+        });
+    }
+    togglePassword('togglePwd', 'password');
+    togglePassword('toggleConfirmPwd', 'confirmPassword');
+
+    // Indicateur de force du mot de passe
+    document.getElementById('password').addEventListener('input', function () {
+        const val = this.value;
+        const bar = document.getElementById('strengthBar');
+        const label = document.getElementById('strengthLabel');
+        let strength = 0;
+        if (val.length >= 6) strength++;
+        if (val.length >= 10) strength++;
+        if (/[A-Z]/.test(val)) strength++;
+        if (/[0-9]/.test(val)) strength++;
+        if (/[^A-Za-z0-9]/.test(val)) strength++;
+
+        const levels = [
+            { pct: '0%',   cls: 'bg-secondary opacity-25', text: '' },
+            { pct: '25%',  cls: 'bg-danger',  text: 'Très faible' },
+            { pct: '50%',  cls: 'bg-warning',  text: 'Faible' },
+            { pct: '70%',  cls: 'bg-info',     text: 'Moyen' },
+            { pct: '85%',  cls: 'bg-success',  text: 'Fort' },
+            { pct: '100%', cls: 'bg-success',  text: 'Très fort' },
+        ];
+        const lvl = val.length === 0 ? levels[0] : levels[Math.min(strength, 5)];
+        bar.style.width = lvl.pct;
+        bar.className = 'password-strength ' + lvl.cls;
+        label.textContent = lvl.text;
+    });
+
+    // Soumission
+    document.getElementById('registerForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const username = document.getElementById('username').value.trim();
+        const email = document.getElementById('email').value.trim();
+        const password = document.getElementById('password').value;
+        const confirmPassword = document.getElementById('confirmPassword').value;
+        const submitBtn = document.getElementById('submitBtn');
+
+        function showAlert(type, icon, message) {
+            const box = document.getElementById('alertBox');
+            box.className = 'alert alert-' + type + ' mb-3 py-2';
+            document.getElementById('alertIcon').className = 'fas ' + icon + ' me-2';
+            document.getElementById('alertMsg').textContent = message;
+        }
+
+        if (!username || !email || !password || !confirmPassword) {
+            showAlert('danger', 'fa-triangle-exclamation', 'Veuillez remplir tous les champs.');
+            return;
+        }
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+            showAlert('danger', 'fa-triangle-exclamation', 'Adresse email invalide.');
+            return;
+        }
+        if (password.length < 6) {
+            showAlert('danger', 'fa-triangle-exclamation', 'Le mot de passe doit contenir au moins 6 caractères.');
+            return;
+        }
+        if (password !== confirmPassword) {
+            showAlert('danger', 'fa-triangle-exclamation', 'Les mots de passe ne correspondent pas.');
+            return;
+        }
+
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Création en cours…';
+
+        try {
+            const res = await fetch('/api/auth/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+                body: JSON.stringify({ username, email, password })
+            });
+
+            const data = await res.json();
+
+            if (res.ok) {
+                showAlert('success', 'fa-circle-check',
+                    'Compte créé avec succès ! Redirection vers la connexion…');
+                setTimeout(() => window.location.href = '/login.html', 1500);
+            } else {
+                showAlert('danger', 'fa-triangle-exclamation', data.error || 'Erreur lors de la création du compte.');
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fas fa-user-plus me-2"></i>Créer mon compte';
+            }
+        } catch (_) {
+            showAlert('danger', 'fa-triangle-exclamation', 'Erreur de connexion au serveur. Veuillez réessayer.');
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<i class="fas fa-user-plus me-2"></i>Créer mon compte';
+        }
+    });
+</script>
+</body>
+</html>

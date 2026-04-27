@@ -10,6 +10,7 @@ import org.example.repositories.ForestRepository;
 import org.example.repositories.PlantRepository;
 import org.example.repositories.SpeciesRepository;
 import org.example.repositories.StimulusRepository;
+import org.example.services.UserService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
@@ -27,27 +28,41 @@ public class DataInitializer implements CommandLineRunner {
     private final ForestRepository forestRepository;
     private final EffectRepository effectRepository;
     private final StimulusRepository stimulusRepository;
+    private final UserService userService;
 
-    // Injection des dépendances (Les outils pour parler à la BDD)
     public DataInitializer(SpeciesRepository speciesRepository,
             PlantRepository plantRepository,
             ForestRepository forestRepository,
             EffectRepository effectRepository,
-            StimulusRepository stimulusRepository) {
+            StimulusRepository stimulusRepository,
+            UserService userService) {
         this.speciesRepository = speciesRepository;
         this.plantRepository = plantRepository;
         this.forestRepository = forestRepository;
         this.effectRepository = effectRepository;
         this.stimulusRepository = stimulusRepository;
+        this.userService = userService;
     }
 
     @Override
     public void run(String... args) throws Exception {
         System.out.println("Démarrage de l'initialisation des données (idempotent)...");
+        seedDefaultAdmin();
         seedReferenceSpecies();
         seedReferenceEffects();
         seedScenarios();
         System.out.println("Initialisation terminée.");
+    }
+
+    private void seedDefaultAdmin() {
+        if (!userService.existsByUsername("admin")) {
+            userService.createUser("admin", "admin@greendesk.local", "admin123", "ADMIN");
+            System.out.println("✔ Compte admin créé → username: admin / password: admin123");
+        }
+        if (!userService.existsByUsername("demo")) {
+            userService.createUser("demo", "demo@greendesk.local", "demo123", "USER");
+            System.out.println("✔ Compte demo créé → username: demo / password: demo123");
+        }
     }
 
     private void seedReferenceSpecies() {

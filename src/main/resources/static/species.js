@@ -3,7 +3,10 @@ const API_GREENHOUSE_OVERVIEW = '/api/greenhouse/overview';
 
 let speciesCache = [];
 
-document.addEventListener('DOMContentLoaded', loadSpeciesTable);
+document.addEventListener('DOMContentLoaded', async () => {
+    if (!await AUTH.requireAuth()) return;
+    loadSpeciesTable();
+});
 
 function showSpeciesFeedback(message, variant = 'info') {
     const feedback = document.getElementById('speciesFeedback');
