@@ -667,6 +667,7 @@ async function acknowledgeWeatherAlert(alertId) {
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
+    if (!await AUTH.requireAuth()) return;
     await loadDashboardData();
     await loadWeatherForestFilter();
 });

@@ -405,6 +405,7 @@ function setInspector(plant, x, y) {
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
+    if (!await AUTH.requireAuth()) return;
     plantModal = new bootstrap.Modal(q('plantSeedModal'));
     actionModal = new bootstrap.Modal(q('plantActionModal'));
 

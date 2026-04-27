@@ -12,6 +12,16 @@ public class HomeController {
 
     @GetMapping("/")
     public String home() {
-        return "redirect:/home.html";
+        return "redirect:/login.html";
+    }
+
+    @GetMapping("/login")
+    public String loginPage() {
+        return "redirect:/login.html";
+    }
+
+    @GetMapping("/register")
+    public String registerPage() {
+        return "redirect:/register.html";
     }
 }

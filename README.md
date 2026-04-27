@@ -215,6 +215,55 @@ Validation stimulus (`POST /api/stimuli`) :
 
 ## Version
 
+**v2.1.3** - *Système d'authentification + Protection des pages*
+
+### Feature V6 - Authentification & Sécurité
+
+#### Nouvelles fonctionnalités
+
+- **Système d'authentification complet** basé sur Spring Security (sessions HTTP)
+  - Inscription (`POST /api/auth/register`) avec validation des champs
+  - Connexion (`POST /api/auth/login`) avec gestion de session
+  - Déconnexion (`POST /api/auth/logout`)
+  - Profil utilisateur courant (`GET /api/auth/me`)
+
+- **Gestion des rôles** : `USER` et `ADMIN`
+  - Espace administration protégé (`/api/admin/**`) accessible uniquement aux admins
+  - Contrôleur dédié `AdminController` pour la gestion des utilisateurs
+
+- **Nouvelles pages frontend**
+  - `login.html` — Page de connexion (point d'entrée de l'application)
+  - `register.html` — Page d'inscription
+  - `admin.html` — Tableau de bord administrateur (rôle ADMIN requis)
+
+- **Protection de toutes les pages**
+  - `auth-guard.js` — Script de garde d'authentification côté frontend
+  - Toutes les pages protégées redirigent vers `/login.html` si non connecté
+  - Correction du bug de chargement dans `placement-optimizer.html` (auth-guard chargé avant le script inline)
+
+- **Comptes de démonstration** (initialisés automatiquement au démarrage)
+  - `admin` / `admin123` (rôle ADMIN)
+  - `demo` / `demo123` (rôle USER)
+
+#### Nouveaux fichiers
+
+| Fichier | Rôle |
+|---|---|
+| `config/SecurityConfig.java` | Configuration Spring Security |
+| `controllers/auth/AuthController.java` | Endpoints login/register/logout/me |
+| `controllers/auth/AdminController.java` | Endpoints gestion utilisateurs (admin) |
+| `entities/user/User.java` | Entité utilisateur MongoDB |
+| `repositories/UserRepository.java` | Accès MongoDB pour User |
+| `services/UserService.java` | Logique métier utilisateurs |
+| `services/CustomUserDetailsService.java` | Intégration Spring Security |
+| `dto/auth/` | DTOs LoginRequest, CreateUserRequest, UserResponseDto… |
+| `static/login.html` | Page de connexion |
+| `static/register.html` | Page d'inscription |
+| `static/admin.html` | Interface d'administration |
+| `static/auth-guard.js` | Protection frontend des pages |
+
+---
+
 **v5.0** - *Jumeau numérique météo + Assistant prédictif (Parties 1, 2 et 3)*
 
 ### Feature V1 - Jumeau numérique météo (Partie 1)
@@ -417,9 +466,9 @@ docker compose up -d
 
 **Cette commande lance** :
 
-- **app**: Application **Spring Boot (port 8080)**
+- **app**: Application **Spring Boot (port 8081)**
 - **mongodb**: Base de données **MongoDB (port 27017)**
-- **mongo-express**: Interface web **MongoDB (port 8081)**
+- **mongo-express**: Interface web **MongoDB (port 8082)**
 
 3. **Vérifier les services**
 
@@ -439,7 +488,7 @@ docker compose logs -f app
 - **Application API**: http://localhost:8080
 - **Swagger UI**: http://localhost:8080/swagger-ui.html
 - **OpenAPI Docs**: http://localhost:8080/v3/api-docs
-- **Mongo Express**: http://localhost:8081 (admin/admin)
+- **Mongo Express**: http://localhost:8082 (admin/admin)
 - **MongoDB**: mongodb://localhost:27017
 
 5. **Arrêter les services**

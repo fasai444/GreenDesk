@@ -19,12 +19,13 @@
         <div class="collapse navbar-collapse" id="navbarHome">
             <ul class="navbar-nav ms-auto">
                 <li class="nav-item"><a class="nav-link" href="dashboard.html">Vue d'ensemble</a></li>
-                <li class="nav-item"><a class="nav-link" href="index.html">Simulation</a></li>
+                <li class="nav-item"><a class="nav-link" href="simulation.html">Simulation</a></li>
                 <li class="nav-item"><a class="nav-link" href="species.html">Espèces</a></li>
                 <li class="nav-item"><a class="nav-link" href="effects.html">Effets</a></li>
                 <li class="nav-item"><a class="nav-link" href="disease.html">Maladies</a></li>
                 <li class="nav-item"><a class="nav-link text-success" href="placement-optimizer.html">Optimizer</a></li>
             </ul>
+            <ul class="navbar-nav ms-2" id="nav-auth-area"></ul>
         </div>
     </div>
 </nav>
@@ -56,7 +57,7 @@
                 <h5 class="mt-2">Exécuter la simulation</h5>
                 <p class="text-muted mb-3">Construire la forêt, placer les plantes, faire avancer les saisons et appliquer les stimulus.</p>
                 <div class="d-grid gap-2">
-                    <a href="index.html" class="btn btn-success"><i class="fas fa-seedling me-1"></i> Ouvrir la simulation</a>
+                    <a href="simulation.html" class="btn btn-success"><i class="fas fa-seedling me-1"></i> Ouvrir la simulation</a>
                     <a href="dashboard.html" class="btn btn-outline-secondary"><i class="fas fa-gauge-high me-1"></i> Voir les indicateurs</a>
                 </div>
             </div>
@@ -90,5 +91,11 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="auth-guard.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', async () => {
+        await AUTH.requireAuth();
+    });
+</script>
 </body>
 </html>
