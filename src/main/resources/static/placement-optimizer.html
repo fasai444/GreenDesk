@@ -311,7 +311,7 @@
 
     async function loadForests() {
         try {
-            const forests = await fetch(`${API_BASE}/forests`).then(r => r.json());
+            const forests = await fetch(`${API_BASE}/forests`, { credentials: 'include' }).then(r => r.json());
             const select = document.getElementById('forestSelect');
             forests.forEach(f => {
                 const opt = document.createElement('option');
@@ -327,7 +327,7 @@
 
     async function loadAllPlants() {
         try {
-            allPlants = await fetch(`${API_BASE}/plants`).then(r => r.json());
+            allPlants = await fetch(`${API_BASE}/plants`, { credentials: 'include' }).then(r => r.json());
             renderPlantList();
         } catch (e) {
             showFeedback('Erreur chargement plantes : ' + e.message, 'danger');
@@ -335,24 +335,24 @@
     }
 
     async function loadSpeciesForHeatmap() {
-        try {
-            allSpecies = await fetch(`${API_BASE}/species`).then(r => r.json());
-            const heatSel = document.getElementById('heatmapSpecies');
-            const sugSel  = document.getElementById('suggestSpecies');
-            allSpecies.forEach(s => {
-                getSpeciesColor(s.name);
-                [heatSel, sugSel].forEach(sel => {
-                    const opt = document.createElement('option');
-                    opt.value = s.name;
-                    opt.textContent = s.name;
-                    sel.appendChild(opt);
-                });
+    try {
+        allSpecies = await fetch(`${API_BASE}/species`, { credentials: 'include' }).then(r => r.json());
+        const heatSel = document.getElementById('heatmapSpecies');
+        const sugSel  = document.getElementById('suggestSpecies');
+        allSpecies.forEach(s => {
+            getSpeciesColor(s.name);
+            [heatSel, sugSel].forEach(sel => {
+                const opt = document.createElement('option');
+                opt.value = s.name;
+                opt.textContent = s.name;
+                sel.appendChild(opt);
             });
-            renderLegend();
-        } catch (e) {
-            console.error('Erreur chargement espèces', e);
-        }
+        });
+        renderLegend();
+    } catch (e) {
+        console.error('Erreur chargement espèces', e);
     }
+}
 
     // ── Legend ──────────────────────────────────────────────────────────────────
     function renderLegend() {
@@ -527,6 +527,7 @@
             const data = await fetch(`${API_BASE}/placement/optimize`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
                 body: JSON.stringify({ plantIds: selectedPlantIds, forestWidth: currentForest.width, forestHeight: currentForest.height })
             }).then(r => r.json());
 
@@ -556,6 +557,7 @@
             await fetch(`${API_BASE}/placement/optimize-and-apply/${currentForest.id}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
                 body: JSON.stringify(selectedPlantIds)
             });
             showFeedback('Placement appliqué avec succès !', 'success');
@@ -574,7 +576,7 @@
         const species = document.getElementById('heatmapSpecies').value;
         if (!species || !currentForest) { showFeedback('Veuillez sélectionner une forêt et une espèce.', 'warning'); return; }
         try {
-            const data = await fetch(`${API_BASE}/placement/heatmap/${currentForest.id}?species=${encodeURIComponent(species)}`).then(r => r.json());
+            const data = await fetch(`${API_BASE}/placement/heatmap/${currentForest.id}?species=${encodeURIComponent(species)}`, { credentials: 'include' }).then(r => r.json());
             heatmapData = data.heatmap;
             document.getElementById('clearHeatmapBtn').classList.remove('d-none');
             showFeedback(`Heatmap affichée pour ${species}.`, 'success');
@@ -595,7 +597,7 @@
         const species = document.getElementById('suggestSpecies').value;
         if (!species || !currentForest) { showFeedback('Veuillez sélectionner une forêt et une espèce.', 'warning'); return; }
         try {
-            const data = await fetch(`${API_BASE}/placement/suggest/${currentForest.id}?species=${encodeURIComponent(species)}`).then(r => r.json());
+            const data = await fetch(`${API_BASE}/placement/suggest/${currentForest.id}?species=${encodeURIComponent(species)}`, { credentials: 'include' }).then(r => r.json());
             if (data.message) { showFeedback(data.message, 'warning'); return; }
 
             // Highlight on canvas
@@ -633,6 +635,7 @@
             await fetch(`${API_BASE}/forests`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
                 body: JSON.stringify({ name, width, height })
             });
             bootstrap.Modal.getInstance(document.getElementById('createForestModal')).hide();
