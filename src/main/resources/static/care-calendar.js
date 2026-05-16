@@ -30,59 +30,12 @@ async function loadTasks() {
             }
         );
 
-        const tasks =
+        tasks =
             await response.json();
 
-        // FILTER VALUES
+        updateStats(tasks);
 
-        const priority =
-            document.getElementById('priorityFilter').value;
-
-        const status =
-            document.getElementById('statusFilter').value;
-
-        const search =
-            document.getElementById('searchInput')
-                .value
-                .toLowerCase();
-
-        // FILTERING
-
-        const filteredTasks =
-            tasks.filter(task => {
-
-                const matchPriority =
-                    !priority
-                    || task.priority === priority;
-
-                const matchStatus =
-                    !status
-                    || task.status === status;
-
-                const matchSearch =
-                    !search
-                    || (
-                        task.plantName &&
-                        task.plantName
-                            .toLowerCase()
-                            .includes(search)
-                    );
-
-                return (
-                    matchPriority
-                    && matchStatus
-                    && matchSearch
-                );
-
-            });
-
-        // RENDER
-
-        renderTasks(filteredTasks);
-
-        // STATS BASED ON FILTERED TASKS
-
-        updateStats(filteredTasks);
+        renderTasks(tasks);
 
     } catch (e) {
 
