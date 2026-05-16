@@ -5,6 +5,9 @@ target/
 !gradle/wrapper/gradle-wrapper.jar
 .kotlin/
 
+### Clé API Google
+service-account.json
+
 ### IntelliJ IDEA ###
 .idea/modules.xml
 .idea/jarRepositories.xml

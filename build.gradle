@@ -37,6 +37,16 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'de.flapdoodle.embed:de.flapdoodle.embed.mongo.spring30x:4.22.0'
     testImplementation 'org.apache.commons:commons-lang3:3.17.0'
+
+
+    // Google Calendar
+    implementation 'com.google.apis:google-api-services-calendar:v3-rev411-1.25.0'
+
+    // Google Auth
+    implementation 'com.google.auth:google-auth-library-oauth2-http:1.23.0'
+
+    // Jackson support
+    implementation 'com.google.http-client:google-http-client-jackson2:1.43.3'
 }
 
 test {

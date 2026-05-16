@@ -10,6 +10,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.http.HttpMethod;
 
 @Configuration
 @EnableWebSecurity
@@ -39,7 +40,20 @@ public class SecurityConfig {
                 .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
                 // Espace Admin - rôle ADMIN requis
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                // ============================================================
+                // AJOUTS FEATURE 2 : CARE CALENDAR & PLANS (SÉCURISATION)
+                // ============================================================
+                // 1. Restriction des actions d'administration (Génération / Recalcul)
+                .requestMatchers(HttpMethod.POST, "/api/care-tasks/generate").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.POST, "/api/care-plan/recompute").hasRole("ADMIN")
+
+                // 2. Accès général aux autres routes de soin (Lecture, Done, Cancel, Patch)
+                .requestMatchers("/api/care-tasks/**").hasAnyRole("USER", "ADMIN")
+                .requestMatchers("/api/care-plan/**").hasAnyRole("USER", "ADMIN")
+                // ============================================================
                 // Tous les autres endpoints API restent accessibles (fonctionnalités existantes)
+                .requestMatchers("/api/plants/**")
+                .hasAnyRole("USER", "ADMIN")
                 .anyRequest().permitAll()
             )
             .exceptionHandling(ex -> ex
