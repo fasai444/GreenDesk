@@ -38,11 +38,20 @@ jobs:
       - name: Generate PDF documentation
         run: |
           mkdir -p build/docs
+
           pandoc README.md \
             --from markdown \
             --pdf-engine=xelatex \
             -V geometry:margin=2.5cm \
             -o build/docs/documentation.pdf
+
+          if [ -f docs/reports/devops-2-github-actions-report.md ]; then
+            pandoc docs/reports/devops-2-github-actions-report.md \
+              --from markdown \
+              --pdf-engine=xelatex \
+              -V geometry:margin=2.5cm \
+              -o build/docs/devops2-report.pdf
+          fi
 
       - name: Archive Javadoc
         run: |
@@ -60,9 +69,12 @@ jobs:
           elif [ "$TAG" = "v1.0.2" ]; then
             TITLE="Livraison 2 - ${TAG}"
             BODY=$'Release automatique de la Livraison 2.\n\nContenu:\n- Build du projet\n- Tests automatiques\n- Documentation PDF'
+          elif [ "$TAG" = "v2.0.0" ]; then
+            TITLE="DevOps 2 - GreenDesk ${TAG}"
+            BODY=$'Release automatique DevOps 2.\n\nContenu:\n- Build du projet GreenDesk\n- Génération de la documentation PDF\n- Génération du rapport DevOps 2 en PDF\n- Génération de la Javadoc\n- Publication des artefacts Java\n- Validation via GitHub Actions'
           else
-            TITLE="Livraison 3 - ${TAG}"
-            BODY=$'Release automatique de la Livraison 3.\n\nContenu:\n- Build du projet\n- Documentation complete\n- Assets publies'
+            TITLE="Release GreenDesk - ${TAG}"
+            BODY=$'Release automatique GreenDesk.\n\nContenu:\n- Build du projet\n- Documentation PDF\n- Rapport DevOps 2 si disponible\n- Assets publies'
           fi
 
           {
@@ -78,8 +90,10 @@ jobs:
           tag_name: ${{ github.ref_name }}
           name: ${{ steps.meta.outputs.title }}
           body: ${{ steps.meta.outputs.body }}
+          prerelease: true
           fail_on_unmatched_files: false
           files: |
             build/libs/*.jar
             build/docs/javadoc.zip
             build/docs/documentation.pdf
+            build/docs/devops2-report.pdf
