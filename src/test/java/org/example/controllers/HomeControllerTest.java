@@ -22,7 +22,7 @@ class HomeControllerTest {
     void root_should_redirect_to_home_html() throws Exception {
         mockMvc.perform(get("/"))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/home.html"));
+                .andExpect(redirectedUrl("/login.html"));
     }
 
     @Test

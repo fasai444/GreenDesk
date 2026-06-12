@@ -28,6 +28,9 @@ class PlantAlertServiceTest {
     @Mock
     private PlantAlertRepository plantAlertRepository;
 
+    @Mock
+    private NotificationService notificationService;
+
     @InjectMocks
     private PlantAlertService plantAlertService;
 

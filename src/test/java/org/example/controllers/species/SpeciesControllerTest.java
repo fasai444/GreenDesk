@@ -10,6 +10,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.example.config.TestSecurityConfig;
+import org.springframework.context.annotation.Import;
 
 import java.util.Arrays;
 import java.util.Objects;
@@ -21,6 +23,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(SpeciesController.class)
+@Import(TestSecurityConfig.class)
 class SpeciesControllerTest {
 
     @Autowired

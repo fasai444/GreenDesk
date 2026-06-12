@@ -4,16 +4,20 @@ import org.example.entities.plant.Plant;
 import org.example.entities.plant.PlantState;
 import org.example.repositories.EffectRepository;
 import org.example.repositories.PlantEffectRepository;
+import org.example.repositories.PlantRepository;
 import org.example.repositories.StimulusRepository;
 import org.example.services.ForestService;
 import org.example.services.PlantService;
 import org.example.services.StimulusService;
+import org.example.services.weather.PlantCalibrationService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
+import org.example.config.TestSecurityConfig;
+import org.springframework.context.annotation.Import;
 
 import java.util.Arrays;
 import java.util.Optional;
@@ -25,6 +29,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(PlantController.class)
+@Import(TestSecurityConfig.class)
 @SuppressWarnings("unused")
 class PlantControllerTest {
 
@@ -48,6 +53,12 @@ class PlantControllerTest {
 
     @MockBean
     private StimulusRepository stimulusRepository;
+
+    @MockBean
+    private PlantCalibrationService calibrationService;
+
+    @MockBean
+    private PlantRepository plantRepository;
 
     private Plant mockPlant;
 
