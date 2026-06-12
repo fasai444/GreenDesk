@@ -49,6 +49,9 @@ jobs:
             pandoc docs/reports/devops-2-github-actions-report.md \
               --from markdown \
               --pdf-engine=xelatex \
+              --resource-path=docs/reports:docs \
+              --toc \
+              --number-sections \
               -V geometry:margin=2.5cm \
               -o build/docs/devops2-report.pdf
           fi
