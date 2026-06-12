@@ -14,6 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import org.example.util.ParisTime;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -130,7 +132,7 @@ public class WeatherWebhookController {
             }
             WeatherAlert alert = alertOpt.get();
             alert.setAcknowledged(true);
-            alert.setAcknowledgedAt(LocalDateTime.now());
+            alert.setAcknowledgedAt(ParisTime.now());
             weatherAlertRepository.save(alert);
             return ResponseEntity.ok(Map.of("message", "Alerte acquittée"));
         } catch (Exception e) {

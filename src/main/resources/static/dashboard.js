@@ -600,6 +600,19 @@ async function loadWeatherForestFilter() {
     }
 }
 
+function formatParisDateTime(value) {
+    if (!value) return '—';
+    try {
+        return new Date(value).toLocaleString('fr-FR', {
+            timeZone: 'Europe/Paris',
+            dateStyle: 'short',
+            timeStyle: 'medium'
+        });
+    } catch (e) {
+        return String(value);
+    }
+}
+
 async function loadWeatherAlerts() {
     const tbody = document.getElementById('weatherAlertsTable');
     if (!tbody) return;
@@ -638,11 +651,11 @@ async function loadWeatherAlerts() {
                 ? `<button class="btn btn-sm btn-outline-success" onclick="acknowledgeWeatherAlert('${alert.id}')">
                        <i class="fas fa-check"></i> Acquitter
                    </button>`
-                : `<span class="text-muted small">${alert.acknowledgedAt ? new Date(alert.acknowledgedAt).toLocaleString() : '—'}</span>`;
+                : `<span class="text-muted small">${formatParisDateTime(alert.acknowledgedAt)}</span>`;
 
             return `
                 <tr>
-                    <td><small>${alert.timestamp ? new Date(alert.timestamp).toLocaleString() : '—'}</small></td>
+                    <td><small>${formatParisDateTime(alert.timestamp)}</small></td>
                     <td><span class="badge bg-light text-dark">${typeIcon(alert.type)} ${alert.type}</span></td>
                     <td><span class="badge ${severityClass}">${severityText}</span></td>
                     <td><small>${alert.coords ? `${alert.coords[0].toFixed(4)}, ${alert.coords[1].toFixed(4)}` : 'N/A'}</small></td>

@@ -1,8 +1,11 @@
 package org.example.entities.weather;
 
-
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import org.example.config.ParisLocalDateTimeSerializer;
+import org.example.util.ParisTime;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -21,6 +24,8 @@ public class PlantImpact {
     private String previousState;
     private String newState;
     private List<String> actionsTaken;
+
+    @JsonSerialize(using = ParisLocalDateTimeSerializer.class)
     private LocalDateTime timestamp;
 
     // Constructeur par défaut (obligatoire pour MongoDB)
@@ -39,7 +44,7 @@ public class PlantImpact {
         this.previousState = previousState;
         this.newState = newState;
         this.actionsTaken = actionsTaken;
-        this.timestamp = LocalDateTime.now();
+        this.timestamp = ParisTime.now();
     }
 
     // Getters et Setters

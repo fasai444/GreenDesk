@@ -312,7 +312,45 @@ Validation stimulus (`POST /api/stimuli`) :
 #### 5. Forçage d’état (debug)
 - `PUT /plants/{id}/force-state` pour modifier directement le stress et l’état d’une plante sans recalcul.
 
+### Feature 2 - Calendrier de soins dynamique (Hybrid Engine)
 
+Transforme les besoins biologiques des plantes en tâches concrètes, en tenant compte des données météo de la Feature V1.
+
+#### Moteur WNS (Watering Need Score)
+
+```
+WNS = (0.3 × Taille) + (0.2 × Stade) + (0.15 × Stress) - (0.25 × Pluie_Prévue)
+```
+
+- Si **WNS > 0.8** → création automatique d'une tâche de soin
+- **Stress** = max(`stressIndex` plante, **ISR** météo)
+- **Priorité** dérivée du **SPS** (Feature 1)
+- **Pluie prévue dans les 6h** (Tomorrow.io) → ajustement WNS et blocage des arrosages inutiles
+
+#### Endpoints REST
+
+| Méthode | Endpoint | Description |
+|---------|----------|-------------|
+| `GET` | `/api/care-tasks` | Liste des tâches (tri priorité / échéance) |
+| `POST` | `/api/care-tasks` | Création WNS pour une plante + push Google Calendar |
+| `POST` | `/api/care-tasks/generate` | Génération batch (plante / forêt / toutes) |
+| `PATCH` | `/api/care-tasks/{id}` | Déplacement d'une tâche flexible |
+| `PUT` | `/api/care-tasks/{id}/validate` | Validation + mise à jour santé plante |
+| `DELETE` | `/api/care-tasks/{id}` | Annulation + retrait agenda externe |
+
+#### Interface
+
+- Page **Calendrier de soins** : `http://localhost:8081/care-calendar.html`
+
+#### Lien Feature 1 → Feature 2
+
+```
+Alertes Tomorrow.io → ISR / SPS → WNS → Tâches agenda
+         ↓                              ↓
+   Alerte critique              Validation utilisateur
+         ↓                              ↓
+   Report tâches flexibles      Santé plante mise à jour
+```
 
 **Documentation complète** :
 - [PLACEMENT_OPTIMIZER_GUIDE.md](PLACEMENT_OPTIMIZER_GUIDE.md) - Tutoriel complet
@@ -458,7 +496,17 @@ Si le port `8080` est déjà occupé, lancer sur un autre port :
 - **Docker Engine** installé
 - **Docker Compose** installé
 
-2. **Lancer tous les services**
+2. **Configurer Tomorrow.io (optionnel, Feature 1 + 2)**
+
+```bash
+# Copier le modèle et renseigner votre clé API
+cp env.example .env
+# Éditer .env : TOMORROW_API_KEY=votre_cle
+```
+
+Sans clé API, le moteur WNS utilise les alertes météo déjà stockées en base (repli Feature 1).
+
+3. **Lancer tous les services**
 
 ```bash
 docker compose up -d
@@ -470,7 +518,7 @@ docker compose up -d
 - **mongodb**: Base de données **MongoDB (port 27017)**
 - **mongo-express**: Interface web **MongoDB (port 8082)**
 
-3. **Vérifier les services**
+4. **Vérifier les services**
 
 ```bash
 # Statut des conteneurs
@@ -483,15 +531,16 @@ docker compose logs -f app
 ./scripts/test-docker.sh
 ```
 
-4. **Accès aux services**
+5. **Accès aux services**
 
-- **Application API**: http://localhost:8080
-- **Swagger UI**: http://localhost:8080/swagger-ui.html
-- **OpenAPI Docs**: http://localhost:8080/v3/api-docs
+- **Application API**: http://localhost:8081
+- **Calendrier de soins**: http://localhost:8081/care-calendar.html
+- **Swagger UI**: http://localhost:8081/swagger-ui.html
+- **OpenAPI Docs**: http://localhost:8081/v3/api-docs
 - **Mongo Express**: http://localhost:8082 (admin/admin)
 - **MongoDB**: mongodb://localhost:27017
 
-5. **Arrêter les services**
+6. **Arrêter les services**
 
 ```bash
 # Arrêter les conteneurs

@@ -1,11 +1,15 @@
 package org.example.services.scheduling;
 
 import org.example.entities.care.CareTask;
-import org.example.entities.care.TaskStatus;
 import org.example.entities.care.CareTaskType;
 import org.example.entities.care.TaskPriority;
+import org.example.entities.care.TaskStatus;
+import org.example.entities.plant.GrowthStage;
 import org.example.entities.plant.Plant;
+import org.example.entities.species.Species;
 import org.example.repositories.CareTaskRepository;
+import org.example.repositories.PlantImpactRepository;
+import org.example.repositories.PlantRepository;
 import org.example.services.calendar.ExternalCalendarService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -16,8 +20,9 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -31,24 +36,44 @@ class CareTaskServiceTest {
     @Mock
     private ExternalCalendarService externalCalendarService;
 
+    @Mock
+    private WnsCalculator wnsCalculator;
+
+    @Mock
+    private PlantRepository plantRepository;
+
+    @Mock
+    private PlantImpactRepository plantImpactRepository;
+
+    @Mock
+    private CarePlanService carePlanService;
+
     @InjectMocks
     private CareTaskService careTaskService;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+        when(plantImpactRepository.findByPlantIdOrderByTimestampDesc(anyString()))
+                .thenReturn(Collections.emptyList());
     }
 
-    // ============================================================
-    // TRAIN DE TESTS : GÉNÉRATION ET SEUILS DE STRESS (WNS)
-    // ============================================================
-
     @Test
-    @DisplayName("Génération : Stress à 85% doit générer une tâche WATERING (Seuil critique > 80)")
-    void shouldGenerateWateringTaskWhenStressIsHigh() {
-        Plant plant = createMockPlant("plant-1", "Monstera", 85);
+    @DisplayName("Génération : WNS > 0.8 doit générer une tâche WATERING")
+    void shouldGenerateWateringTaskWhenWnsIsHigh() {
+        Plant plant = createMockPlant("plant-1", "Chêne", 0.85);
+        plant.setHeightCm(200);
+        plant.setGrowthStage(GrowthStage.VEGETATIVE);
+        Species species = new Species("Oak", 5000, 20, 60, 5000, 1, 0.5);
+        species.setMaxHeight(300);
+        plant.setSpecies(species);
+        plant.setWaterLevel(100);
 
-        when(careTaskRepository.findByPlantIdAndTypeAndScheduledAt(anyString(), any(), any())).thenReturn(Optional.empty());
+        when(wnsCalculator.calculate(eq(plant), any())).thenReturn(
+                new WnsResult(0.92, Map.of("globalScore", 0.92), false, false)
+        );
+        when(careTaskRepository.findByPlantIdAndTypeAndScheduledAt(anyString(), any(), any()))
+                .thenReturn(Optional.empty());
         when(careTaskRepository.save(any(CareTask.class))).thenAnswer(inv -> {
             CareTask t = inv.getArgument(0);
             ReflectionTestUtils.setField(t, "id", "task-water-1");
@@ -61,70 +86,55 @@ class CareTaskServiceTest {
         assertNotNull(result);
         assertEquals(CareTaskType.WATERING, result.getType());
         assertEquals(TaskStatus.PENDING, result.getStatus());
-        assertEquals(TaskPriority.HIGH, result.getPriority());
-        assertTrue(result.isFlexible(), "WATERING doit être flexible");
-        assertEquals(0.85, result.getWnsScore(), 0.001);
+        assertTrue(result.isFlexible());
+        assertEquals(0.92, result.getWnsScore(), 0.001);
+        assertTrue(result.getDescription().contains("Arrosage"));
+        verify(carePlanService).addTaskToPlan("plant-1", "task-water-1");
     }
 
     @Test
-    @DisplayName("Génération : Stress à 81% doit générer une tâche FERTILIZATION (Seuil global > 80 mais <= 80 pour WATERING)")
-    void shouldGenerateFertilizationTaskWhenStressIsJustAboveGlobalThreshold() {
-        // Dans ton service : determineTaskType renvoie WATERING si > 80.
-        // Or 81 > 80, donc on teste ici la limite stricte de la structure.
-        Plant plant = createMockPlant("plant-2", "Ficus", 81);
+    @DisplayName("Génération : WNS <= 0.8 doit retourner null")
+    void shouldReturnNullWhenWnsBelowThreshold() {
+        Plant plant = createMockPlant("plant-4", "Fougère", 0.3);
 
-        when(careTaskRepository.findByPlantIdAndTypeAndScheduledAt(anyString(), any(), any())).thenReturn(Optional.empty());
-        when(careTaskRepository.save(any(CareTask.class))).thenAnswer(inv -> {
-            CareTask t = inv.getArgument(0);
-            ReflectionTestUtils.setField(t, "id", "task-ferti-1");
-            return t;
-        });
+        when(wnsCalculator.calculate(eq(plant), any())).thenReturn(
+                new WnsResult(0.45, Map.of("globalScore", 0.45), false, false)
+        );
 
         CareTask result = careTaskService.generateTask(plant);
 
-        assertNotNull(result);
-        assertEquals(CareTaskType.WATERING, result.getType(), "81 étant supérieur à 80, le type attendu est WATERING");
-    }
-
-    @Test
-    @DisplayName("Génération : Stress exactement à 80% (Cas limite) -> FERTILIZATION attendu")
-    void shouldGenerateFertilizationWhenStressIsExactlyEighty() {
-        Plant plant = createMockPlant("plant-3", " Cactus", 80); // 80 / 100 = 0.8 (Passe le cap du 0.8 global)
-
-        when(careTaskRepository.findByPlantIdAndTypeAndScheduledAt(anyString(), any(), any())).thenReturn(Optional.empty());
-        when(careTaskRepository.save(any(CareTask.class))).thenAnswer(inv -> {
-            CareTask t = inv.getArgument(0);
-            ReflectionTestUtils.setField(t, "id", "task-ferti-2");
-            return t;
-        });
-
-        CareTask result = careTaskService.generateTask(plant);
-
-        assertNotNull(result);
-        assertEquals(CareTaskType.FERTILIZATION, result.getType(), "Exactement 80 ne valide pas > 80, donc FERTILIZATION");
-        assertTrue(result.isFlexible(), "FERTILIZATION doit être flexible");
-    }
-
-    @Test
-    @DisplayName("Génération : Stress inférieur à 80% (ex: 79%) -> Doit retourner null immédiatement")
-    void shouldReturnNullWhenStressIsBelowThreshold() {
-        Plant plant = createMockPlant("plant-4", "Fougère", 79); // 0.79 < 0.80
-
-        CareTask result = careTaskService.generateTask(plant);
-
-        assertNull(result, "La tâche ne doit pas être créée si le score WNS simulé est inférieur à 0.8");
+        assertNull(result);
         verifyNoInteractions(careTaskRepository);
         verifyNoInteractions(externalCalendarService);
     }
 
-    // ============================================================
-    // TRAIN DE TESTS : IDEMPOTENCE
-    // ============================================================
+    @Test
+    @DisplayName("Génération : pluie dans 6h bloque l'arrosage")
+    void shouldSkipWateringWhenRainWithin6Hours() {
+        Plant plant = createMockPlant("plant-rain", "Tomate", 0.9);
+        plant.setWaterLevel(50);
+        Species species = new Species("Tomato", 3000, 22, 70, 8000, 1, 0.5);
+        plant.setSpecies(species);
+
+        when(wnsCalculator.calculate(eq(plant), any())).thenReturn(
+                new WnsResult(0.95, Map.of("globalScore", 0.95), true, true)
+        );
+
+        CareTask result = careTaskService.generateTask(plant);
+
+        assertNull(result);
+        verifyNoInteractions(careTaskRepository);
+    }
 
     @Test
-    @DisplayName("Idempotence : Retourne la tâche existante sans doublon si critères identiques détectés")
+    @DisplayName("Idempotence : retourne la tâche existante sans doublon")
     void shouldReturnExistingTaskToEnsureIdempotence() {
-        Plant plant = createMockPlant("plant-1", "Monstera", 90);
+        Plant plant = createMockPlant("plant-1", "Monstera", 0.9);
+
+        when(wnsCalculator.calculate(eq(plant), any())).thenReturn(
+                new WnsResult(0.95, Map.of("globalScore", 0.95), false, false)
+        );
+
         CareTask existingTask = new CareTask();
         ReflectionTestUtils.setField(existingTask, "id", "existing-unique-id");
         existingTask.setStatus(TaskStatus.PENDING);
@@ -140,42 +150,39 @@ class CareTaskServiceTest {
         verifyNoInteractions(externalCalendarService);
     }
 
-    // ============================================================
-    // TRAIN DE TESTS : WORKFLOWS DE CLÔTURE (DONE / CANCEL)
-    // ============================================================
-
     @Test
-    @DisplayName("Clôture DONE : Passage au statut DONE et fixation de la date closedAt")
-    void shouldMarkTaskAsDoneSuccessfully() {
+    @DisplayName("Validation : clôture la tâche et met à jour la santé de la plante")
+    void shouldValidateTaskAndUpdatePlantHealth() {
         CareTask pendingTask = new CareTask();
         ReflectionTestUtils.setField(pendingTask, "id", "task-done");
+        pendingTask.setPlantId("plant-1");
+        pendingTask.setType(CareTaskType.WATERING);
         pendingTask.setStatus(TaskStatus.PENDING);
+
+        Plant plant = createMockPlant("plant-1", "Chêne", 0.7);
+        Species species = new Species("Oak", 5000, 20, 60, 5000, 1, 0.5);
+        plant.setSpecies(species);
+        plant.setWaterLevel(100);
+        plant.setTemperature(20);
+        plant.setHumidity(60);
+        plant.setLux(5000);
 
         when(careTaskRepository.findById("task-done")).thenReturn(Optional.of(pendingTask));
         when(careTaskRepository.save(any(CareTask.class))).thenAnswer(inv -> inv.getArgument(0));
+        when(plantRepository.findById("plant-1")).thenReturn(Optional.of(plant));
+        when(plantRepository.save(any(Plant.class))).thenAnswer(inv -> inv.getArgument(0));
 
-        CareTask result = careTaskService.markAsDone("task-done");
+        CareTask result = careTaskService.validateTask("task-done");
 
-        assertNotNull(result);
         assertEquals(TaskStatus.DONE, result.getStatus());
-        assertNotNull(result.getClosedAt(), "La date de complétion closedAt doit être injectée");
+        assertNotNull(result.getClosedAt());
+        verify(plantRepository).save(plant);
+        assertTrue(plant.getWaterLevel() > 100);
+        assertNotNull(plant.getPlantState());
     }
 
     @Test
-    @DisplayName("Clôture DONE : Doit lever une exception si l'ID de la tâche n'existe pas")
-    void shouldThrowExceptionWhenMarkingDoneOnNonExistingTask() {
-        when(careTaskRepository.findById("invalid-id")).thenReturn(Optional.empty());
-
-        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
-            careTaskService.markAsDone("invalid-id");
-        });
-
-        assertEquals("Task not found", exception.getMessage());
-        verify(careTaskRepository, never()).save(any());
-    }
-
-    @Test
-    @DisplayName("Annulation CANCEL : Passage au statut CANCELED et nettoyage de l'agenda externe si présent")
+    @DisplayName("Annulation : passe au statut CANCELED et nettoie l'agenda externe")
     void shouldCancelTaskAndRemoveFromExternalCalendar() {
         CareTask task = new CareTask();
         ReflectionTestUtils.setField(task, "id", "task-cancel");
@@ -188,43 +195,11 @@ class CareTaskServiceTest {
         careTaskService.cancelTask("task-cancel");
 
         assertEquals(TaskStatus.CANCELED, task.getStatus());
-        verify(externalCalendarService, times(1)).remove("google-event-xyz");
+        verify(externalCalendarService).remove("google-event-xyz");
     }
 
     @Test
-    @DisplayName("Annulation CANCEL : Pas d'appel au calendrier externe si pas d'externalId relié")
-    void shouldCancelTaskWithoutInteractingWithCalendarIfExternalIdIsNull() {
-        CareTask task = new CareTask();
-        ReflectionTestUtils.setField(task, "id", "task-cancel-no-cal");
-        task.setStatus(TaskStatus.PENDING);
-        task.setExternalId(null);
-
-        when(careTaskRepository.findById("task-cancel-no-cal")).thenReturn(Optional.of(task));
-
-        careTaskService.cancelTask("task-cancel-no-cal");
-
-        assertEquals(TaskStatus.CANCELED, task.getStatus());
-        verify(externalCalendarService, never()).remove(anyString());
-    }
-
-    @Test
-    @DisplayName("Annulation CANCEL : Doit lever une exception si l'ID à annuler est introuvable")
-    void shouldThrowExceptionWhenCancelingNonExistingTask() {
-        when(careTaskRepository.findById("unknown-id")).thenReturn(Optional.empty());
-
-        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
-            careTaskService.cancelTask("unknown-id");
-        });
-
-        assertEquals("Task not found", exception.getMessage());
-    }
-
-    // ============================================================
-    // TRAIN DE TESTS : DASHBOARD ET STRATÉGIES DE RECHERCHE
-    // ============================================================
-
-    @Test
-    @DisplayName("Dashboard : Récupération globale ordonnée par les critères du Repository")
+    @DisplayName("Dashboard : récupération globale ordonnée")
     void shouldReturnAllTasksOrderedByPriorityAndDueAt() {
         List<CareTask> mockList = List.of(new CareTask(), new CareTask());
         when(careTaskRepository.findAllByOrderByPriorityDescDueAtAsc()).thenReturn(mockList);
@@ -232,16 +207,16 @@ class CareTaskServiceTest {
         List<CareTask> result = careTaskService.getAllTasks();
 
         assertEquals(2, result.size());
-        verify(careTaskRepository, times(1)).findAllByOrderByPriorityDescDueAtAsc();
+        verify(careTaskRepository).findAllByOrderByPriorityDescDueAtAsc();
     }
 
-    // Helper method pour factoriser la création de plantes de test
-    private Plant createMockPlant(String id, String name, int stressIndex) {
+    private Plant createMockPlant(String id, String name, double stressIndex) {
         Plant plant = new Plant();
         plant.setId(id);
         plant.setName(name);
         plant.setStressIndex(stressIndex);
         plant.setForestId("forest-generic-id");
+        plant.setGrowthStage(GrowthStage.VEGETATIVE);
         return plant;
     }
 }

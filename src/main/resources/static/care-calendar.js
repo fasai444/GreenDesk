@@ -153,7 +153,36 @@ async function cancelTask(taskId) {
 
 async function rescheduleTask(taskId) {
 
-    alert('Fonction reschedule bientôt connectée.');
+    try {
+
+        const task = tasks.find(t => t.id === taskId);
+        if (!task || !task.isFlexible) {
+            alert('Cette tâche n\'est pas flexible.');
+            return;
+        }
+
+        const newScheduled = new Date(task.scheduledAt);
+        newScheduled.setHours(newScheduled.getHours() + 24);
+
+        const newDue = new Date(task.dueAt);
+        newDue.setHours(newDue.getHours() + 24);
+
+        await fetch(`/api/care-tasks/${taskId}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({
+                scheduledAt: newScheduled.toISOString(),
+                dueAt: newDue.toISOString()
+            })
+        });
+
+        await loadTasks();
+
+    } catch (error) {
+
+        console.error(error);
+    }
 }
 
 // =====================================================

@@ -2,104 +2,108 @@ package org.example.controllers.care;
 
 import jakarta.validation.Valid;
 import org.example.dto.care.CareTaskResponseDto;
+import org.example.dto.care.CareTaskUpdateRequest;
 import org.example.dto.care.CreateManualTaskRequest;
+import org.example.dto.care.CreateTaskRequest;
 import org.example.dto.care.GenerateTasksRequest;
 import org.example.entities.care.CareTask;
+import org.example.repositories.PlantRepository;
 import org.example.services.scheduling.CareTaskService;
+import org.example.services.scheduling.WnsCalculator;
+import org.example.services.scheduling.WnsResult;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * ============================================================
- * CARE TASK CONTROLLER
- * ============================================================
- * * API REST des tâches de soins sécurisée par DTO.
- * * ============================================================
- */
 @RestController
 @RequestMapping("/api/care-tasks")
 public class CareTaskController {
 
     private final CareTaskService careTaskService;
+    private final PlantRepository plantRepository;
+    private final WnsCalculator wnsCalculator;
 
-    public CareTaskController(CareTaskService careTaskService) {
+    public CareTaskController(CareTaskService careTaskService,
+                              PlantRepository plantRepository,
+                              WnsCalculator wnsCalculator) {
         this.careTaskService = careTaskService;
+        this.plantRepository = plantRepository;
+        this.wnsCalculator = wnsCalculator;
     }
 
-    /**
-     * ============================================================
-     * Toutes les tâches
-     * ============================================================
-     */
     @GetMapping
     public ResponseEntity<List<CareTaskResponseDto>> getAllTasks() {
-        List<CareTask> tasks = careTaskService.getAllTasks();
-
-        List<CareTaskResponseDto> dtos = tasks.stream()
+        List<CareTaskResponseDto> dtos = careTaskService.getAllTasks().stream()
                 .map(this::convertToResponseDto)
                 .collect(Collectors.toList());
-
         return ResponseEntity.ok(dtos);
     }
 
     /**
-     * ============================================================
-     * Génération manuelle (Mise à jour DTO)
-     * ============================================================
-     * * Désormais, on ne passe plus l'entité 'Plant' brute.
-     * L'orchestration finale ira chercher la plante via le plantId.
+     * POST tâches : création automatique via le moteur WNS + push agenda Google.
      */
+    @PostMapping
+    public ResponseEntity<CareTaskResponseDto> createTask(
+            @Valid @RequestBody CreateTaskRequest request
+    ) {
+        CareTask task = careTaskService.createTaskForPlant(request.getPlantId());
+        return ResponseEntity.status(HttpStatus.CREATED).body(convertToResponseDto(task));
+    }
+
     @PostMapping("/generate")
     public ResponseEntity<List<CareTaskResponseDto>> generateTasks(
             @Valid @RequestBody GenerateTasksRequest request
     ) {
-        // Adaptation temporaire du service : on génère la tâche basée sur le payload reçu
-        // Note : On retourne une liste car le CDC parle d'un recompute/generate global ou ciblé
-        List<CareTask> generatedTasks = careTaskService.generateTasksForRequest(request);
-
-        List<CareTaskResponseDto> dtos = generatedTasks.stream()
+        List<CareTaskResponseDto> dtos = careTaskService.generateTasksForRequest(request).stream()
                 .map(this::convertToResponseDto)
                 .collect(Collectors.toList());
-
         return ResponseEntity.status(HttpStatus.CREATED).body(dtos);
     }
 
     /**
-     * ============================================================
-     * DONE
-     * ============================================================
+     * PATCH tâches flexibles : déplacement manuel ou suite à une alerte météo.
      */
-    @PostMapping("/{id}/done")
-    public ResponseEntity<CareTaskResponseDto> markDone(
-            @PathVariable String id
+    @PatchMapping("/{id}")
+    public ResponseEntity<CareTaskResponseDto> patchTask(
+            @PathVariable String id,
+            @Valid @RequestBody CareTaskUpdateRequest request
     ) {
-        CareTask updatedTask = careTaskService.markAsDone(id);
-        return ResponseEntity.ok(convertToResponseDto(updatedTask));
+        CareTask updated = careTaskService.patchFlexibleTask(id, request);
+        return ResponseEntity.ok(convertToResponseDto(updated));
     }
 
     /**
-     * ============================================================
-     * CANCEL
-     * ============================================================
+     * PUT tâche validée : clôture + mise à jour santé de la plante.
      */
+    @PutMapping("/{id}/validate")
+    public ResponseEntity<CareTaskResponseDto> validateTask(@PathVariable String id) {
+        CareTask updated = careTaskService.validateTask(id);
+        return ResponseEntity.ok(convertToResponseDto(updated));
+    }
+
+    @PostMapping("/{id}/done")
+    public ResponseEntity<CareTaskResponseDto> markDone(@PathVariable String id) {
+        CareTask updated = careTaskService.markAsDone(id);
+        return ResponseEntity.ok(convertToResponseDto(updated));
+    }
+
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> cancelTask(
-            @PathVariable String id
-    ) {
+    public ResponseEntity<Void> cancelTask(@PathVariable String id) {
         careTaskService.cancelTask(id);
         return ResponseEntity.noContent().build();
     }
 
-    /**
-     * ============================================================
-     * Méthode de Mapping Manuelle (Entité -> DTO)
-     * ============================================================
-     */
+    @PostMapping("/manual")
+    public ResponseEntity<CareTaskResponseDto> createManualTask(
+            @RequestBody CreateManualTaskRequest request
+    ) {
+        CareTask task = careTaskService.createManualTask(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(convertToResponseDto(task));
+    }
+
     private CareTaskResponseDto convertToResponseDto(CareTask task) {
         if (task == null) {
             return null;
@@ -122,24 +126,20 @@ public class CareTaskController {
         dto.setCreatedAt(task.getCreatedAt());
         dto.setClosedAt(task.getClosedAt());
 
-        // Construction du wnsBreakdown requis par le cahier des charges (6.4)
-        // La structure pourra être enrichie dynamiquement par la suite par la Personne B
-        dto.setWnsBreakdown(Collections.singletonMap("globalScore", task.getWnsScore()));
+        plantRepository.findById(task.getPlantId()).ifPresent(plant -> {
+            dto.setPlantName(plant.getName());
+            WnsResult wns = wnsCalculator.calculate(plant, List.of());
+            dto.setWnsBreakdown(wns.getBreakdown());
+        });
 
-        // Note: Le plantName sera résolu plus tard (via jointure ou appel à PlantService)
-        dto.setPlantName("Plante #" + task.getPlantId());
+        if (dto.getWnsBreakdown() == null) {
+            dto.setWnsBreakdown(java.util.Map.of("globalScore", task.getWnsScore()));
+        }
+
+        if (dto.getPlantName() == null) {
+            dto.setPlantName("Plante #" + task.getPlantId());
+        }
 
         return dto;
-    }
-
-    @PostMapping("/manual")
-    public ResponseEntity<CareTaskResponseDto> createManualTask(
-            @RequestBody CreateManualTaskRequest request
-    ) {
-
-        CareTask task = careTaskService.createManualTask(request);
-
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(convertToResponseDto(task));
     }
 }

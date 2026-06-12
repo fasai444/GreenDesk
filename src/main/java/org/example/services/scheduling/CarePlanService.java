@@ -1,18 +1,24 @@
 package org.example.services.scheduling;
 
+import org.example.dto.care.GenerateTasksRequest;
 import org.example.entities.care.CarePlan;
+import org.example.entities.care.CareTask;
 import org.example.repositories.CarePlanRepository;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
 public class CarePlanService {
 
     private final CarePlanRepository carePlanRepository;
+    private final CareTaskService careTaskService;
 
-    public CarePlanService(CarePlanRepository carePlanRepository) {
+    public CarePlanService(CarePlanRepository carePlanRepository, @Lazy CareTaskService careTaskService) {
         this.carePlanRepository = carePlanRepository;
+        this.careTaskService = careTaskService;
     }
 
     /**
@@ -36,13 +42,30 @@ public class CarePlanService {
     }
 
     /**
-     * Force le recalcul global (Simulé pour l'ADMIN)
+     * Recalcule le plan de soins : génère les tâches WNS et met à jour le plan.
      */
-    public void recomputeGlobalPlan(String forestId, String plantId) {
+    public List<CareTask> recomputeGlobalPlan(String forestId, String plantId) {
+        GenerateTasksRequest request = new GenerateTasksRequest();
+        request.setForestId(forestId);
+        request.setPlantId(plantId);
+
+        List<CareTask> tasks = careTaskService.generateTasksForRequest(request);
+
         if (plantId != null) {
             CarePlan plan = getOrCreatePlan(plantId);
-            plan.touchRecalculation(); // Utilisation de ton helper
+            plan.touchRecalculation();
             carePlanRepository.save(plan);
+        } else if (forestId != null) {
+            tasks.stream()
+                    .map(CareTask::getPlantId)
+                    .distinct()
+                    .forEach(pid -> {
+                        CarePlan plan = getOrCreatePlan(pid);
+                        plan.touchRecalculation();
+                        carePlanRepository.save(plan);
+                    });
         }
+
+        return tasks;
     }
 }

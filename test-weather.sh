@@ -17,7 +17,7 @@ WEBHOOK_DATA='{
   "event_id": "test-heatwave-001",
   "type": "heatwave",
   "coords": [48.8566, 2.3522],
-  "timestamp": "'$(date -u +%Y-%m-%dT%H:%M:%S.%3NZ)'",
+  "timestamp": "'$(TZ=Europe/Paris date +%Y-%m-%dT%H:%M:%S)'",
   "severity": "high",
   "details": {
     "temperature": 38.5,

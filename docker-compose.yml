@@ -44,6 +44,10 @@ services:
       SPRING_DATA_MONGODB_URI: mongodb://admin:adminpass@mongodb:27017/greendesk?authSource=admin
       SPRING_DATA_MONGODB_DATABASE: greendesk
       SERVER_PORT: 8081
+      # Tomorrow.io — Feature 1 (alertes) + Feature 2 (prévisions pluie WNS)
+      # Définir dans env.example ou exporter avant docker compose up
+      TOMORROW_API_KEY: ${TOMORROW_API_KEY:-}
+      TOMORROW_WEBHOOK_URL: ${TOMORROW_WEBHOOK_URL:-http://host.docker.internal:8081/api/weather/webhook}
     depends_on:
       - mongodb
     networks:

@@ -1,8 +1,10 @@
 package org.example.entities.weather;
 
-
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import org.example.config.ParisLocalDateTimeSerializer;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+
 import java.time.LocalDateTime;
 import java.util.Map;
 
@@ -15,12 +17,20 @@ public class WeatherAlert {
     private String eventId;        // ID unique de l'alerte Tomorrow.io
     private String type;           // frost, heatwave, heavy_rain, etc.
     private double[] coords;       // [latitude, longitude]
+
+    @JsonSerialize(using = ParisLocalDateTimeSerializer.class)
     private LocalDateTime timestamp;
+
     private String severity;       // low, medium, high
     private Map<String, Object> details;
     private boolean processed;
+
+    @JsonSerialize(using = ParisLocalDateTimeSerializer.class)
     private LocalDateTime processedAt;
+
     private boolean acknowledged;
+
+    @JsonSerialize(using = ParisLocalDateTimeSerializer.class)
     private LocalDateTime acknowledgedAt;
 
     // Constructeur par défaut (obligatoire pour MongoDB)

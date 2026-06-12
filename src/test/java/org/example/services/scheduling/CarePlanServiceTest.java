@@ -21,12 +21,16 @@ class CarePlanServiceTest {
     @Mock
     private CarePlanRepository carePlanRepository;
 
+    @Mock
+    private CareTaskService careTaskService;
+
     @InjectMocks
     private CarePlanService carePlanService;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+        when(careTaskService.generateTasksForRequest(any())).thenReturn(java.util.List.of());
     }
 
     // ============================================================
@@ -139,10 +143,11 @@ class CarePlanServiceTest {
     }
 
     @Test
-    @DisplayName("recomputeGlobalPlan : Ignore silencieusement l'opération si le plantId transmis est null")
-    void shouldDoNothingWhenPlantIdIsNull() {
+    @DisplayName("recomputeGlobalPlan : génère les tâches même si plantId est null (forêt entière)")
+    void shouldGenerateTasksForForestWhenPlantIdIsNull() {
         carePlanService.recomputeGlobalPlan("forest-123", null);
 
+        verify(careTaskService).generateTasksForRequest(any());
         verifyNoInteractions(carePlanRepository);
     }
 

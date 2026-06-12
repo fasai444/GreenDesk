@@ -9,6 +9,7 @@ import org.example.repositories.ForestRepository;
 import org.example.repositories.PlantRepository;
 import org.example.repositories.WeatherAlertRepository;
 import org.example.repositories.PlantImpactRepository;
+import org.example.services.scheduling.CareTaskWeatherRescheduler;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.DisplayName;
@@ -43,6 +44,9 @@ class WebhookReceiverServiceTest {
 
     @Mock
     private PlantStateUpdater stateUpdater;
+
+    @Mock
+    private CareTaskWeatherRescheduler careTaskWeatherRescheduler;
 
     @InjectMocks
     private WebhookReceiverService webhookReceiverService;

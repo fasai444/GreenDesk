@@ -87,4 +87,9 @@ public interface CareTaskRepository
      * Utilisé comme verrou d'idempotence pour éviter les doublons dans Google Calendar.
      */
     Optional<CareTask> findByPlantIdAndTypeAndStatus(String plantId, CareTaskType type, TaskStatus status);
+
+    /**
+     * Tâches en attente pour une forêt (filtrage isFlexible fait en Java).
+     */
+    List<CareTask> findByForestIdAndStatus(String forestId, TaskStatus status);
 }

@@ -9,12 +9,14 @@ import org.example.repositories.ForestRepository;
 import org.example.repositories.PlantRepository;
 import org.example.repositories.WeatherAlertRepository;
 import org.example.repositories.PlantImpactRepository;
+import org.example.services.scheduling.CareTaskWeatherRescheduler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import org.example.util.ParisTime;
+
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;  // ⬅️ AJOUTER CET IMPORT
 
@@ -40,6 +42,9 @@ public class WebhookReceiverService {
     
     @Autowired
     private PlantStateUpdater stateUpdater;
+
+    @Autowired
+    private CareTaskWeatherRescheduler careTaskWeatherRescheduler;
     
     @Transactional
     public void processWebhook(TomorrowWebhookPayload payload) {
@@ -84,15 +89,22 @@ public class WebhookReceiverService {
             impacts.add(plantImpactRepository.save(impact));
         }
         
-        // 5. Marquer l'alerte comme traitée
+        // 5. Reporter les tâches flexibles du calendrier de soins
+        List<String> impactedForestIds = impactedPlants.stream()
+                .map(Plant::getForestId)
+                .filter(Objects::nonNull)
+                .distinct()
+                .collect(Collectors.toList());
+        careTaskWeatherRescheduler.rescheduleForWeatherAlert(alert, impactedForestIds);
+
+        // 6. Marquer l'alerte comme traitée
         alert.setProcessed(true);
-        alert.setProcessedAt(LocalDateTime.now());
+        alert.setProcessedAt(ParisTime.now());
         weatherAlertRepository.save(alert);
     }
     
     private WeatherAlert saveAlert(TomorrowWebhookPayload payload) {
-        LocalDateTime timestamp = LocalDateTime.parse(payload.getTimestamp(), 
-                DateTimeFormatter.ISO_DATE_TIME);
+        LocalDateTime timestamp = ParisTime.parse(payload.getTimestamp());
         
         WeatherAlert alert = new WeatherAlert(
             payload.getEvent_id(),
