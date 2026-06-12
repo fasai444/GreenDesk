@@ -8,6 +8,10 @@ timeout /t 5 /nobreak > nul
 
 REM URL de base (adapter le port si nécessaire)
 set BASE_URL=http://localhost:8081
+if "%WEATHER_WEBHOOK_SECRET%"=="" (
+  echo WEATHER_WEBHOOK_SECRET doit etre defini.
+  exit /b 1
+)
 
 echo 1. Test de l'endpoint des alertes météo (devrait être vide au départ)
 curl -s "%BASE_URL%/api/weather/alerts"
@@ -20,7 +24,7 @@ echo Données du webhook:
 echo %WEBHOOK_DATA%
 
 echo.
-curl -s -X POST "%BASE_URL%/api/weather/webhook" -H "Content-Type: application/json" -d "%WEBHOOK_DATA%"
+curl -s -X POST "%BASE_URL%/api/weather/webhook" -H "Content-Type: application/json" -H "X-Webhook-Secret: %WEATHER_WEBHOOK_SECRET%" -d "%WEBHOOK_DATA%"
 
 echo.
 echo 3. Vérification des alertes après le webhook

@@ -98,7 +98,7 @@ public class CareTaskController {
 
     @PostMapping("/manual")
     public ResponseEntity<CareTaskResponseDto> createManualTask(
-            @RequestBody CreateManualTaskRequest request
+            @Valid @RequestBody CreateManualTaskRequest request
     ) {
         CareTask task = careTaskService.createManualTask(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(convertToResponseDto(task));

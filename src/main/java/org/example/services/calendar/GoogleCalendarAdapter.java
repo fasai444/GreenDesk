@@ -102,6 +102,10 @@ public class GoogleCalendarAdapter implements ExternalCalendarService {
 
             event.setSummary(task.getDescription());
             event.setDescription("GreenDesk CareTask: " + task.getType());
+            event.setStart(new EventDateTime()
+                    .setDateTime(new com.google.api.client.util.DateTime(task.getScheduledAt().toString())));
+            event.setEnd(new EventDateTime()
+                    .setDateTime(new com.google.api.client.util.DateTime(task.getDueAt().toString())));
 
             calendarService.events()
                     .update(calendarId, externalId, event)

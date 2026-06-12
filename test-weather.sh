@@ -8,6 +8,7 @@ sleep 10
 
 # URL de base (adapter le port si nécessaire)
 BASE_URL="http://localhost:8081"
+: "${WEATHER_WEBHOOK_SECRET:?WEATHER_WEBHOOK_SECRET doit etre defini}"
 
 echo "1. Test de l'endpoint des alertes météo (devrait être vide au départ)"
 curl -s "${BASE_URL}/api/weather/alerts" | jq '.' || curl -s "${BASE_URL}/api/weather/alerts"
@@ -30,6 +31,7 @@ echo "$WEBHOOK_DATA" | jq '.' || echo "$WEBHOOK_DATA"
 
 RESPONSE=$(curl -s -X POST "${BASE_URL}/api/weather/webhook" \
   -H "Content-Type: application/json" \
+  -H "X-Webhook-Secret: ${WEATHER_WEBHOOK_SECRET}" \
   -d "$WEBHOOK_DATA")
 
 echo "Réponse du webhook:"

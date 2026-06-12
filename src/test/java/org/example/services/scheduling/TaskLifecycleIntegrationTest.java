@@ -59,7 +59,6 @@ public class TaskLifecycleIntegrationTest {
         assertNotNull(task1);
 
         careTaskService.cancelTask(task1.getId());
-        careTaskRepository.delete(task1);
 
         CareTask task2 = careTaskService.generateTask(plant);
         assertNotNull(task2);

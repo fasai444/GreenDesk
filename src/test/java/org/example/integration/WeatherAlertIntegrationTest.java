@@ -22,6 +22,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 
 import java.time.LocalDateTime;
@@ -132,7 +134,7 @@ class WeatherAlertIntegrationTest {
         // Note: Le service est mocké, donc on teste juste l'endpoint
         doNothing().when(webhookReceiverService).processWebhook(any());
         
-        ResponseEntity<String> response = restTemplate.postForEntity(webhookUrl, payload, String.class);
+        ResponseEntity<String> response = postWebhook(payload);
         
         // Then
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -150,11 +152,17 @@ class WeatherAlertIntegrationTest {
         doThrow(new RuntimeException("Erreur de traitement"))
             .when(webhookReceiverService).processWebhook(any());
         
-        ResponseEntity<String> response = restTemplate.postForEntity(webhookUrl, payload, String.class);
+        ResponseEntity<String> response = postWebhook(payload);
         
         // Then
         // Le service mocké lance une exception, donc réponse 500
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+    }
+
+    private ResponseEntity<String> postWebhook(Map<String, Object> payload) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("X-Webhook-Secret", "test-secret");
+        return restTemplate.postForEntity(webhookUrl, new HttpEntity<>(payload, headers), String.class);
     }
 
     @Test

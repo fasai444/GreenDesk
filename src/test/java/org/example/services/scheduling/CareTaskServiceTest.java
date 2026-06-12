@@ -72,7 +72,7 @@ class CareTaskServiceTest {
         when(wnsCalculator.calculate(eq(plant), any())).thenReturn(
                 new WnsResult(0.92, Map.of("globalScore", 0.92), false, false)
         );
-        when(careTaskRepository.findByPlantIdAndTypeAndScheduledAt(anyString(), any(), any()))
+        when(careTaskRepository.findByPlantIdAndTypeAndStatus(anyString(), any(), eq(TaskStatus.PENDING)))
                 .thenReturn(Optional.empty());
         when(careTaskRepository.save(any(CareTask.class))).thenAnswer(inv -> {
             CareTask t = inv.getArgument(0);
@@ -139,7 +139,7 @@ class CareTaskServiceTest {
         ReflectionTestUtils.setField(existingTask, "id", "existing-unique-id");
         existingTask.setStatus(TaskStatus.PENDING);
 
-        when(careTaskRepository.findByPlantIdAndTypeAndScheduledAt(anyString(), any(), any()))
+        when(careTaskRepository.findByPlantIdAndTypeAndStatus(anyString(), any(), eq(TaskStatus.PENDING)))
                 .thenReturn(Optional.of(existingTask));
 
         CareTask result = careTaskService.generateTask(plant);
@@ -196,6 +196,37 @@ class CareTaskServiceTest {
 
         assertEquals(TaskStatus.CANCELED, task.getStatus());
         verify(externalCalendarService).remove("google-event-xyz");
+    }
+
+    @Test
+    @DisplayName("Validation : une tâche annulée ne peut pas être validée")
+    void shouldRejectValidationOfCanceledTask() {
+        CareTask canceledTask = new CareTask();
+        canceledTask.setStatus(TaskStatus.CANCELED);
+        when(careTaskRepository.findById("task-canceled")).thenReturn(Optional.of(canceledTask));
+
+        assertThrows(IllegalStateException.class, () -> careTaskService.validateTask("task-canceled"));
+
+        verify(careTaskRepository, never()).save(any());
+        verifyNoInteractions(plantRepository);
+    }
+
+    @Test
+    @DisplayName("Déplacement : refuse une échéance antérieure à la planification")
+    void shouldRejectDueDateBeforeScheduledDate() {
+        CareTask task = new CareTask();
+        task.setStatus(TaskStatus.PENDING);
+        task.setFlexible(true);
+        when(careTaskRepository.findById("task-invalid-dates")).thenReturn(Optional.of(task));
+
+        org.example.dto.care.CareTaskUpdateRequest request = new org.example.dto.care.CareTaskUpdateRequest();
+        request.setScheduledAt(Instant.now().plusSeconds(7200));
+        request.setDueAt(Instant.now().plusSeconds(3600));
+
+        assertThrows(IllegalArgumentException.class,
+                () -> careTaskService.patchFlexibleTask("task-invalid-dates", request));
+
+        verify(careTaskRepository, never()).save(any());
     }
 
     @Test

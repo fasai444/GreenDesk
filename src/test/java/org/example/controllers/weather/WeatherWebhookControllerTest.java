@@ -11,6 +11,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.util.ReflectionTestUtils;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -45,6 +46,7 @@ class WeatherWebhookControllerTest {
         weatherWebhookController.setWebhookReceiverService(webhookReceiverService);
         weatherWebhookController.setWeatherAlertRepository(weatherAlertRepository);
         weatherWebhookController.setPlantImpactRepository(plantImpactRepository);
+        ReflectionTestUtils.setField(weatherWebhookController, "webhookSecret", "test-secret");
         
         // Créer un payload valide
         Map<String, Object> details = new HashMap<>();
@@ -73,7 +75,7 @@ class WeatherWebhookControllerTest {
     void testReceiveWebhook_ValidPayload_ReturnsOk() {
         doNothing().when(webhookReceiverService).processWebhook(any(TomorrowWebhookPayload.class));
         
-        ResponseEntity<?> response = weatherWebhookController.receiveWebhook(validPayload);
+        ResponseEntity<?> response = weatherWebhookController.receiveWebhook("test-secret", validPayload);
         
         assertEquals(HttpStatus.OK, response.getStatusCode());
         verify(webhookReceiverService, times(1)).processWebhook(validPayload);
@@ -85,7 +87,7 @@ class WeatherWebhookControllerTest {
         doThrow(new RuntimeException("Erreur de traitement"))
             .when(webhookReceiverService).processWebhook(any(TomorrowWebhookPayload.class));
         
-        ResponseEntity<?> response = weatherWebhookController.receiveWebhook(validPayload);
+        ResponseEntity<?> response = weatherWebhookController.receiveWebhook("test-secret", validPayload);
         
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
         verify(webhookReceiverService, times(1)).processWebhook(validPayload);
@@ -97,7 +99,7 @@ class WeatherWebhookControllerTest {
         doThrow(new RuntimeException("Payload invalide"))
             .when(webhookReceiverService).processWebhook(null);
         
-        ResponseEntity<?> response = weatherWebhookController.receiveWebhook(null);
+        ResponseEntity<?> response = weatherWebhookController.receiveWebhook("test-secret", null);
         
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
     }
@@ -107,7 +109,7 @@ class WeatherWebhookControllerTest {
     void testReceiveWebhook_MissingEventId_StillProcessed() {
         doNothing().when(webhookReceiverService).processWebhook(any(TomorrowWebhookPayload.class));
         
-        ResponseEntity<?> response = weatherWebhookController.receiveWebhook(invalidPayload);
+        ResponseEntity<?> response = weatherWebhookController.receiveWebhook("test-secret", invalidPayload);
         
         assertEquals(HttpStatus.OK, response.getStatusCode());
         verify(webhookReceiverService, times(1)).processWebhook(invalidPayload);
@@ -144,7 +146,7 @@ class WeatherWebhookControllerTest {
         
         doNothing().when(webhookReceiverService).processWebhook(any(TomorrowWebhookPayload.class));
         
-        ResponseEntity<?> response = weatherWebhookController.receiveWebhook(specialPayload);
+        ResponseEntity<?> response = weatherWebhookController.receiveWebhook("test-secret", specialPayload);
         
         assertEquals(HttpStatus.OK, response.getStatusCode());
         verify(webhookReceiverService, times(1)).processWebhook(specialPayload);
@@ -155,10 +157,19 @@ class WeatherWebhookControllerTest {
     void testReceiveWebhook_ResponseValidation() {
         doNothing().when(webhookReceiverService).processWebhook(any(TomorrowWebhookPayload.class));
         
-        ResponseEntity<?> response = weatherWebhookController.receiveWebhook(validPayload);
+        ResponseEntity<?> response = weatherWebhookController.receiveWebhook("test-secret", validPayload);
         
         assertNotNull(response);
         assertEquals(HttpStatus.OK, response.getStatusCode());
+    }
+
+    @Test
+    @DisplayName("POST /webhook - Secret invalide doit retourner 401")
+    void testReceiveWebhook_InvalidSecret_ReturnsUnauthorized() {
+        ResponseEntity<?> response = weatherWebhookController.receiveWebhook("wrong-secret", validPayload);
+
+        assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
+        verifyNoInteractions(webhookReceiverService);
     }
 
     @Test

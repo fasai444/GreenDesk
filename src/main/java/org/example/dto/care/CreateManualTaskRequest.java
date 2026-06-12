@@ -1,5 +1,8 @@
 package org.example.dto.care;
 
+import jakarta.validation.constraints.Future;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import org.example.entities.care.CareTaskType;
 import org.example.entities.care.TaskPriority;
 
@@ -7,16 +10,22 @@ import java.time.Instant;
 
 public class CreateManualTaskRequest {
 
+    @NotBlank
     private String plantId;
 
     private String plantName;
 
+    @NotNull
     private CareTaskType type;
 
+    @NotBlank
     private String description;
 
+    @NotNull
     private TaskPriority priority;
 
+    @NotNull
+    @Future
     private Instant dueAt;
 
     public String getPlantId() {

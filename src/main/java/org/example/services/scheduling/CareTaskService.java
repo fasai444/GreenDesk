@@ -65,7 +65,7 @@ public class CareTaskService {
         Instant scheduledAt = Instant.now().truncatedTo(ChronoUnit.HOURS);
 
         Optional<CareTask> existing = careTaskRepository
-                .findByPlantIdAndTypeAndScheduledAt(plant.getId(), type, scheduledAt);
+                .findByPlantIdAndTypeAndStatus(plant.getId(), type, TaskStatus.PENDING);
 
         if (existing.isPresent()) {
             return existing.get();
@@ -132,6 +132,7 @@ public class CareTaskService {
         if (task.getStatus() == TaskStatus.DONE) {
             return task;
         }
+        requirePending(task, "validée");
 
         task.setStatus(TaskStatus.DONE);
         task.setClosedAt(Instant.now());
@@ -147,6 +148,17 @@ public class CareTaskService {
 
         if (!task.isFlexible()) {
             throw new IllegalStateException("Cette tâche n'est pas flexible et ne peut pas être déplacée");
+        }
+        requirePending(task, "déplacée");
+
+        Instant scheduledAt = request.getScheduledAt() != null
+                ? request.getScheduledAt()
+                : task.getScheduledAt();
+        Instant dueAt = request.getDueAt() != null
+                ? request.getDueAt()
+                : task.getDueAt();
+        if (scheduledAt != null && dueAt != null && dueAt.isBefore(scheduledAt)) {
+            throw new IllegalArgumentException("La date d'échéance doit être postérieure à la planification");
         }
 
         if (request.getScheduledAt() != null) {
@@ -172,8 +184,10 @@ public class CareTaskService {
     public void cancelTask(String taskId) {
         CareTask task = careTaskRepository.findById(taskId)
                 .orElseThrow(() -> new RuntimeException("Task not found"));
+        requirePending(task, "annulée");
 
         task.setStatus(TaskStatus.CANCELED);
+        task.setClosedAt(Instant.now());
         careTaskRepository.save(task);
 
         if (task.getExternalId() != null) {
@@ -186,8 +200,12 @@ public class CareTaskService {
     }
 
     public CareTask createManualTask(CreateManualTaskRequest request) {
+        Plant plant = plantRepository.findById(request.getPlantId())
+                .orElseThrow(() -> new RuntimeException("Plant not found: " + request.getPlantId()));
+
         CareTask task = new CareTask();
         task.setPlantId(request.getPlantId());
+        task.setForestId(plant.getForestId());
         task.setType(request.getType());
         task.setDescription(request.getDescription());
         task.setPriority(request.getPriority());
@@ -206,6 +224,14 @@ public class CareTaskService {
             carePlanService.addTaskToPlan(request.getPlantId(), saved.getId());
         }
         return saved;
+    }
+
+    private void requirePending(CareTask task, String action) {
+        if (task.getStatus() != TaskStatus.PENDING) {
+            throw new IllegalStateException(
+                    "Seule une tâche en attente peut être " + action + " (statut actuel : " + task.getStatus() + ")"
+            );
+        }
     }
 
     private List<Plant> resolvePlants(GenerateTasksRequest request) {

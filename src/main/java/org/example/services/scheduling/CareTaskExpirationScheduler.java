@@ -3,6 +3,7 @@ package org.example.services.scheduling;
 import org.example.entities.care.CareTask;
 import org.example.entities.care.TaskStatus;
 import org.example.repositories.CareTaskRepository;
+import org.example.services.calendar.ExternalCalendarService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -27,9 +28,12 @@ public class CareTaskExpirationScheduler {
     private static final Logger log = LoggerFactory.getLogger(CareTaskExpirationScheduler.class);
 
     private final CareTaskRepository careTaskRepository;
+    private final ExternalCalendarService externalCalendarService;
 
-    public CareTaskExpirationScheduler(CareTaskRepository careTaskRepository) {
+    public CareTaskExpirationScheduler(CareTaskRepository careTaskRepository,
+                                       ExternalCalendarService externalCalendarService) {
         this.careTaskRepository = careTaskRepository;
+        this.externalCalendarService = externalCalendarService;
     }
 
     /**
@@ -54,6 +58,9 @@ public class CareTaskExpirationScheduler {
                 task.setStatus(TaskStatus.CANCELED);
                 task.setClosedAt(now);
                 careTaskRepository.save(task);
+                if (task.getExternalId() != null) {
+                    externalCalendarService.remove(task.getExternalId());
+                }
 
                 // Log structuré (Critère AC-9 / Section 13.1 du CDC)
                 log.info("[CARE_TASK_EXPIRED] {{taskId: '{}', plantId: '{}', reason: 'dueAt {} exceeded now {}'}}",

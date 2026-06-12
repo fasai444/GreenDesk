@@ -197,10 +197,13 @@ public class WeatherForecastService {
   private RainForecast fromAlertsForForest(String forestId) {
     LocalDateTime now = ParisTime.now();
     LocalDateTime in6h = now.plus(6, ChronoUnit.HOURS);
+    Optional<Forest> forest = forestRepository.findById(forestId);
+    double[] forestCoords = forest.map(Forest::getCoords).orElse(null);
 
     List<WeatherAlert> alerts = weatherAlertRepository.findAll().stream()
         .filter(a -> !a.isAcknowledged())
         .filter(a -> RAIN_ALERT_TYPES.contains(a.getType()))
+        .filter(a -> forestCoords == null || isWithinRadius(forestCoords, a.getCoords(), 10.0))
         .filter(a -> a.getTimestamp() != null
             && !a.getTimestamp().isBefore(now)
             && !a.getTimestamp().isAfter(in6h))
@@ -241,5 +244,17 @@ public class WeatherForecastService {
       return number.doubleValue();
     }
     return 10.0;
+  }
+
+  private boolean isWithinRadius(double[] point1, double[] point2, double radiusKm) {
+    if (point1 == null || point2 == null || point1.length != 2 || point2.length != 2) {
+      return false;
+    }
+    double dLat = Math.toRadians(point2[0] - point1[0]);
+    double dLon = Math.toRadians(point2[1] - point1[1]);
+    double a = Math.sin(dLat / 2) * Math.sin(dLat / 2)
+        + Math.cos(Math.toRadians(point1[0])) * Math.cos(Math.toRadians(point2[0]))
+        * Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    return 6371.0 * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)) <= radiusKm;
   }
 }

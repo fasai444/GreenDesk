@@ -3,6 +3,7 @@ package org.example.services.scheduling;
 import org.example.entities.care.CareTask;
 import org.example.entities.care.TaskStatus;
 import org.example.repositories.CareTaskRepository;
+import org.example.services.calendar.ExternalCalendarService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -20,6 +21,9 @@ class CareTaskExpirationSchedulerTest {
 
     @Mock
     private CareTaskRepository careTaskRepository;
+
+    @Mock
+    private ExternalCalendarService externalCalendarService;
 
     @InjectMocks
     private CareTaskExpirationScheduler scheduler;
@@ -50,6 +54,7 @@ class CareTaskExpirationSchedulerTest {
         CareTask task1 = new CareTask();
         ReflectionTestUtils.setField(task1, "id", "task-1");
         task1.setStatus(TaskStatus.PENDING);
+        task1.setExternalId("event-1");
 
         CareTask task2 = new CareTask();
         ReflectionTestUtils.setField(task2, "id", "task-2");
@@ -64,6 +69,7 @@ class CareTaskExpirationSchedulerTest {
         // Assert
         verify(careTaskRepository, times(1)).save(task1);
         verify(careTaskRepository, times(1)).save(task2);
+        verify(externalCalendarService).remove("event-1");
     }
 
     @Test

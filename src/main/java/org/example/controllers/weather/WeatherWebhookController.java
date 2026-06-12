@@ -11,6 +11,7 @@ import org.example.services.NotificationService;
 import org.example.services.weather.WeatherAlertConfigService;
 import org.example.services.weather.WebhookReceiverService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,10 +23,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
 
 @RestController
 @RequestMapping("/api/weather")
 public class WeatherWebhookController {
+
+    @Value("${weather.webhook.secret}")
+    private String webhookSecret;
 
     @Autowired
     private WebhookReceiverService webhookReceiverService;
@@ -59,13 +65,25 @@ public class WeatherWebhookController {
     }
 
     @PostMapping("/webhook")
-    public ResponseEntity<?> receiveWebhook(@RequestBody TomorrowWebhookPayload payload) {
+    public ResponseEntity<?> receiveWebhook(
+            @RequestHeader(value = "X-Webhook-Secret", required = false) String providedSecret,
+            @RequestBody TomorrowWebhookPayload payload) {
+        if (!validWebhookSecret(providedSecret)) {
+            return ResponseEntity.status(401).body(Map.of("error", "Signature webhook invalide"));
+        }
         try {
             webhookReceiverService.processWebhook(payload);
             return ResponseEntity.ok().body(Map.of("status", "processed"));
         } catch (Exception e) {
             return ResponseEntity.status(500).body(Map.of("error", e.getMessage()));
         }
+    }
+
+    private boolean validWebhookSecret(String providedSecret) {
+        return providedSecret != null && MessageDigest.isEqual(
+                webhookSecret.getBytes(StandardCharsets.UTF_8),
+                providedSecret.getBytes(StandardCharsets.UTF_8)
+        );
     }
     
     // GET /api/weather/alerts?forestId={id}&activeOnly=true
