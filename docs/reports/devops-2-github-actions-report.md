@@ -353,6 +353,112 @@ sequenceDiagram
 
 Le diagramme reprend les noms réellement présents dans le code. La recherche des plantes s'appuie sur les coordonnées des forêts, puis le traitement est limité aux plantes sensibles au type d'événement.
 
+#### 2.1.7 Types d'alertes météo pris en charge
+
+Le jumeau numérique traite cinq catégories d'événements Tomorrow.io. Chaque alerte est rapprochée des sensibilités déclarées pour l'espèce avant le calcul de l'impact.
+
+| Type technique | Événement représenté | Conséquence principale |
+|---|---|---|
+| `heatwave` | Vague de chaleur | Évaluation du stress thermique et adaptation des soins |
+| `frost` | Gel | Évaluation du risque de gel et des besoins de protection |
+| `heavy_rain` | Pluie intense | Réévaluation ou report des tâches d'arrosage flexibles |
+| `high_wind` | Vent fort | Évaluation du risque mécanique et adaptation des tâches concernées |
+| `uv_alert` | Niveau UV élevé | Évaluation de l'exposition et de l'impact sur les plantes sensibles |
+
+Le calcul est assuré par `PlantImpactCalculator`, qui produit les scores ISR et SPS. `PlantStateUpdater` applique ensuite les ajustements nécessaires à l'état de la plante.
+
+#### 2.1.8 API météo, consultation et notifications
+
+La Feature 1 ne se limite pas à la réception du webhook. Elle fournit également les opérations nécessaires à la consultation, au suivi et à la configuration des alertes.
+
+| Méthode et endpoint | Rôle |
+|---|---|
+| `POST /api/weather/webhook` | Recevoir et traiter une alerte externe |
+| `GET /api/weather/alerts` | Consulter les alertes, avec filtres optionnels `forestId`, `plantId` et `activeOnly` |
+| `POST /api/weather/alerts/{alertId}/ack` | Acquitter une alerte |
+| `GET /api/weather/impact/{plantId}` | Consulter l'historique des impacts d'une plante |
+| `POST /api/weather/alert-config` | Configurer les seuils d'alerte d'une forêt |
+| `GET /api/weather/notifications` | Consulter les notifications météo |
+| `POST /api/weather/notifications/{id}/read` | Marquer une notification comme lue |
+| `POST /api/weather/notifications/read-all` | Marquer toutes les notifications comme lues |
+
+#### 2.1.9 Interface utilisateur
+
+Le tableau de bord présente une section **Alertes météo** alimentée par l'API. L'utilisateur peut afficher les alertes reçues, limiter l'affichage aux alertes non acquittées et acquitter une alerte depuis l'interface. Cette intégration est portée par `dashboard.html` et `dashboard.js`.
+
+L'historique persistant permet de conserver une trace de l'événement reçu, des plantes concernées et des impacts calculés, même après l'acquittement de l'alerte.
+
+##### 2.1.9.1 Suivi opérationnel des alertes météo
+
+![Liste des alertes météo Tomorrow.io](/assets/images/feature1-weather-alerts.svg)
+
+Cette vue représente le point de contrôle opérationnel de la Feature 1. Chaque ligne correspond à une alerte Tomorrow.io persistée par GreenDesk. Le tableau affiche sa date, son type, sa sévérité, les coordonnées de la zone concernée et son statut.
+
+Le filtre par forêt permet de limiter l'analyse à une zone précise. L'option **Non acquittées uniquement** met en évidence les événements restant à traiter. Le bouton **Acquitter** confirme qu'un utilisateur a pris connaissance de l'alerte sans supprimer son historique.
+
+##### 2.1.9.2 Projection de l'évolution des plantes
+
+![Graphique des prédictions à 7 jours](/assets/images/feature1-predictions-7-days.svg)
+
+Cette vue complète le suivi météo par une représentation prédictive. L'utilisateur sélectionne une plante et une durée, puis le frontend appelle `GET /api/predictions/plant/{plantId}?days={days}`. Le graphique compare deux séries :
+
+- le stress prévisionnel, exprimé en pourcentage ;
+- la hauteur prévisionnelle, exprimée en centimètres.
+
+`PredictionService` calcule ces projections à partir de l'état courant de la plante, de sa hauteur, de son facteur de croissance et des caractéristiques de son espèce. Une alerte prédictive est ajoutée lorsque le stress projeté dépasse le seuil critique de `70 %`. Cette visualisation aide donc l'utilisateur à anticiper une dégradation après avoir observé les alertes et impacts produits par le jumeau numérique météo.
+
+#### 2.1.10 Robustesse et sécurité du traitement
+
+Plusieurs mécanismes protègent le traitement contre les erreurs et les doublons :
+
+- le webhook exige l'en-tête `X-Webhook-Secret`, comparé au secret configuré par `WeatherWebhookController` ;
+- `WebhookReceiverService` valide la présence de `event_id`, du type, de l'horodatage et de deux coordonnées exploitables ;
+- l'identifiant externe `event_id` permet d'éviter de traiter deux fois la même alerte ;
+- la recherche géographique s'appuie sur les coordonnées des forêts afin de limiter l'analyse aux zones proches ;
+- seules les plantes sensibles au type d'événement sont retenues pour le calcul d'impact ;
+- l'alerte est marquée comme traitée après l'analyse et le réordonnancement.
+
+L'authentification Spring Security de la Feature V6 protège l'utilisation générale de l'application et les espaces réservés. Le webhook météo constitue cependant un point d'entrée externe spécifique : il utilise donc son propre secret plutôt qu'une session HTTP utilisateur.
+
+##### 2.1.10.1 Contrôle d'accès à la Feature 1
+
+L'accès humain aux informations produites par la Feature 1 passe par le système d'authentification de GreenDesk. Avant de consulter le tableau de bord et les alertes météo, l'utilisateur doit ouvrir une session depuis `login.html`. Les identifiants sont transmis à `POST /api/auth/login`, puis Spring Security crée une session HTTP utilisée lors des requêtes suivantes.
+
+![Page de connexion GreenDesk](/assets/images/feature1-auth-login.png)
+
+La page de connexion présente également les comptes de démonstration `admin / admin123` et `demo / demo123`. Après authentification, `auth-guard.js` vérifie la session avec `GET /api/auth/me` et redirige vers `/login.html` toute personne non connectée qui tente d'accéder à une page protégée.
+
+Deux niveaux d'accès sont distingués :
+
+| Rôle | Accès associé |
+|---|---|
+| `USER` | Consultation des pages protégées, du tableau de bord et des informations météo autorisées |
+| `ADMIN` | Accès utilisateur standard et administration des comptes via `/api/admin/**` |
+
+L'écran **Gestion des comptes utilisateurs** est réservé au rôle `ADMIN`. Il centralise le nombre total de comptes, les administrateurs, les utilisateurs et les comptes actifs. Il permet également de rechercher, modifier, réinitialiser ou supprimer un compte.
+
+Depuis le bouton **Nouveau compte**, l'administrateur ouvre une fenêtre de création. Il renseigne le nom d'utilisateur, l'adresse email et le mot de passe, puis attribue explicitement le rôle **Utilisateur** ou **Administrateur**. Cette séparation empêche un utilisateur standard de s'attribuer lui-même des droits élevés.
+
+Ainsi, la sécurité de la Feature 1 repose sur deux mécanismes complémentaires :
+
+- la session Spring Security et les rôles protègent l'accès des utilisateurs aux écrans et aux API internes ;
+- le secret `X-Webhook-Secret` authentifie les alertes envoyées par le fournisseur météo externe, qui ne peut pas ouvrir une session utilisateur.
+
+#### 2.1.11 Tests et scripts locaux
+
+La fonctionnalité météo est couverte à plusieurs niveaux :
+
+| Test ou outil | Périmètre vérifié |
+|---|---|
+| `WeatherWebhookControllerTest` | Réception HTTP, secret webhook, payloads valides et invalides |
+| `WebhookReceiverServiceTest` | Validation, idempotence et orchestration du traitement |
+| `PlantImpactCalculatorTest` | Calcul des impacts ISR et SPS selon les événements |
+| `WeatherForecastServiceTest` | Exploitation des prévisions météo |
+| `WeatherAlertIntegrationTest` | Parcours intégré avec persistance et endpoints |
+| `test-weather.sh` et `test-weather.bat` | Test local du webhook, de la liste des alertes et du filtre `activeOnly` |
+
+Les deux scripts locaux utilisent la variable d'environnement `WEATHER_WEBHOOK_SECRET`, envoient une alerte de chaleur de démonstration puis vérifient sa présence dans l'API.
+
 ### 2.2 Feature 2 - Calendrier de soins dynamique
 
 #### 2.2.1 Objectif fonctionnel
