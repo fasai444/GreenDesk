@@ -1,687 +1,668 @@
 # Dossier Technique & Manuel Utilisateur
-# Projet DevOps 2 - Application GreenDesk
+## Projet DevOps 2 - Application GreenDesk
 
-**Date du dossier :** 13 juin 2026
-
-**Dépôt GitHub :** `MisasoaRobison/GreenDesk`
+| Information | Valeur |
+|---|---|
+| Version | `v2.0.0` |
+| Projet | GreenDesk |
+| Type | Dossier technique, manuel utilisateur et rapport DevOps 2 |
+| Dépôt GitHub | `MisasoaRobison/GreenDesk` |
+| Date | 13 juin 2026 |
+| Équipe | Hadi ISSA, Fatima SAIDI, Lydia AMROUCHE, Misasoa ROBISON, Mamadou DIALLO |
 
 ---
 
-## 1. Présentation générale
+## Sommaire
 
-### 1.1 Objectif du projet
-
-GreenDesk est une application de gestion agronomique et de simulation destinée au suivi de plantes et de forêts numériques. Elle centralise les données biologiques, les mesures environnementales, les alertes météo et les actions de soin.
-
-Le périmètre DevOps 2 se concentre principalement sur deux fonctionnalités complémentaires :
-
-1. **Feature 1 - Jumeau numérique météo** : réception et traitement des événements météorologiques, calcul de leur impact et mise à jour de l'état des plantes.
-2. **Feature 2 - Calendrier de soins dynamique** : transformation des besoins biologiques et météorologiques en tâches concrètes, planifiées et suivies.
-
-Les objectifs principaux sont :
-
-- anticiper les risques météorologiques ;
-- prioriser les interventions sur les plantes ;
-- éviter les actions inutiles, comme un arrosage avant une pluie ;
-- synchroniser les tâches avec Google Calendar ;
-- assurer la qualité du logiciel avec GitHub Actions, Gradle, JUnit et JaCoCo ;
-- produire automatiquement les artefacts et documents de release.
-
-### 1.2 Équipe & contributeurs
-
-L'équipe déclarée dans la documentation du projet est composée de :
-
-| Membre | Identité Git observée |
-|---|---|
-| Hadi ISSA | `Hadi ISSA` |
-| Fatima SAIDI | `fasai444`, `fatima saidi` |
-| Lydia AMROUCHE | `lydiaamrouche` |
-| Misasoa ROBISON | `Misasoa Robison` |
-| Mamadou DIALLO | `M Diallo`, `Mamadou Sanoussy DIALLO` |
-
-Les contributions couvrent le backend, les interfaces, les tests, Docker, la CI/CD, la documentation et les releases.
-
-### 1.3 Gestion de projet & DevOps
-
-Le projet suit une organisation itérative :
-
-- développement par fonctionnalités ;
-- branches Git dédiées ;
-- intégration sur `master` ;
-- validation par tests automatisés ;
-- documentation versionnée avec le code ;
-- création de releases à partir de tags Git.
-
-La chaîne DevOps repose sur :
-
-| Outil | Usage |
-|---|---|
-| Git / GitHub | Versioning, collaboration, tags et releases |
-| GitHub Actions | CI, documentation, UML et release |
-| Gradle Wrapper | Build reproductible |
-| JUnit 5 / Spring Boot Test | Tests unitaires et d'intégration |
-| JaCoCo | Mesure de couverture |
-| Docker / Docker Compose | Conteneurisation et orchestration |
-| Pandoc / XeLaTeX | Génération automatique des PDF |
-
-```mermaid
-flowchart LR
-    A[Développement] --> B[Commit Git]
-    B --> C[Push / Pull Request]
-    C --> D[GitHub Actions]
-    D --> E[Tests et rapports]
-    E --> F[Merge]
-    F --> G[Tag version]
-    G --> H[Release et PDF]
-```
+1. Architecture technique
+2. Fonctionnalités détaillées
+3. GitHub Actions et CI/CD
+4. Tests effectués
+5. Matrice de responsabilités et réalisations
+6. Guide d'installation et déploiement
+7. Guide de release DevOps 2
+8. Annexe API REST
+9. Conclusion
 
 ---
 
-## 2. Architecture technique
+## 1. Architecture technique
 
-### 2.1 Stack technologique
+GreenDesk est une application de gestion agronomique et de simulation. Elle centralise les plantes, les forêts, les mesures environnementales, les alertes météo et les tâches de soin. Son architecture associe une API Spring Boot, une interface web statique, MongoDB et une chaîne DevOps automatisée avec GitHub Actions.
 
-| Couche | Technologie |
-|---|---|
-| Langage | Java 21 |
-| Framework backend | Spring Boot 3.3.3 |
-| API | Spring Web / REST |
-| Sécurité | Spring Security, sessions, BCrypt |
-| Validation | Jakarta Validation |
-| Base de données | MongoDB / Spring Data MongoDB |
-| Frontend | HTML, CSS, JavaScript, Bootstrap |
-| Build | Gradle Wrapper 9.2.0 |
-| Tests | JUnit 5, Mockito, Spring Boot Test |
-| Couverture | JaCoCo 0.8.12 |
-| Documentation API | Swagger / OpenAPI |
-| Conteneurs | Docker, Docker Compose |
-| Intégrations | Tomorrow.io, Open-Meteo, Google Calendar |
+### 1.1 Vue d'ensemble de l'architecture
 
-### 2.2 Architecture globale
+Le backend suit une architecture modulaire en couches :
 
-GreenDesk utilise une architecture en couches.
+- les **Controllers** exposent les endpoints REST et valident les requêtes ;
+- les **Services** portent la logique métier ;
+- les **Repositories** assurent l'accès aux collections MongoDB ;
+- les **Entities** représentent les données persistées ;
+- les **DTOs** définissent les objets d'entrée et de sortie ;
+- les ressources HTML, CSS et JavaScript constituent le frontend ;
+- GitHub Actions automatise les tests, la documentation et les releases.
+
+Cette séparation facilite les tests, la maintenance et l'évolution indépendante des fonctionnalités météo et du calendrier de soins.
+
+### 1.2 Stack technologique
+
+| Couche | Technologie | Rôle |
+|---|---|---|
+| Frontend | HTML, CSS, JavaScript, Bootstrap | Interfaces utilisateur et appels à l'API |
+| Backend | Java 21, Spring Boot 3.3.3 | API REST et logique métier |
+| Sécurité | Spring Security, BCrypt, sessions | Authentification et autorisation |
+| Base de données | MongoDB, Spring Data MongoDB | Persistance des plantes, tâches et alertes |
+| Build | Gradle Wrapper 9.2.0 | Compilation, tests, JAR et Javadoc |
+| Tests | JUnit 5, Mockito, Spring Boot Test | Tests unitaires et d'intégration |
+| Couverture | JaCoCo 0.8.12 | Mesure de couverture du code |
+| CI/CD | GitHub Actions | Build, tests, documentation et release |
+| Documentation | Markdown, Pandoc, XeLaTeX | Génération des documents PDF |
+| Déploiement | Docker, Docker Compose | Exécution conteneurisée |
+| Services externes | Tomorrow.io, Open-Meteo, Google Calendar | Météo et calendrier externe |
+
+### 1.3 Diagramme d'architecture global
 
 ```mermaid
 flowchart LR
-    U[Utilisateur / API client] --> UI[Interface Web]
-    U --> C[Controllers REST]
-    UI --> C
+    U[Utilisateur / Frontend] --> API[API REST Spring Boot]
+    API --> C[Controllers]
     C --> S[Services métier]
     S --> R[Repositories Spring Data]
     R --> DB[(MongoDB)]
-    S --> W[Tomorrow.io / Open-Meteo]
-    S --> G[Google Calendar]
+
+    S --> EXT[Services externes]
+    EXT --> WEATHER[Tomorrow.io / Open-Meteo]
+    EXT --> CAL[Google Calendar]
+
+    GH[GitHub Actions] --> BUILD[Build Gradle]
+    GH --> TESTS[Tests + JaCoCo]
+    GH --> PDF[Génération PDF]
+    GH --> REL[GitHub Release]
+
+    REL --> A1[JAR]
+    REL --> A2[documentation.pdf]
+    REL --> A3[devops2-report.pdf]
+    REL --> A4[javadoc.zip]
 ```
 
-Responsabilités :
+L'utilisateur accède au frontend ou directement à l'API REST. Les contrôleurs transmettent les opérations aux services métier, qui utilisent les repositories pour lire et écrire dans MongoDB. Les services météo et calendrier communiquent avec des fournisseurs externes. En parallèle, GitHub Actions construit, teste, documente et publie l'application.
 
-- **Controllers** : réception des requêtes et réponses HTTP ;
-- **Services** : règles métier, WNS, impacts météo et cycle de vie ;
-- **Repositories** : accès aux collections MongoDB ;
-- **Entities / DTO** : données persistées et contrats API ;
-- **Static resources** : interface utilisateur.
+### 1.4 Organisation du projet
 
-### 2.3 Modélisation UML
-
-```mermaid
-classDiagram
-    class Plant {
-        +String id
-        +String forestId
-        +double stressIndex
-        +double heightCm
-        +GrowthStage growthStage
-    }
-
-    class WeatherAlert {
-        +String eventId
-        +String type
-        +double[] coords
-        +String severity
-        +boolean acknowledged
-    }
-
-    class PlantImpact {
-        +String alertId
-        +String plantId
-        +double isr
-        +double sps
-    }
-
-    class CarePlan {
-        +String plantId
-        +List taskIds
-        +Instant lastRecalculationDate
-    }
-
-    class CareTask {
-        +String plantId
-        +String forestId
-        +CareTaskType type
-        +double wnsScore
-        +TaskPriority priority
-        +TaskStatus status
-        +Instant dueAt
-    }
-
-    Plant "1" --> "*" PlantImpact
-    WeatherAlert "1" --> "*" PlantImpact
-    Plant "1" --> "1" CarePlan
-    CarePlan "1" --> "*" CareTask
-```
-
-### 2.4 Structure du projet
-
-```text
-GreenDesk/
-|-- .github/workflows/         # Pipelines GitHub Actions
-|-- docs/                      # Documentation et captures
-|-- scripts/                   # Scripts de démonstration et tests
-|-- src/main/java/org/example/
-|   |-- config/                # Sécurité et configuration
-|   |-- controllers/           # API REST
-|   |-- dto/                   # Objets de requête/réponse
-|   |-- entities/              # Modèle métier MongoDB
-|   |-- repositories/          # Accès aux données
-|   `-- services/              # Logique métier
-|-- src/main/resources/static/ # Interface utilisateur
-|-- src/test/                  # Tests unitaires et intégration
-|-- build.gradle
-|-- Dockerfile
-`-- docker-compose.yml
-```
-
-### 2.5 Base de données MongoDB
-
-Les principales collections liées au périmètre DevOps 2 sont :
-
-| Collection | Contenu |
+| Élément | Rôle |
 |---|---|
-| `plants` | Plantes et état courant |
-| `forests` | Forêts et coordonnées géographiques |
-| `weather_alerts` | Alertes météo reçues |
-| `plant_impacts` | ISR, SPS et changement d'état |
-| `care_tasks` | Tâches de soins |
-| `care_plans` | Plans de soins associés aux plantes |
-| `users` | Comptes et rôles |
-
-Un index composé est défini pour les tâches sur `plantId`, `type` et `scheduledAt`. L'idempotence métier utilise les tâches `PENDING` afin d'éviter plusieurs tâches actives identiques.
+| `.github/workflows/` | Workflows CI, documentation, UML, rapport et release |
+| `src/main/java/org/example/controllers/` | Contrôleurs REST |
+| `src/main/java/org/example/services/` | Services métier |
+| `src/main/java/org/example/repositories/` | Repositories MongoDB |
+| `src/main/java/org/example/entities/` | Entités persistées |
+| `src/main/java/org/example/dto/` | DTOs d'entrée et de sortie |
+| `src/main/resources/static/` | Frontend web |
+| `src/test/java/` | Tests unitaires et d'intégration |
+| `docs/` | Documentation et captures |
+| `docs/reports/` | Rapports de livraison |
+| `build.gradle` | Dépendances et tâches Gradle |
+| `Dockerfile` | Construction du conteneur applicatif |
+| `docker-compose.yml` | Orchestration GreenDesk, MongoDB et Mongo Express |
 
 ---
 
-## 3. Fonctionnalités détaillées
+## 2. Fonctionnalités détaillées
 
-### 3.1 Feature 1 - Jumeau numérique météo
+Le périmètre DevOps 2 est organisé autour de deux fonctionnalités principales : le jumeau numérique météo et le calendrier de soins dynamique.
 
-Le jumeau numérique météo reçoit des alertes, détecte les plantes concernées et calcule leur impact.
+### 2.1 Feature 1 - Jumeau numérique météo / Tomorrow.io
 
-Types d'alertes pris en charge :
+#### 2.1.1 Objectif fonctionnel
 
-- `heatwave` ;
-- `frost` ;
-- `heavy_rain` ;
-- `high_wind` ;
-- `uv_alert`.
+Cette fonctionnalité permet de :
 
-Flux principal :
+- recevoir des alertes météo par webhook ;
+- sécuriser la réception avec `X-Webhook-Secret` ;
+- détecter les forêts et plantes proches de l'alerte ;
+- calculer l'impact ISR et le score SPS ;
+- mettre à jour l'état et le stress des plantes ;
+- persister les alertes et les impacts météo ;
+- réordonnancer les tâches de soin flexibles.
+
+#### 2.1.2 Logique métier
+
+Le traitement réel suit les étapes suivantes :
+
+1. Tomorrow.io ou un simulateur envoie une alerte météo.
+2. `WeatherWebhookController` vérifie le secret avec une comparaison constante.
+3. `WebhookReceiverService` valide le payload et recherche un doublon par `eventId`.
+4. L'alerte est sauvegardée dans `weather_alerts`.
+5. Les forêts situées dans un rayon de 10 km sont identifiées.
+6. Les plantes des forêts concernées sont récupérées.
+7. Les plantes non sensibles au type d'alerte sont ignorées.
+8. `PlantImpactCalculator` calcule ISR et SPS.
+9. `PlantStateUpdater` applique les ajustements et met à jour l'état de la plante.
+10. Un `PlantImpact` est sauvegardé pour chaque plante traitée.
+11. `CareTaskWeatherRescheduler` reporte les tâches flexibles concernées.
+12. L'alerte est marquée comme traitée.
+
+#### 2.1.3 Classes impliquées
+
+| Classe | Rôle |
+|---|---|
+| `WeatherWebhookController` | Reçoit le webhook, vérifie le secret et expose les endpoints météo |
+| `WebhookReceiverService` | Orchestre le traitement complet de l'alerte |
+| `WeatherAlert` | Entité représentant une alerte météo |
+| `WeatherAlertRepository` | Persiste et recherche les alertes |
+| `PlantImpact` | Entité représentant l'impact sur une plante |
+| `PlantImpactRepository` | Persiste et recherche les impacts |
+| `PlantImpactCalculator` | Calcule ISR et SPS |
+| `PlantStateUpdater` | Ajuste le stress et l'état de la plante |
+| `CareTaskWeatherRescheduler` | Reporte les tâches flexibles selon l'alerte |
+| `ForestRepository` | Fournit les forêts et leurs coordonnées |
+| `PlantRepository` | Fournit et sauvegarde les plantes |
+
+Le projet ne contient pas de classe `TomorrowWebhookVerifier` : la vérification du secret est réalisée directement dans `WeatherWebhookController`.
+
+#### 2.1.4 Endpoints API
+
+| Méthode | Endpoint | Rôle | Entrée | Sortie | Erreurs possibles |
+|---|---|---|---|---|---|
+| `POST` | `/api/weather/webhook` | Recevoir une alerte météo | Header secret + payload JSON | Statut `processed` | `401`, `500` |
+| `GET` | `/api/weather/alerts` | Lister et filtrer les alertes | `forestId`, `plantId`, `activeOnly` | Liste d'alertes | `500` |
+| `POST` | `/api/weather/alerts/{alertId}/ack` | Acquitter une alerte | Identifiant d'alerte | Message de confirmation | `404`, `500` |
+| `GET` | `/api/weather/impact/{plantId}` | Lire l'historique d'impact | Identifiant de plante | Liste d'impacts | `500` |
+| `POST` | `/api/weather/alert-config` | Configurer les seuils d'une forêt | `forestId`, `thresholds` | Résultat de configuration | `400`, `500` |
+| `GET` | `/api/weather/notifications` | Lister les notifications | `unreadOnly` | Liste de notifications | `500` |
+| `POST` | `/api/weather/notifications/{id}/read` | Marquer une notification comme lue | Identifiant | Message de confirmation | `500` |
+| `POST` | `/api/weather/notifications/read-all` | Marquer toutes les notifications comme lues | Aucune | Message de confirmation | `500` |
+
+#### 2.1.5 Exemple de payload webhook
+
+```json
+{
+  "event_id": "evt-heavy-rain-001",
+  "type": "heavy_rain",
+  "coords": [48.8566, 2.3522],
+  "timestamp": "2026-06-12T10:00:00",
+  "severity": "CRITICAL",
+  "details": {
+    "rainfall": 22.5,
+    "windSpeed": 45
+  }
+}
+```
+
+Le header `X-Webhook-Secret` doit contenir la valeur configurée dans `WEATHER_WEBHOOK_SECRET`.
+
+#### 2.1.6 Diagramme de séquence - Réception d'une alerte météo
 
 ```mermaid
 sequenceDiagram
-    participant T as Tomorrow.io
-    participant API as WeatherWebhookController
-    participant S as WebhookReceiverService
+    autonumber
+    actor T as Tomorrow.io
+    participant WC as WeatherWebhookController
+    participant WRS as WebhookReceiverService
+    participant WAR as WeatherAlertRepository
+    participant FR as ForestRepository
+    participant PR as PlantRepository
+    participant PIC as PlantImpactCalculator
+    participant PSU as PlantStateUpdater
+    participant PIR as PlantImpactRepository
+    participant CTR as CareTaskWeatherRescheduler
     participant DB as MongoDB
-    participant C as CareTaskWeatherRescheduler
 
-    T->>API: POST /api/weather/webhook
-    API->>API: Vérification X-Webhook-Secret
-    API->>S: processWebhook(payload)
-    S->>DB: Enregistrer WeatherAlert
-    S->>DB: Calculer et enregistrer PlantImpact
-    S->>C: Reporter les tâches flexibles
-    S->>DB: Marquer l'alerte traitée
+    T->>WC: POST /api/weather/webhook + X-Webhook-Secret
+    WC->>WC: Vérifier le secret
+    WC->>WRS: processWebhook(payload)
+    WRS->>WAR: findByEventId(eventId)
+    WAR->>DB: Rechercher un doublon
+    DB-->>WAR: Résultat
+    WRS->>WAR: save(weatherAlert)
+    WAR->>DB: Persister l'alerte
+    WRS->>FR: findAll()
+    FR->>DB: Lire les forêts
+    WRS->>PR: findAll()
+    PR->>DB: Lire les plantes
+    loop Pour chaque plante sensible et proche
+        WRS->>PIC: calculateISR() puis calculateSPS()
+        PIC-->>WRS: ISR et SPS
+        WRS->>PSU: applyDynamicAdjustments() et updatePlantState()
+        WRS->>PIR: save(plantImpact)
+        PIR->>DB: Persister l'impact
+    end
+    WRS->>CTR: rescheduleForWeatherAlert(alert, forestIds)
+    CTR-->>WRS: Nombre de tâches reportées
+    WRS->>WAR: save(alert processed=true)
+    WRS-->>WC: Traitement terminé
+    WC-->>T: 200 OK
 ```
 
-Les indicateurs produits sont :
+Le diagramme reprend les noms réellement présents dans le code. La recherche des plantes s'appuie sur les coordonnées des forêts, puis le traitement est limité aux plantes sensibles au type d'événement.
 
-- **ISR** : indice de stress lié à l'événement météo ;
-- **SPS** : score de priorité des soins ;
-- changement de `stressIndex` ;
-- changement éventuel de l'état de la plante.
+### 2.2 Feature 2 - Calendrier de soins dynamique
 
-### 3.2 Feature 2 - Calendrier de soins dynamique
+#### 2.2.1 Objectif fonctionnel
 
-La Feature 2 transforme les besoins biologiques et météorologiques en tâches actionnables.
+Le calendrier de soins dynamique permet :
 
-Fonctions principales :
+- de générer automatiquement des tâches de soin ;
+- de prioriser les interventions avec les scores WNS et SPS ;
+- d'éviter les doublons de tâches actives ;
+- de prendre en compte les prévisions de pluie ;
+- de réagir aux alertes météo ;
+- de gérer le cycle de vie des tâches ;
+- de conserver un plan de soins par plante ;
+- de synchroniser les tâches avec Google Calendar.
 
-- calculer un besoin de soin ;
-- créer automatiquement une tâche ;
-- générer les tâches d'une plante, d'une forêt ou de toutes les plantes ;
-- créer une tâche manuelle ;
-- reporter une tâche flexible ;
-- terminer ou annuler une tâche ;
-- mettre à jour la santé de la plante après validation ;
-- synchroniser les tâches avec Google Calendar ;
-- annuler automatiquement les tâches expirées.
+#### 2.2.2 Concepts métiers
 
-### 3.3 WNS - Weighted Need Score
+**CareTask**
 
-Dans le code, WNS représente le score de besoin utilisé par le moteur hybride.
+Une tâche de soin liée à une plante et à sa forêt. L'entité contient notamment `plantId`, `forestId`, `type`, `description`, `wnsScore`, `priority`, `scheduledAt`, `dueAt`, `status`, `isFlexible`, `weatherDependency`, `externalId`, `createdAt` et `closedAt`.
+
+**CarePlan**
+
+Un plan de soins associé à une plante. Il conserve la liste des identifiants de tâches et la date du dernier recalcul.
+
+**WNS**
+
+Le `WnsCalculator` combine la taille, le stade de croissance, le stress et la pluie prévue :
 
 ```text
 WNS = (0,3 x Taille) + (0,2 x Stade) + (0,15 x Stress) - (0,25 x Pluie prévue)
 ```
 
-Si une pluie est prévue dans les six heures, une pénalité supplémentaire est appliquée. Un arrosage est ignoré lorsque l'intensité normalisée de pluie atteint le seuil prévu.
+Une tâche automatique est requise lorsque le score dépasse le seuil défini dans `WnsResult.THRESHOLD`. Une pluie prévue peut diminuer le score ou empêcher un arrosage.
 
-| Facteur | Origine |
-|---|---|
-| Taille | Hauteur de la plante et hauteur maximale de l'espèce |
-| Stade | `SEEDLING`, `VEGETATIVE`, `FLOWERING`, `FRUITING`, `MATURE` |
-| Stress | Maximum entre stress biologique et ISR météo |
-| Pluie prévue | Tomorrow.io, Open-Meteo ou alertes stockées |
+**SPS**
 
-Une tâche est requise lorsque :
+Le SPS est issu du dernier impact météo. Il détermine la priorité de la tâche :
 
-```text
-WNS > 0,8 et arrosage non bloqué par la pluie
-```
+| SPS | Priorité |
+|---:|---|
+| `>= 0,8` | `CRITICAL` |
+| `>= 0,6` | `HIGH` |
+| `>= 0,4` | `MEDIUM` |
+| `< 0,4` | `LOW` |
 
-### 3.4 CareTask et cycle de vie des tâches
+Les statuts possibles sont `PENDING`, `DONE` et `CANCELED`. Les types sont `WATERING`, `FERTILIZATION`, `PRUNING` et `HEATING_ADJUSTMENT`.
 
-Types de tâches :
+#### 2.2.3 Génération automatique des tâches
 
-- `WATERING` ;
-- `FERTILIZATION` ;
-- `PRUNING` ;
-- `HEATING_ADJUSTMENT`.
+1. Un utilisateur appelle `POST /api/care-tasks` pour une plante ou `POST /api/care-tasks/generate` pour une sélection.
+2. `CareTaskService` résout les plantes à partir de `plantId`, `forestId` ou de toutes les plantes.
+3. L'historique `PlantImpact` de chaque plante est chargé.
+4. `WnsCalculator` demande la prévision de pluie à `WeatherForecastService`.
+5. Le score WNS est calculé.
+6. Si le score est insuffisant ou si la pluie bloque l'arrosage, aucune tâche n'est créée.
+7. Le type et la priorité de tâche sont déterminés.
+8. Le repository recherche une tâche identique au statut `PENDING`.
+9. La tâche est envoyée à `ExternalCalendarService`.
+10. La tâche est sauvegardée dans MongoDB.
+11. Son identifiant est ajouté au `CarePlan`.
 
-Priorités :
-
-- `LOW` ;
-- `MEDIUM` ;
-- `HIGH` ;
-- `CRITICAL`.
-
-Cycle de vie :
+#### 2.2.4 Diagramme de séquence - Génération automatique d'une tâche
 
 ```mermaid
-stateDiagram-v2
-    [*] --> PENDING
-    PENDING --> DONE: Validation utilisateur
-    PENDING --> CANCELED: Annulation ou expiration
-    DONE --> [*]
-    CANCELED --> [*]
+sequenceDiagram
+    autonumber
+    actor U as Utilisateur / Admin
+    participant C as CareTaskController
+    participant S as CareTaskService
+    participant PR as PlantRepository
+    participant PIR as PlantImpactRepository
+    participant WNS as WnsCalculator
+    participant WFS as WeatherForecastService
+    participant CTR as CareTaskRepository
+    participant CAL as ExternalCalendarService
+    participant CPS as CarePlanService
+    participant DB as MongoDB
+
+    U->>C: POST /api/care-tasks/generate
+    C->>S: generateTasksForRequest(request)
+    S->>PR: resolvePlants(request)
+    PR->>DB: Rechercher les plantes
+    DB-->>PR: Plantes trouvées
+    loop Pour chaque plante
+        S->>PIR: findByPlantIdOrderByTimestampDesc()
+        PIR->>DB: Lire l'historique météo
+        S->>WNS: calculate(plant, history)
+        WNS->>WFS: getRainForecast(forestId)
+        WFS-->>WNS: Prévision de pluie
+        WNS-->>S: WnsResult
+        alt Score insuffisant ou arrosage bloqué
+            S-->>S: Ne pas créer de tâche
+        else Tâche requise
+            S->>CTR: findByPlantIdAndTypeAndStatus(..., PENDING)
+            CTR->>DB: Vérifier un doublon actif
+            alt Tâche absente
+                S->>CAL: push(task)
+                CAL-->>S: externalId
+                S->>CTR: save(task)
+                CTR->>DB: Persister CareTask
+                S->>CPS: addTaskToPlan(plantId, taskId)
+            else Tâche existante
+                CTR-->>S: Réutiliser la tâche existante
+            end
+        end
+    end
+    S-->>C: Liste des tâches
+    C-->>U: 201 Created + JSON
 ```
 
-Les transitions sont protégées : seules les tâches `PENDING` peuvent être déplacées, validées ou annulées.
+Le service utilise l'historique météo et les prévisions de pluie pour éviter les actions inutiles. L'idempotence repose sur la recherche d'une tâche du même type déjà au statut `PENDING`.
 
-Lorsqu'une tâche est validée, la plante est mise à jour :
+#### 2.2.5 Validation d'une tâche
 
-| Type | Effet principal |
+Lorsqu'une tâche est validée :
+
+1. le backend récupère la tâche ;
+2. il vérifie que son statut est `PENDING` ;
+3. le statut devient `DONE` et `closedAt` est renseigné ;
+4. la tâche est sauvegardée ;
+5. la plante associée est récupérée ;
+6. l'intervention modifie l'eau, le stress, la hauteur ou la température ;
+7. l'état de la plante est recalculé ;
+8. la plante est sauvegardée.
+
+Dans l'implémentation actuelle, la validation ne supprime pas l'événement du calendrier externe. La suppression est réalisée lors de l'annulation d'une tâche.
+
+#### 2.2.6 Diagramme de séquence - Validation d'une tâche
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor U as Utilisateur
+    participant C as CareTaskController
+    participant S as CareTaskService
+    participant CTR as CareTaskRepository
+    participant PR as PlantRepository
+    participant DB as MongoDB
+
+    U->>C: POST /api/care-tasks/{id}/done
+    C->>S: markAsDone(taskId)
+    S->>CTR: findById(taskId)
+    CTR->>DB: Rechercher CareTask
+    DB-->>CTR: CareTask
+    S->>S: Vérifier statut PENDING
+    S->>S: status = DONE, closedAt = now()
+    S->>CTR: save(task)
+    CTR->>DB: Sauvegarder la tâche
+    S->>PR: findById(plantId)
+    PR->>DB: Rechercher la plante
+    DB-->>PR: Plante
+    S->>S: updatePlantHealthAfterCare(task)
+    S->>PR: save(plant)
+    PR->>DB: Sauvegarder la plante
+    S-->>C: CareTask mise à jour
+    C-->>U: 200 OK
+```
+
+Les effets appliqués dépendent du type de tâche : l'arrosage augmente le niveau d'eau, la fertilisation réduit le stress, la taille réduit légèrement la hauteur et le chauffage augmente la température.
+
+#### 2.2.7 Réordonnancement des tâches flexibles
+
+`CareTaskWeatherRescheduler` traite les alertes `heavy_rain`, `heatwave`, `frost` et `high_wind`. Il recherche les tâches `PENDING` des forêts impactées, conserve les tâches flexibles compatibles avec l'alerte, puis les reporte de 24 heures. La date d'échéance est replacée quatre heures après la nouvelle date et Google Calendar est mis à jour lorsque `externalId` existe.
+
+#### 2.2.8 Diagramme de séquence - Réordonnancement météo des tâches
+
+```mermaid
+sequenceDiagram
+    autonumber
+    participant WRS as WebhookReceiverService
+    participant CTRS as CareTaskWeatherRescheduler
+    participant CTR as CareTaskRepository
+    participant CAL as ExternalCalendarService
+    participant DB as MongoDB
+
+    WRS->>CTRS: rescheduleForWeatherAlert(alert, forestIds)
+    loop Pour chaque forêt impactée
+        CTRS->>CTR: findByForestIdAndStatus(forestId, PENDING)
+        CTR->>DB: Rechercher les tâches
+        DB-->>CTR: Liste CareTask
+        loop Pour chaque tâche flexible
+            CTRS->>CTRS: shouldReschedule(task, alertType)
+            alt Tâche impactée
+                CTRS->>CTRS: Reporter de 24 h et modifier weatherDependency
+                CTRS->>CTR: save(task)
+                CTR->>DB: Sauvegarder la modification
+                alt externalId présent
+                    CTRS->>CAL: update(externalId, task)
+                    CAL-->>CTRS: Calendrier mis à jour
+                end
+            else Tâche non impactée
+                CTRS-->>CTRS: Aucun changement
+            end
+        end
+    end
+    CTRS-->>WRS: Nombre de tâches reportées
+```
+
+Le report est automatique, ciblé par forêt et limité aux tâches dont le type est réellement affecté par l'alerte.
+
+#### 2.2.9 Interface utilisateur
+
+La page `care-calendar.html` fournit l'interface utilisateur du calendrier de soins. Elle permet de consulter les tâches, visualiser leur priorité et leur statut, filtrer les résultats, créer une tâche manuelle et déclencher les actions de validation, report ou annulation. Les opérations utilisent les endpoints `/api/care-tasks` et `/api/care-plan`.
+
+#### 2.2.10 Classes impliquées dans la Feature 2
+
+| Classe | Rôle |
 |---|---|
-| Arrosage | Augmentation du niveau d'eau, baisse du stress |
-| Fertilisation | Baisse du stress |
-| Taille | Baisse du stress et légère réduction de hauteur |
-| Chauffage | Hausse de température et baisse du stress |
+| `CareTaskController` | Expose les endpoints de gestion des tâches |
+| `CarePlanController` | Expose les endpoints du plan de soins |
+| `CareTaskService` | Porte la logique principale des tâches |
+| `CarePlanService` | Gère l'association des tâches aux plans |
+| `WnsCalculator` | Calcule le score de besoin |
+| `WeatherForecastService` | Fournit la prévision de pluie |
+| `CareTaskWeatherRescheduler` | Reporte les tâches flexibles |
+| `ExternalCalendarService` | Définit le contrat du calendrier externe |
+| `GoogleCalendarAdapter` | Implémente la synchronisation Google Calendar |
+| `CareTaskRepository` | Persiste et recherche les tâches |
+| `CarePlanRepository` | Persiste les plans de soins |
+| `CareTask` | Entité représentant une tâche |
+| `CarePlan` | Entité représentant un plan de soins |
 
-### 3.5 Interface Care Calendar
+#### 2.2.11 Endpoints API de la Feature 2
 
-Le manuel utilisateur du calendrier est le suivant :
-
-1. Se connecter avec un compte `USER` ou `ADMIN`.
-2. Ouvrir `care-calendar.html`.
-3. Consulter les compteurs et la liste des tâches.
-4. Filtrer les tâches par priorité ou statut.
-5. Rechercher une plante ou une description.
-6. Terminer, reporter ou annuler une tâche en attente.
-7. Créer une tâche manuelle en sélectionnant la plante, le type et la priorité.
-
-Les actions d'administration sont réservées au rôle `ADMIN` :
-
-- génération batch des tâches ;
-- recalcul global d'un plan.
-
-### 3.6 Intégration météo / Tomorrow.io
-
-La récupération de pluie suit une stratégie de repli :
-
-```text
-Tomorrow.io -> Open-Meteo -> alertes météo MongoDB
-```
-
-Variables :
-
-```properties
-TOMORROW_API_KEY=
-TOMORROW_WEBHOOK_URL=http://localhost:8081/api/weather/webhook
-WEATHER_WEBHOOK_SECRET=secret-long-et-aleatoire
-```
-
-Le webhook doit recevoir :
-
-```http
-X-Webhook-Secret: <WEATHER_WEBHOOK_SECRET>
-```
-
-Les alertes stockées sont filtrées selon leur proximité avec la forêt ciblée afin qu'une pluie éloignée ne bloque pas un arrosage local.
-
-### 3.7 Sécurité et authentification
-
-GreenDesk utilise Spring Security avec :
-
-- mots de passe BCrypt ;
-- authentification par session ;
-- rôles `USER` et `ADMIN` ;
-- réponses JSON `401` et `403` ;
-- protection frontend avec `auth-guard.js` ;
-- secret partagé pour le webhook météo.
-
-| Route | Accès |
-|---|---|
-| `/api/auth/**` | Public |
-| `/api/admin/**` | `ADMIN` |
-| `POST /api/care-tasks/generate` | `ADMIN` |
-| `POST /api/care-plan/recompute` | `ADMIN` |
-| `/api/care-tasks/**` | `USER` ou `ADMIN` |
-| `/api/care-plan/**` | `USER` ou `ADMIN` |
-
-Point de vigilance : CSRF est actuellement désactivé. Ce choix simplifie les appels API mais doit être réévalué avant une exposition publique.
+| Méthode | Endpoint | Rôle | Entrée | Sortie | Erreurs possibles |
+|---|---|---|---|---|---|
+| `GET` | `/api/care-tasks` | Lister les tâches | Aucune | Liste de tâches | Erreur serveur |
+| `POST` | `/api/care-tasks` | Générer une tâche pour une plante | `plantId` | Tâche créée | Plante absente, WNS insuffisant |
+| `POST` | `/api/care-tasks/generate` | Générer plusieurs tâches | `plantId` ou `forestId` facultatif | Liste créée | Validation, accès refusé |
+| `PATCH` | `/api/care-tasks/{id}` | Modifier une tâche flexible | Dates, flexibilité, description | Tâche modifiée | Tâche absente ou non flexible |
+| `PUT` | `/api/care-tasks/{id}/validate` | Valider une tâche | Identifiant | Tâche `DONE` | Statut invalide |
+| `POST` | `/api/care-tasks/{id}/done` | Marquer une tâche terminée | Identifiant | Tâche `DONE` | Statut invalide |
+| `DELETE` | `/api/care-tasks/{id}` | Annuler une tâche | Identifiant | `204 No Content` | Statut invalide |
+| `POST` | `/api/care-tasks/manual` | Créer une tâche manuelle | DTO de création | Tâche créée | Plante absente, validation |
+| `GET` | `/api/care-plan/{plantId}` | Lire le plan d'une plante | Identifiant de plante | Plan et tâches | Erreur serveur |
+| `POST` | `/api/care-plan/recompute` | Recalculer un plan | `plantId` et/ou `forestId` | `200 OK` | Accès refusé, erreur serveur |
 
 ---
 
-## 4. Matrice de responsabilités
+## 3. GitHub Actions et CI/CD
 
-### 4.1 Répartition du travail
+GreenDesk contient cinq workflows dans `.github/workflows`.
 
-La matrice ci-dessous combine la documentation du projet et les sujets visibles dans l'historique Git.
+### 3.1 Workflow `gradle.yml`
 
-| Domaine | Hadi | Fatima | Lydia | Misasoa | Mamadou |
-|---|---:|---:|---:|---:|---:|
-| Authentification et sécurité | R | C | C | C | C |
-| Jumeau numérique météo | R | C | C | C | R |
-| Calendrier de soins | C | C | C | R | C |
-| Tests et qualité | R | R | R | R | C |
-| GitHub Actions / CI/CD | R | C | R | C | C |
-| Documentation et PDF | C | C | R | C | R |
-| Docker et déploiement | R | C | C | C | C |
+Le workflow **Java CI with Gradle** s'exécute lors des pushes sur `main`, `master`, `develop` et `feature/**`, ainsi que lors des pull requests vers `main`, `master` ou `develop`.
 
-Légende : `R` = contribution principale observée, `C` = contribution ou collaboration observée/déclarée.
+Il :
 
-![Matrice de responsabilité](../assets/images/martrice_responsabilite.png)
+1. récupère le code ;
+2. installe Temurin JDK 21 ;
+3. active le cache Gradle ;
+4. exécute `./gradlew clean test jacocoTestReport --no-daemon` ;
+5. archive les rapports de tests ;
+6. archive le rapport JaCoCo.
 
-### 4.2 Contributions individuelles
+### 3.2 Workflow `docs-pages.yml`
 
-| Contributeur | Contributions observées |
-|---|---|
-| Hadi ISSA | Authentification, protection des pages, Docker, workflows GitHub Actions, tests |
-| Fatima SAIDI | Documentation et corrections de tests |
-| Lydia AMROUCHE | Documentation, GitHub Pages, CI/release, rapports PDF, corrections et tests |
-| Misasoa ROBISON | Calendrier de soins dynamique, Google Calendar, tests, MongoDB et simulation écosystème |
-| Mamadou DIALLO | Jumeau numérique météo, documentation des fonctionnalités, contrôleurs et interfaces |
+Ce workflow publie le dossier `docs` sur GitHub Pages lors d'un push sur `main` ou `master`, ou après un lancement manuel. Il utilise les permissions `pages: write` et `id-token: write`, prépare l'artefact Pages puis déploie la documentation.
 
-Ces attributions sont fondées sur les messages de commits et ne remplacent pas une validation formelle par l'équipe.
+### 3.3 Workflow `update-uml.yml`
 
-### 4.3 Difficultés rencontrées
+Ce workflow réagit aux changements dans `src/main/java/**` et `build.gradle`. Il installe Java 21, vérifie si la tâche Gradle `buildClassDiagram` existe, l'exécute si possible, puis utilise `git-auto-commit-action` pour versionner les fichiers `.puml` générés.
 
-Les principales difficultés techniques identifiées sont :
+### 3.4 Workflow `release.yml`
 
-- synchroniser les dates réelles avec Google Calendar ;
-- empêcher les transitions invalides sur les tâches ;
-- garantir l'idempotence sans bloquer les cycles futurs ;
-- filtrer les alertes météo selon la forêt ;
-- protéger le webhook sans casser les tests d'intégration ;
-- gérer les secrets dans Docker et GitHub Actions ;
-- maintenir une couverture JaCoCo suffisante sur tous les packages ;
-- conserver la cohérence des ports entre local, Docker et documentation ;
-- générer automatiquement un PDF complet dans la release.
+Le workflow **Release & Documentation PDF** est déclenché par un tag `v*`. Il :
+
+1. récupère le code ;
+2. installe JDK 21 ;
+3. exécute les tests, JaCoCo, l'assemblage et la Javadoc ;
+4. installe Pandoc et XeLaTeX ;
+5. génère `documentation.pdf` depuis le README ;
+6. génère `devops2-report.pdf` depuis ce rapport ;
+7. archive la Javadoc ;
+8. définit le titre et le corps de la release ;
+9. crée une GitHub Release ;
+10. publie les JAR, PDF et la Javadoc.
+
+Le workflow `devops-report.yml` permet également de générer le rapport PDF comme artefact, sans créer de tag.
+
+### 3.5 Diagramme de séquence - Pipeline de release GitHub Actions
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor D as Développeur
+    participant G as GitHub
+    participant A as GitHub Actions
+    participant B as Gradle
+    participant P as Pandoc / XeLaTeX
+    participant R as GitHub Release
+
+    D->>G: git push origin v2.0.0
+    G->>A: Déclencher release.yml
+    A->>A: Checkout et setup JDK 21
+    A->>B: clean test jacocoTestReport assemble javadoc
+    B-->>A: Tests, JAR, JaCoCo et Javadoc
+    A->>P: Convertir README.md
+    P-->>A: documentation.pdf
+    A->>P: Convertir le rapport DevOps 2
+    P-->>A: devops2-report.pdf
+    A->>R: Créer la release
+    A->>R: Publier JAR, PDF et javadoc.zip
+    R-->>D: Release disponible
+```
+
+Ce pipeline garantit qu'une release regroupe les artefacts exécutables et documentaires produits à partir du même état du dépôt.
 
 ---
 
-## 5. Tests effectués
+## 4. Tests effectués
 
-### 5.1 Tests unitaires
+### 4.1 Objectif des tests
 
-Les tests unitaires vérifient notamment :
+La stratégie de tests vise à garantir la fiabilité métier, éviter les régressions, sécuriser les endpoints, valider la génération des tâches, vérifier le traitement météo et assurer la compatibilité avec la CI/CD.
 
-- formule et seuil du WNS ;
-- impact de la pluie ;
-- prise en compte de l'ISR et du SPS ;
-- génération et idempotence des tâches ;
-- validation, annulation et report ;
-- expiration automatique ;
-- calcul d'impact météo ;
-- filtrage météo par proximité ;
-- validation du secret webhook.
+### 4.2 Tests météo
 
-Fichiers représentatifs :
+| Test présent | Type | Objectif | Résultat attendu |
+|---|---|---|---|
+| `WeatherWebhookControllerTest` | Contrôleur | Vérifier webhook, secret et réponses HTTP | Requêtes acceptées ou refusées correctement |
+| `PlantImpactCalculatorTest` | Unitaire | Vérifier les calculs ISR et SPS | Scores conformes aux règles |
+| `PlantStateUpdaterTest` | Unitaire | Vérifier les changements d'état | État et stress mis à jour |
+| `WebhookReceiverServiceTest` | Unitaire | Vérifier l'orchestration du webhook | Alerte et impacts traités |
+| `WeatherForecastServiceTest` | Unitaire | Vérifier les prévisions et replis | Prévision cohérente |
+| `WeatherAlertIntegrationTest` | Intégration | Vérifier le flux météo avec MongoDB | Alertes et impacts persistés |
 
-```text
-WnsCalculatorTest.java
-CareTaskServiceTest.java
-CarePlanServiceTest.java
-CareTaskExpirationSchedulerTest.java
-WeatherForecastServiceTest.java
-WebhookReceiverServiceTest.java
-```
+Le projet ne contient pas de tests nommés `TomorrowWebhookVerifierTest` ou `WeatherAlertConfigServiceTest`.
 
-### 5.2 Tests d’intégration
+### 4.3 Tests calendrier de soins
 
-Les tests d'intégration utilisent Spring Boot et MongoDB embarqué.
+| Test présent | Type | Objectif | Résultat attendu |
+|---|---|---|---|
+| `CareTaskServiceTest` | Unitaire | Tester création, validation, annulation et report | Transitions conformes |
+| `CarePlanServiceTest` | Unitaire | Tester l'association des tâches au plan | Plan mis à jour |
+| `WnsCalculatorTest` | Unitaire | Tester formule, seuil et pluie | Score et décision corrects |
+| `CareTaskExpirationSchedulerTest` | Unitaire | Tester l'expiration automatique | Tâches expirées annulées |
+| `TaskLifecycleIntegrationTest` | Intégration | Tester le cycle de vie complet | Transitions persistées |
+| `CareIntegrationFlowTest` | Intégration | Tester génération et idempotence | Aucun doublon actif |
 
-Scénarios couverts :
+Le projet ne contient pas de tests nommés `CareTaskControllerTest`, `CarePlanControllerTest`, `CareReschedulingServiceTest` ou `CareCalendarSmokeTest`.
 
-- cycle complet d'une tâche ;
-- déblocage de l'idempotence après clôture ;
-- génération pour plusieurs plantes ;
-- expiration automatique ;
-- réception d'un webhook authentifié ;
-- stockage et recherche des alertes et impacts.
+### 4.4 Tests CI/CD
 
-Fichiers :
+GitHub Actions exécute les tests avec Gradle et archive systématiquement :
 
-```text
-CareIntegrationFlowTest.java
-TaskLifecycleIntegrationTest.java
-WeatherAlertIntegrationTest.java
-```
+- `build/reports/tests/test/**` ;
+- `build/test-results/test/**` ;
+- `build/reports/jacoco/test/**`.
 
-### 5.3 Résultats des tests
+Le workflow de release exécute également les tests avant publication. La CI principale génère JaCoCo, mais n'exécute pas `clean check` : le seuil configuré dans `jacocoTestCoverageVerification` n'est donc pas bloquant dans cette CI.
 
-Commande exécutée :
+### 4.5 Couverture JaCoCo
 
-```bash
-./gradlew test
-```
+Mesures issues du rapport JaCoCo local vérifié le 13 juin 2026 :
 
-| Indicateur | Résultat |
+| Métrique | Valeur |
 |---|---:|
-| Tests exécutés | 374 |
-| Réussis | 374 |
-| Échecs | 0 |
-| Erreurs | 0 |
-| Ignorés | 0 |
+| LINE | 66,87 % |
+| BRANCH | 47,99 % |
+| CLASS | 86,84 % |
+| METHOD | 65,87 % |
 
-### 5.4 Couverture JaCoCo
-
-| Métrique | Couverture mesurée |
-|---|---:|
-| Lignes | 66,87 % |
-| Branches | 47,99 % |
-| Classes | 86,84 % |
-| Méthodes | 65,87 % |
-
-La commande suivante exécute les tests et la vérification de couverture :
-
-```bash
-./gradlew clean check
-```
-
-Elle échoue actuellement sur `jacocoTestCoverageVerification`, car `build.gradle` impose **80 % de lignes pour chaque package**. Les tests passent, mais plusieurs packages restent sous ce seuil.
-
-### 5.5 Captures qualité
-
-![Rapport JaCoCo](../assets/images/site-jacoco-coverage.png)
-
-![Swagger UI](../assets/images/site-swagger-ui.png)
-
-![Dashboard](../assets/images/site-dashboard.png)
-
-![Alertes actives](../assets/images/site-alerts-active-list.png)
+La suite contient **374 tests réussis**, sans échec, erreur ni test ignoré.
 
 ---
 
-## 6. CI/CD et GitHub Actions
+## 5. Matrice de responsabilités et réalisations
 
-### 6.1 Workflows existants
+La matrice suivante synthétise les responsabilités observées dans la documentation et l'historique Git. Elle doit être validée par l'équipe avant livraison officielle.
 
-| Workflow | Déclencheur | Fonction |
-|---|---|---|
-| `gradle.yml` | Push / pull request | Build, tests et rapports |
-| `devops-report.yml` | Modification du rapport / lancement manuel | Génération et archivage du rapport PDF |
-| `docs-pages.yml` | Push `main`/`master` | Déploiement GitHub Pages |
-| `update-uml.yml` | Changements Java/Gradle | Génération UML et commit |
-| `release.yml` | Tag `v*` | JAR, Javadoc, PDF et release |
-
-Le workflow CI principal produit deux artefacts :
-
-- `test-reports` ;
-- `coverage-report`.
-
-Point d'amélioration : il exécute `clean test jacocoTestReport`, mais pas `clean check`. La vérification des seuils JaCoCo n'est donc pas bloquante dans GitHub Actions.
-
-### 6.2 Build Gradle
-
-Commandes principales :
-
-```bash
-./gradlew test
-./gradlew clean check
-./gradlew clean assemble javadoc
-./gradlew test jacocoTestReport
-```
-
-Le wrapper fixe Gradle à la version `9.2.0`, ce qui rend le build reproductible sur les postes et dans GitHub Actions.
-
-### 6.3 Génération automatique du PDF
-
-Le workflow `release.yml` installe Pandoc et XeLaTeX, puis génère :
-
-```text
-build/docs/documentation.pdf
-build/docs/devops2-report.pdf
-```
-
-Le rapport DevOps 2 est produit depuis :
-
-```text
-docs/reports/devops-2-github-actions-report.md
-```
-
-Le workflow `devops-report.yml` permet aussi de générer le PDF sans créer de tag. Il s'exécute automatiquement lorsque le rapport ou ses images changent, et peut être lancé manuellement depuis l'onglet **Actions** avec `workflow_dispatch`. Le fichier obtenu est archivé dans l'artefact `devops2-report-pdf`.
-
-### 6.4 Release automatique par tag
-
-Une release est déclenchée lors d'un push de tag correspondant à :
-
-```yaml
-tags:
-  - 'v*'
-```
-
-Exemple :
-
-```bash
-git tag -a v2.0.2 -m "DevOps 2 - GreenDesk v2.0.2"
-git push origin v2.0.2
-```
-
-La release `v2.0.0` reçoit un titre spécifique DevOps 2. Les autres tags utilisent le titre générique GreenDesk. Les releases sont actuellement marquées comme préversions avec `prerelease: true`.
-
-### 6.5 Assets publiés
-
-La release publie :
-
-| Asset | Description |
-|---|---|
-| `*.jar` | Application Java exécutable |
-| `javadoc.zip` | Documentation technique Java |
-| `documentation.pdf` | Documentation générale |
-| `devops2-report.pdf` | Dossier technique DevOps 2 |
-
-Le workflow de release exécute les tests et génère le rapport JaCoCo avant publication. Une amélioration restante consiste à produire un checksum des artefacts.
+| Fonctionnalité | Lydia | Misasoa | Hadi | Fatima | Mamadou | Remarque |
+|---|---|---|---|---|---|---|
+| Architecture backend | Contribution | Contribution | Contribution | À compléter | Contribution | Validation équipe requise |
+| Feature météo | Contribution | À compléter | Contribution | À compléter | Contribution principale | Validation équipe requise |
+| Feature calendrier de soins | Contribution | Contribution principale | À compléter | À compléter | Contribution | Validation équipe requise |
+| GitHub Actions | Contribution principale | Contribution | Contribution principale | À compléter | À compléter | Workflows versionnés |
+| Documentation et PDF | Contribution principale | Contribution | Contribution | Contribution | Contribution | Rapport et captures |
+| Tests | Contribution | Contribution principale | Contribution | Contribution | Contribution | 374 tests réussis |
+| Docker et déploiement | Contribution | Contribution | Contribution principale | À compléter | À compléter | Docker Compose présent |
 
 ---
 
-## 7. Guide d’installation et de déploiement
+## 6. Guide d'installation et déploiement
 
-### 7.1 Prérequis
+### 6.1 Prérequis
 
 - Git ;
 - Java 21 ;
-- Docker et Docker Compose pour le mode conteneurisé ;
-- accès à MongoDB ;
-- un secret webhook long et aléatoire ;
-- facultativement une clé Tomorrow.io et des credentials Google Calendar.
+- Gradle Wrapper fourni avec le projet ;
+- Docker et Docker Compose ;
+- MongoDB pour un lancement hors Docker ;
+- variables d'environnement météo et MongoDB ;
+- éventuellement une clé Tomorrow.io et des identifiants Google Calendar.
 
-### 7.2 Lancement local
+### 6.2 Lancement local
 
 ```bash
 git clone https://github.com/MisasoaRobison/GreenDesk.git
 cd GreenDesk
+./gradlew clean bootRun
 ```
 
-Configurer les variables nécessaires :
+Sous Windows :
 
 ```powershell
-$env:WEATHER_WEBHOOK_SECRET="un-secret-long-et-aleatoire"
-$env:SPRING_DATA_MONGODB_URI="mongodb://localhost:27017/greendesk"
+.\gradlew.bat clean bootRun
 ```
 
-Puis lancer :
-
-```powershell
-.\gradlew.bat bootRun
-```
-
-Accès :
-
-- application : `http://localhost:8080/home.html` ;
-- calendrier : `http://localhost:8080/care-calendar.html` ;
-- Swagger : `http://localhost:8080/swagger-ui/index.html`.
-
-### 7.3 Lancement Docker
-
-Créer le fichier `.env` :
-
-```bash
-cp env.example .env
-```
-
-Renseigner au minimum :
+Variables minimales :
 
 ```properties
 WEATHER_WEBHOOK_SECRET=un-secret-long-et-aleatoire
+SPRING_DATA_MONGODB_URI=mongodb://localhost:27017/greendesk
 ```
 
-Lancer :
+### 6.3 Lancement avec Docker
 
 ```bash
-docker compose up -d --build
+docker compose up --build
 ```
 
-Services exposés :
+Le projet expose notamment GreenDesk sur `http://localhost:8081`, Mongo Express sur `http://localhost:8082` et MongoDB sur le port `27017`.
 
-| Service | URL / port |
-|---|---|
-| GreenDesk | `http://localhost:8081` |
-| Care Calendar | `http://localhost:8081/care-calendar.html` |
-| Swagger | `http://localhost:8081/swagger-ui.html` |
-| Mongo Express | `http://localhost:8082` |
-| MongoDB | `localhost:27017` |
-
-### 7.4 Vérifications rapides
+### 6.4 Vérifications rapides
 
 ```bash
 docker compose ps
@@ -690,87 +671,114 @@ curl http://localhost:8081/api/species
 curl http://localhost:8081/v3/api-docs
 ```
 
-Test météo local :
+Vérifier également :
 
-```bash
-export WEATHER_WEBHOOK_SECRET="un-secret-long-et-aleatoire"
-./test-weather.sh
+- l'ouverture de `http://localhost:8081/home.html` ;
+- l'ouverture de `http://localhost:8081/care-calendar.html` ;
+- l'accès à Swagger ;
+- la connexion MongoDB ;
+- les logs applicatifs.
+
+### 6.5 Dépannage
+
+| Problème | Cause possible | Solution |
+|---|---|---|
+| Port déjà utilisé | Application déjà lancée | Fermer le processus ou changer le port |
+| MongoDB inaccessible | Conteneur arrêté ou URI incorrecte | Relancer Docker Compose et vérifier l'URI |
+| Webhook retourne `401` | Secret absent ou incorrect | Vérifier `X-Webhook-Secret` |
+| PDF non généré localement | Pandoc ou XeLaTeX absent | Utiliser GitHub Actions |
+| Release sans PDF | Échec de la conversion | Consulter les logs de `release.yml` |
+| `clean check` échoue | Couverture par package sous 80 % | Consulter JaCoCo et ajouter des tests |
+
+---
+
+## 7. Guide de release DevOps 2
+
+### 7.1 Modifier le rapport
+
+Le document source est :
+
+```text
+docs/reports/devops-2-github-actions-report.md
 ```
 
-### 7.5 Dépannage
+### 7.2 Commit et push
 
-| Problème | Vérification |
-|---|---|
-| L'application ne démarre pas | Vérifier `WEATHER_WEBHOOK_SECRET` et MongoDB |
-| Erreur MongoDB | Vérifier URI, credentials et conteneur |
-| Port occupé | Changer `SERVER_PORT` ou arrêter le service existant |
-| Webhook retourne `401` | Vérifier `X-Webhook-Secret` |
-| Aucun événement Google | Vérifier le fichier de credentials et le calendrier |
-| `clean check` échoue | Consulter le rapport JaCoCo |
-| PDF absent de la release | Vérifier Pandoc/XeLaTeX et le workflow `release.yml` |
+```bash
+git add .github/workflows/release.yml .github/workflows/devops-report.yml docs/reports/devops-2-github-actions-report.md
+git commit -m "docs: finalize DevOps 2 report and GitHub Actions"
+git push origin master
+```
+
+### 7.3 Créer un nouveau tag
+
+Pour préserver la traçabilité, il est recommandé de créer un nouveau tag plutôt que de déplacer un tag déjà publié :
+
+```bash
+git tag -a v2.0.2 -m "DevOps 2 - GreenDesk"
+git push origin v2.0.2
+```
+
+### 7.4 Vérifier GitHub Actions
+
+Dans GitHub :
+
+1. ouvrir **Actions** ;
+2. sélectionner **Release & Documentation PDF** ;
+3. attendre la fin du workflow ;
+4. vérifier que toutes les étapes sont vertes.
+
+Le workflow **Generate DevOps Report PDF** peut être lancé manuellement pour valider uniquement le rapport.
+
+### 7.5 Télécharger le PDF
+
+Dans GitHub :
+
+1. ouvrir **Releases** ;
+2. sélectionner la version publiée ;
+3. ouvrir **Assets** ;
+4. télécharger `devops2-report.pdf`.
 
 ---
 
 ## 8. Annexe API REST
 
-### 8.1 Endpoints météo
+### 8.1 API météo et notifications
 
-| Méthode | Endpoint | Description |
-|---|---|---|
-| `POST` | `/api/weather/webhook` | Recevoir une alerte authentifiée |
-| `GET` | `/api/weather/alerts` | Lister les alertes |
-| `POST` | `/api/weather/alerts/{alertId}/ack` | Acquitter une alerte |
-| `GET` | `/api/weather/impact/{plantId}` | Historique des impacts |
-| `POST` | `/api/weather/alert-config` | Configurer les seuils |
-| `GET` | `/api/weather/notifications` | Lister les notifications |
+| Méthode | Endpoint | Rôle | Entrée | Sortie | Erreurs |
+|---|---|---|---|---|---|
+| `POST` | `/api/weather/webhook` | Traiter une alerte | Secret + webhook | Statut | `401`, `500` |
+| `GET` | `/api/weather/alerts` | Lister les alertes | Filtres facultatifs | Liste | `500` |
+| `POST` | `/api/weather/alerts/{alertId}/ack` | Acquitter une alerte | ID | Message | `404`, `500` |
+| `GET` | `/api/weather/impact/{plantId}` | Lire les impacts | ID plante | Liste | `500` |
+| `POST` | `/api/weather/alert-config` | Configurer une forêt | JSON | Résultat | `400`, `500` |
+| `GET` | `/api/weather/notifications` | Lister les notifications | `unreadOnly` | Liste | `500` |
+| `POST` | `/api/weather/notifications/{id}/read` | Marquer comme lue | ID | Message | `500` |
+| `POST` | `/api/weather/notifications/read-all` | Tout marquer comme lu | Aucune | Message | `500` |
 
-### 8.2 Endpoints care-tasks
+### 8.2 API CareTask
 
-| Méthode | Endpoint | Description |
-|---|---|---|
-| `GET` | `/api/care-tasks` | Lister les tâches |
-| `POST` | `/api/care-tasks` | Générer une tâche pour une plante |
-| `POST` | `/api/care-tasks/generate` | Génération batch, rôle ADMIN |
-| `POST` | `/api/care-tasks/manual` | Créer une tâche manuelle |
-| `PATCH` | `/api/care-tasks/{id}` | Reporter une tâche flexible |
-| `PUT` | `/api/care-tasks/{id}/validate` | Valider une tâche |
-| `POST` | `/api/care-tasks/{id}/done` | Marquer une tâche terminée |
-| `DELETE` | `/api/care-tasks/{id}` | Annuler une tâche |
+| Méthode | Endpoint | Rôle | Entrée | Sortie | Erreurs |
+|---|---|---|---|---|---|
+| `GET` | `/api/care-tasks` | Lister les tâches | Aucune | Liste | Erreur serveur |
+| `POST` | `/api/care-tasks` | Créer automatiquement | `plantId` | Tâche | Plante absente, WNS insuffisant |
+| `POST` | `/api/care-tasks/generate` | Générer en lot | Filtres | Liste | Validation, autorisation |
+| `POST` | `/api/care-tasks/manual` | Créer manuellement | DTO | Tâche | Validation |
+| `PATCH` | `/api/care-tasks/{id}` | Modifier une tâche flexible | DTO | Tâche | Statut ou flexibilité |
+| `PUT` | `/api/care-tasks/{id}/validate` | Valider | ID | Tâche | Statut invalide |
+| `POST` | `/api/care-tasks/{id}/done` | Terminer | ID | Tâche | Statut invalide |
+| `DELETE` | `/api/care-tasks/{id}` | Annuler | ID | `204` | Statut invalide |
 
-### 8.3 Endpoints care-plan
+### 8.3 API CarePlan
 
-| Méthode | Endpoint | Description |
-|---|---|---|
-| `GET` | `/api/care-plan/{plantId}` | Lire le plan d'une plante |
-| `POST` | `/api/care-plan/recompute` | Recalculer un plan, rôle ADMIN |
+| Méthode | Endpoint | Rôle | Entrée | Sortie | Erreurs |
+|---|---|---|---|---|---|
+| `GET` | `/api/care-plan/{plantId}` | Lire ou créer le plan | ID plante | Plan et tâches | Erreur serveur |
+| `POST` | `/api/care-plan/recompute` | Recalculer les tâches | `forestId`, `plantId` | `200 OK` | Autorisation, erreur serveur |
 
-### 8.4 Exemples de payloads
+### 8.4 Exemples JSON
 
-**Webhook météo**
-
-```bash
-curl -X POST http://localhost:8081/api/weather/webhook \
-  -H "Content-Type: application/json" \
-  -H "X-Webhook-Secret: <SECRET>" \
-  -d '{
-    "event_id": "heatwave-001",
-    "type": "heatwave",
-    "coords": [48.8566, 2.3522],
-    "timestamp": "2026-06-13T12:00:00",
-    "severity": "high",
-    "details": {"temperature": 39.0}
-  }'
-```
-
-**Créer automatiquement une tâche**
-
-```json
-{
-  "plantId": "<PLANT_ID>"
-}
-```
-
-**Génération batch**
+**Génération de tâches**
 
 ```json
 {
@@ -778,7 +786,7 @@ curl -X POST http://localhost:8081/api/weather/webhook \
 }
 ```
 
-**Créer une tâche manuelle**
+**Création manuelle**
 
 ```json
 {
@@ -790,7 +798,7 @@ curl -X POST http://localhost:8081/api/weather/webhook \
 }
 ```
 
-**Reporter une tâche**
+**Mise à jour d'une tâche flexible**
 
 ```json
 {
@@ -800,7 +808,7 @@ curl -X POST http://localhost:8081/api/weather/webhook \
 }
 ```
 
-**Recalculer un plan**
+**Recalcul d'un plan**
 
 ```json
 {
@@ -812,25 +820,8 @@ curl -X POST http://localhost:8081/api/weather/webhook \
 
 ## 9. Conclusion
 
-GreenDesk répond au périmètre DevOps 2 en associant une application métier complète à une chaîne d'automatisation :
+GreenDesk associe deux fonctionnalités métier complémentaires à une chaîne DevOps complète. Le jumeau numérique météo reçoit les alertes, calcule leurs impacts et met à jour les plantes. Le calendrier de soins transforme ces informations et les besoins biologiques en tâches priorisées, suivies et éventuellement synchronisées avec Google Calendar.
 
-- gestion de versions et tags Git ;
-- tests unitaires et d'intégration ;
-- rapports JaCoCo ;
-- build Gradle reproductible ;
-- conteneurisation Docker ;
-- publication GitHub Pages ;
-- génération automatique des PDF ;
-- release GitHub avec artefacts.
+GitHub Actions assure la compilation, les tests, la mesure JaCoCo, la publication de la documentation, la génération des PDF et la création des releases. Les artefacts publiés offrent une traçabilité directe entre le code, les résultats de validation et la documentation de livraison.
 
-Les Features 1 et 2 forment un flux cohérent allant de l'observation météo à l'action de soin. La suite de **374 tests réussis** confirme la stabilité fonctionnelle actuelle.
-
-Les priorités restantes avant une qualification pleinement industrialisée sont :
-
-1. rendre `jacocoTestCoverageVerification` bloquant dans la CI ;
-2. augmenter la couverture des packages sous le seuil ;
-3. supprimer les identifiants de production codés en dur ;
-4. publier une image Docker versionnée et des checksums ;
-5. conserver un tag distinct pour chaque version publiée.
-
-> Limite de vérification : l'état en ligne des runs GitHub Actions n'a pas pu être contrôlé directement, car l'authentification `gh` locale était invalide. Les workflows ont été audités depuis les fichiers versionnés et les résultats locaux.
+La suite de 374 tests réussis confirme la stabilité fonctionnelle actuelle. Les améliorations prioritaires restent l'augmentation de la couverture, l'activation du contrôle JaCoCo bloquant dans la CI et la poursuite de la sécurisation des configurations de production.
