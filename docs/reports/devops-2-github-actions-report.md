@@ -1272,17 +1272,29 @@ Ces résultats confirment la stabilité de la livraison actuelle. La couverture 
 
 ## 4. Matrice de responsabilités et réalisations
 
-La matrice suivante synthétise les responsabilités observées dans la documentation et l'historique Git. Elle doit être validée par l'équipe avant livraison officielle.
+La matrice suivante présente la répartition des responsabilités au sein de l'équipe pour la livraison DevOps 2 du projet GreenDesk. Elle distingue les contributions principales, les contributions de support et les éléments à compléter avant validation finale.
 
-| Fonctionnalité | Lydia | Misasoa | Hadi | Fatima | Mamadou | Remarque |
-|---|---|---|---|---|---|---|
-| Architecture backend | Contribution | Contribution | Contribution | À compléter | Contribution | Validation équipe requise |
-| Feature météo | Contribution | À compléter | Contribution | À compléter | Contribution principale | Validation équipe requise |
-| Feature calendrier de soins | Contribution | Contribution principale | À compléter | À compléter | Contribution | Validation équipe requise |
-| GitHub Actions | Contribution principale | Contribution | Contribution principale | À compléter | À compléter | Workflows versionnés |
-| Documentation et PDF | Contribution principale | Contribution | Contribution | Contribution | Contribution | Rapport et captures |
-| Tests | Contribution | Contribution principale | Contribution | Contribution | Contribution | 374 tests réussis |
-| Docker et déploiement | Contribution | Contribution | Contribution principale | À compléter | À compléter | Docker Compose présent |
+| Fonctionnalité / Tâche | Lydia AMROUCHE | Misasoa ROBISON | Hadi ISSA | Fatima SAIDI | Mamadou DIALLO | Remarque |
+|---|---:|---:|---:|---:|---:|---|
+| Architecture backend générale | ✓ | ✓ | ✓ |  | ✓ | Contribution globale sur la structure Spring Boot |
+| Feature 1 - Jumeau numérique météo / Tomorrow.io |  |  | ✓ |  | ✓ | Hadi et Mamadou responsables principaux de la Feature 1 |
+| Webhook météo et traitement des alertes |  |  | ✓ |  | ✓ | Réception, validation et traitement des alertes météo |
+| Calcul ISR / SPS et impact météo sur les plantes |  |  | ✓ |  | ✓ | Calcul des impacts météo et mise à jour de l'état des plantes |
+| Réordonnancement météo des tâches flexibles |  | ✓ | ✓ |  | ✓ | Connexion entre météo et calendrier de soins |
+| Feature 2 - Calendrier de soins dynamique | ✓ | ✓ |  |  |  | Lydia et Misasoa responsables principaux de la Feature 2 |
+| Module WNS - Calcul du besoin d'intervention | ✓ |  |  |  |  | Partie décisionnelle : `WnsCalculator`, `WnsResult`, seuil WNS |
+| Priorisation des tâches avec SPS | ✓ | ✓ |  |  |  | WNS pour décider, SPS pour prioriser |
+| DTO de réponse et justification API | ✓ |  |  |  |  | Exposition de `wnsScore` et `wnsBreakdown` dans `CareTaskResponseDto` |
+| Moteur de tâches `CareTaskService` |  | ✓ |  |  |  | Génération, validation, annulation et cycle de vie |
+| Persistance `CareTaskRepository` et `CarePlan` |  | ✓ |  |  |  | Sauvegarde MongoDB et association des tâches au plan de soins |
+| Synchronisation Google Calendar |  | ✓ |  |  |  | `ExternalCalendarService` et `GoogleCalendarAdapter` |
+| Expiration automatique des tâches |  | ✓ |  |  |  | `CareTaskExpirationScheduler` |
+| Interface `care-calendar.html` | ✓ | ✓ |  |  |  | Affichage, filtres, création manuelle et actions utilisateur |
+| Tests Feature 1 |  |  | ✓ |  | ✓ | Tests météo, webhook, impact et intégration |
+| Tests Feature 2 | ✓ | ✓ |  |  |  | Tests WNS, CareTask, CarePlan et intégration |
+| GitHub Actions et CI/CD | ✓ | ✓ | ✓ |  |  | Workflows de build, tests, documentation et release |
+| Documentation technique DevOps 2 | ✓ | ✓ | ✓ |  | ✓ | Rapport technique, diagrammes et captures |
+| Génération PDF et intégration Docsify | ✓ | ✓ |  |  |  | Rapport consultable via GitHub Pages et exportable en PDF |
 
 ---
 
