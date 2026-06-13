@@ -461,11 +461,22 @@ Les deux scripts locaux utilisent la variable d'environnement `WEATHER_WEBHOOK_S
 
 ### 2.2 Feature 2 - Calendrier de soins dynamique
 
-#### 2.2.1 Objectif fonctionnel
+#### 2.2.1 Présentation et objectifs fonctionnels
 
 La Feature 2 transforme l'état des plantes, leur historique météo et les prévisions de pluie en tâches de soins planifiées, priorisées et suivies. Elle permet de décider si une intervention est nécessaire, de créer la tâche correspondante, de la synchroniser avec Google Calendar et de gérer son cycle de vie jusqu'à sa validation, son annulation ou son expiration.
 
-#### 2.2.2 Vue d'ensemble de la Feature 2
+La documentation de cette fonctionnalité suit l'organisation d'un dossier technique :
+
+| Partie | Contenu |
+|---|---|
+| Architecture générale | Vue d'ensemble et responsabilités principales |
+| Classes et données | Énumérations, entités MongoDB, services et infrastructure |
+| Module de décision WNS | Calcul du besoin, seuil, justification et priorité |
+| Processus métier | Génération, idempotence, validation et réordonnancement |
+| Interface et API | Utilisation depuis le frontend et endpoints REST |
+| Validation | Tests unitaires et scénarios d'intégration |
+
+#### 2.2.2 Architecture générale et périmètre
 
 Cette section détaille les spécifications techniques de la fonctionnalité de gestion, de planification et de synchronisation externe des tâches de soins agronomiques. Elle est rédigée strictement à partir du code source de l'application et alignée sur le formalisme du dossier technique.
 
@@ -619,48 +630,7 @@ google.api.credentials-path
 
 Lorsque les identifiants Google ne sont pas disponibles en CI ou en test, l'adaptateur retourne un identifiant simulé commençant par `mock-google-`.
 
-##### 2.2.3.4 Explication des algorithmes
-
-**Génération automatique et idempotence**
-
-`CareTaskService.generateTask(plant)` calcule le WNS, arrête le traitement si le score est inférieur ou égal à `0.8`, détermine le type de tâche, puis vérifie avec `CareTaskRepository` si une tâche identique au statut `PENDING` existe déjà. Si elle existe, elle est réutilisée. Sinon, une nouvelle tâche est synchronisée avec Google Calendar, sauvegardée, puis ajoutée au `CarePlan`.
-
-**Nettoyage automatique par scheduler**
-
-Le scheduler exécute :
-
-```java
-cleanupExpiredTasks()
-```
-
-Il collecte les tâches expirées avec :
-
-```java
-findByStatusAndDueAtBefore(
-    TaskStatus.PENDING,
-    Instant.now()
-)
-```
-
-Chaque tâche trouvée passe au statut :
-
-```java
-status = TaskStatus.CANCELED
-```
-
-La tolérance aux pannes repose sur un `try/catch` par tâche. Une erreur isolée n'interrompt donc pas le reste du batch.
-
-##### 2.2.3.5 Tests du moteur de tâches
-
-| Test présent | Vérifications principales |
-|---|---|
-| `CarePlanServiceTest` | Plan existant, création automatique et cas limites |
-| `CareTaskServiceTest` | Statuts, synchronisation calendrier, génération et exceptions |
-| `CareTaskExpirationSchedulerTest` | Absence de tâches expirées, erreurs repository et continuité du batch |
-| `TaskLifecycleIntegrationTest` | Cycle de vie, idempotence et régénération |
-| `CareIntegrationFlowTest` | Création, validation, expiration et flux global |
-
-#### 2.2.4 Module WNS, priorisation et recommandation des tâches
+#### 2.2.4 Module de décision WNS, priorisation et recommandation
 
 Cette section complète le moteur de tâches de soins présenté précédemment. Alors que `CareTaskService` prend en charge la création, la persistance, la synchronisation externe et le cycle de vie des tâches, le module WNS intervient en amont pour déterminer si une intervention est réellement nécessaire.
 
@@ -876,7 +846,26 @@ Ce diagramme montre la complémentarité entre la partie décisionnelle et la pa
 
 Cette séparation rend la fonctionnalité plus lisible. Le calcul du besoin est isolé de la persistance et du cycle de vie des tâches, tout en restant connecté au moteur d'exécution par `CareTaskService`.
 
-#### 2.2.5 Algorithme global de génération d'une tâche
+#### 2.2.5 Processus métier et algorithmes
+
+Cette partie décrit l'enchaînement opérationnel complet après la décision WNS : génération d'une tâche, contrôle de l'idempotence, synchronisation externe, validation par l'utilisateur et adaptation aux alertes météo.
+
+##### 2.2.5.1 Génération automatique, idempotence et expiration
+
+`CareTaskService.generateTask(plant)` calcule le WNS, arrête le traitement si le score est inférieur ou égal à `0.8`, détermine le type de tâche, puis vérifie avec `CareTaskRepository` si une tâche identique au statut `PENDING` existe déjà. Si elle existe, elle est réutilisée. Sinon, une nouvelle tâche est synchronisée avec Google Calendar, sauvegardée, puis ajoutée au `CarePlan`.
+
+Le nettoyage automatique repose sur `CareTaskExpirationScheduler.cleanupExpiredTasks()`. Le scheduler collecte les tâches expirées avec :
+
+```java
+findByStatusAndDueAtBefore(
+    TaskStatus.PENDING,
+    Instant.now()
+)
+```
+
+Chaque tâche trouvée passe au statut `CANCELED`. La tolérance aux pannes repose sur un `try/catch` par tâche : une erreur isolée n'interrompt pas le reste du batch.
+
+##### 2.2.5.2 Génération globale d'une tâche
 
 ```mermaid
 flowchart TD
@@ -901,7 +890,7 @@ flowchart TD
 
 Lydia intervient sur le calcul WNS, l'aide à la priorisation et la justification exposée par l'API. Le collègue intervient sur la création, la persistance, le cycle de vie et Google Calendar. Les deux contributions sont connectées par `CareTaskService`.
 
-#### 2.2.6 Diagramme de séquence complet - Connexion WNS et CareTask
+##### 2.2.5.3 Séquence complète entre WNS et `CareTaskService`
 
 ```mermaid
 sequenceDiagram
@@ -953,7 +942,7 @@ sequenceDiagram
     C-->>U: 201 Created + CareTaskResponseDto
 ```
 
-#### 2.2.7 Validation d'une tâche
+##### 2.2.5.4 Validation d'une tâche
 
 Lorsqu'une tâche est validée, `CareTaskService` la récupère, vérifie qu'elle est `PENDING`, passe son statut à `DONE`, renseigne `closedAt` et la sauvegarde. Le service récupère ensuite la plante associée, applique l'intervention, recalcule son état et la sauvegarde.
 
@@ -986,7 +975,7 @@ sequenceDiagram
 
 La validation appartient au moteur de tâches. Dans l'implémentation actuelle, elle ne supprime pas l'événement Google Calendar ; cette suppression est réalisée lors de l'annulation ou de l'expiration.
 
-#### 2.2.8 Réordonnancement météo des tâches flexibles
+##### 2.2.5.5 Réordonnancement météo des tâches flexibles
 
 `CareTaskWeatherRescheduler` traite les alertes `heavy_rain`, `heatwave`, `frost` et `high_wind`. Il recherche les tâches `PENDING` des forêts impactées, filtre les tâches flexibles concernées, puis les reporte de 24 heures. La date d'échéance est replacée quatre heures après la nouvelle date et Google Calendar est mis à jour lorsque `externalId` existe.
 
@@ -1015,11 +1004,15 @@ sequenceDiagram
     CTRS-->>WRS: Nombre de tâches reportées
 ```
 
-#### 2.2.9 Interface utilisateur `care-calendar.html`
+#### 2.2.6 Interface utilisateur, composants et API
+
+La couche d'exposition rend le moteur de soins utilisable depuis le frontend et par les clients REST. Elle regroupe l'interface `care-calendar.html`, les contrôleurs et les DTO retournés par l'API.
+
+##### 2.2.6.1 Interface utilisateur `care-calendar.html`
 
 La page `care-calendar.html` permet de consulter les tâches, visualiser leur priorité et leur statut, filtrer les résultats, créer une tâche manuelle et déclencher les actions de validation, report ou annulation. Elle utilise les endpoints `/api/care-tasks` et `/api/care-plan`. Les champs `wnsScore` et `wnsBreakdown` du `CareTaskResponseDto` rendent la décision plus explicable côté frontend.
 
-#### 2.2.10 Classes impliquées dans la Feature 2
+##### 2.2.6.2 Vue consolidée des composants impliqués
 
 | Classe | Bloc | Rôle |
 |---|---|---|
@@ -1038,7 +1031,7 @@ La page `care-calendar.html` permet de consulter les tâches, visualiser leur pr
 | `WeatherForecastService` | Calcul et décision | Prévision de pluie |
 | `CareTaskResponseDto` | Réponse API | Exposition des scores et informations métier |
 
-#### 2.2.11 Endpoints API de la Feature 2
+##### 2.2.6.3 Endpoints API de la Feature 2
 
 | Méthode | Endpoint | Rôle | Entrée | Sortie | Erreurs possibles |
 |---|---|---|---|---|---|
@@ -1053,7 +1046,7 @@ La page `care-calendar.html` permet de consulter les tâches, visualiser leur pr
 | `GET` | `/api/care-plan/{plantId}` | Lire le plan d'une plante | Identifiant de plante | Plan et tâches | Erreur serveur |
 | `POST` | `/api/care-plan/recompute` | Recalculer un plan | `plantId` et/ou `forestId` | `200 OK` | Accès refusé, erreur serveur |
 
-#### 2.2.12 Tests associés à la Feature 2
+#### 2.2.7 Validation et tests associés
 
 | Test présent | Bloc concerné | Objectif |
 |---|---|---|
@@ -1065,7 +1058,7 @@ La page `care-calendar.html` permet de consulter les tâches, visualiser leur pr
 | `WnsCalculatorTest` | Calcul et décision | Score, seuil, stress et pluie |
 | Test dédié `CareTaskResponseDto` | Réponse API | À compléter : aucun test DTO dédié n'est présent |
 
-#### 2.2.13 Résumé de la Feature 2
+#### 2.2.8 Synthèse de la Feature 2
 
 La Feature 2 repose sur la complémentarité entre un moteur de décision et un moteur d'exécution. Le moteur de décision, porté par le calcul WNS et la logique de priorisation, détermine si une intervention est nécessaire. Le moteur d'exécution, porté par `CareTaskService`, crée la tâche, la persiste, la synchronise avec Google Calendar et gère son cycle de vie. Cette séparation rend le calendrier de soins plus lisible, testable et évolutif.
 
