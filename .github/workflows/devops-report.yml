@@ -26,7 +26,7 @@ jobs:
       - name: Install Pandoc and LaTeX
         run: |
           sudo apt-get update
-          sudo apt-get install -y pandoc texlive-xetex texlive-fonts-recommended texlive-latex-recommended
+          sudo apt-get install -y pandoc librsvg2-bin texlive-xetex texlive-fonts-recommended texlive-latex-recommended
 
       - name: Generate DevOps report PDF
         run: |
