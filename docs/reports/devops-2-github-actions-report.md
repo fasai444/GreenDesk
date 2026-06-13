@@ -390,7 +390,7 @@ L'historique persistant permet de conserver une trace de l'événement reçu, de
 
 ##### 2.1.9.1 Suivi opérationnel des alertes météo
 
-![Liste des alertes météo Tomorrow.io](assets/images/feature1-weather-alerts.svg)
+![Liste des alertes météo Tomorrow.io](../assets/images/feature1-weather-alerts.svg)
 
 Cette vue représente le point de contrôle opérationnel de la Feature 1. Chaque ligne correspond à une alerte Tomorrow.io persistée par GreenDesk. Le tableau affiche sa date, son type, sa sévérité, les coordonnées de la zone concernée et son statut.
 
@@ -398,7 +398,7 @@ Le filtre par forêt permet de limiter l'analyse à une zone précise. L'option 
 
 ##### 2.1.9.2 Projection de l'évolution des plantes
 
-![Graphique des prédictions à 7 jours](assets/images/feature1-predictions-7-days.svg)
+![Graphique des prédictions à 7 jours](../assets/images/feature1-predictions-7-days.svg)
 
 Cette vue complète le suivi météo par une représentation prédictive. L'utilisateur sélectionne une plante et une durée, puis le frontend appelle `GET /api/predictions/plant/{plantId}?days={days}`. Le graphique compare deux séries :
 
@@ -424,7 +424,7 @@ L'authentification Spring Security de la Feature V6 protège l'utilisation gén�
 
 L'accès humain aux informations produites par la Feature 1 passe par le système d'authentification de GreenDesk. Avant de consulter le tableau de bord et les alertes météo, l'utilisateur doit ouvrir une session depuis `login.html`. Les identifiants sont transmis à `POST /api/auth/login`, puis Spring Security crée une session HTTP utilisée lors des requêtes suivantes.
 
-![Page de connexion GreenDesk](assets/images/feature1-auth-login.png)
+![Page de connexion GreenDesk](../assets/images/feature1-auth-login.png)
 
 La page de connexion présente également les comptes de démonstration `admin / admin123` et `demo / demo123`. Après authentification, `auth-guard.js` vérifie la session avec `GET /api/auth/me` et redirige vers `/login.html` toute personne non connectée qui tente d'accéder à une page protégée.
 
@@ -1014,7 +1014,7 @@ La page `care-calendar.html` permet de consulter les tâches, visualiser leur pr
 
 **Vue d'ensemble et création manuelle**
 
-![Vue d'ensemble du calendrier de soins](assets/images/feature2-care-dashboard-overview.png)
+![Vue d'ensemble du calendrier de soins](../assets/images/feature2-care-dashboard-overview.png)
 
 Cette première vue représente le tableau de pilotage de la Feature 2. Elle fournit une synthèse immédiate du calendrier grâce aux compteurs du nombre total de tâches et de leur répartition entre les statuts `PENDING`, `DONE` et `CANCELED`.
 
@@ -1024,7 +1024,7 @@ Le formulaire **Création manuelle** permet à l'utilisateur de choisir une plan
 
 **Suivi du cycle de vie et synchronisation externe**
 
-![Suivi des tâches et de leur cycle de vie](assets/images/feature2-care-task-lifecycle.png)
+![Suivi des tâches et de leur cycle de vie](../assets/images/feature2-care-task-lifecycle.png)
 
 Cette seconde vue détaille chaque tâche sous forme de carte. Elle expose les informations nécessaires à la décision et au suivi :
 
