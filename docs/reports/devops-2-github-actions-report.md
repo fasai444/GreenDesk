@@ -16,13 +16,11 @@
 
 1. Architecture technique
 2. Fonctionnalités détaillées
-3. GitHub Actions et CI/CD
-4. Tests effectués
-5. Matrice de responsabilités et réalisations
-6. Guide d'installation et déploiement
-7. Guide de release DevOps 2
-8. Annexe API REST
-9. Conclusion
+3. Tests effectués
+4. Matrice de responsabilités et réalisations
+5. Guide d'installation et déploiement
+6. Annexe API REST
+7. Conclusion
 
 ---
 
@@ -375,26 +373,37 @@ La Feature 2 repose sur deux blocs complémentaires reliés par `CareTaskService
 
 ```mermaid
 flowchart TD
-    A[Moteur de simulation / Utilisateur] -->|Déclenchement| B[CareTaskService]
+    A[Moteur de simulation / Utilisateur] -->|Demande de génération| B[Données de la plante]
+    B --> C[Historique PlantImpact]
+    B --> D[WeatherForecastService]
+    C --> E[WnsCalculator]
+    D --> E
+    E -->|Score et justification| F[WnsResult]
+    F -->|Score supérieur au seuil| G[CareTaskService]
+    F -->|Score insuffisant| H[Aucune tâche générée]
 
-    B -->|1. Idempotence et persistance| C[(MongoDB : care_tasks)]
-    B -->|2. Agrégation du plan| D[(MongoDB : care_plans)]
-    B -->|3. Synchronisation externe| E[GoogleCalendarAdapter]
+    G -->|1. Idempotence et persistance| I[(MongoDB : care_tasks)]
+    G -->|2. Agrégation du plan| J[(MongoDB : care_plans)]
+    G -->|3. Synchronisation externe| K[GoogleCalendarAdapter]
 
-    E -->|Requêtes HTTPS REST| F[Google Calendar API]
+    K -->|Requêtes HTTPS REST| L[Google Calendar API]
 
     classDef trigger fill:#172033,stroke:#ffffff,color:#ffffff,stroke-width:1px;
+    classDef decision fill:#312e81,stroke:#ffffff,color:#ffffff,stroke-width:1px;
     classDef service fill:#0f172a,stroke:#ffffff,color:#ffffff,stroke-width:1px;
     classDef database fill:#111827,stroke:#ffffff,color:#ffffff,stroke-width:1px;
     classDef external fill:#172033,stroke:#ffffff,color:#ffffff,stroke-width:1px;
+    classDef stop fill:#3f3f46,stroke:#ffffff,color:#ffffff,stroke-width:1px;
 
-    class A trigger;
-    class B service;
-    class C,D database;
-    class E,F external;
+    class A,B,C,D trigger;
+    class E,F decision;
+    class G service;
+    class I,J database;
+    class K,L external;
+    class H stop;
 ```
 
-Le diagramme place `CareTaskService` au centre du moteur d'exécution. Le service contrôle l'idempotence et persiste les tâches dans `care_tasks`, associe les tâches aux plans stockés dans `care_plans`, puis délègue la synchronisation externe à `GoogleCalendarAdapter`.
+Le diagramme représente l'architecture complète de la Feature 2. `WnsCalculator` analyse les données de la plante, l'historique `PlantImpact` et la prévision fournie par `WeatherForecastService`. `WnsResult` transmet le score et sa justification à `CareTaskService`. Lorsque le seuil est dépassé, le moteur d'exécution contrôle l'idempotence, persiste la tâche dans `care_tasks`, l'associe au plan stocké dans `care_plans` et délègue sa synchronisation à `GoogleCalendarAdapter`.
 
 Le bloc de décision intervient avant la création effective d'une tâche. Le bloc d'exécution prend ensuite en charge sa persistance, son association à un plan et son suivi opérationnel.
 
@@ -655,85 +664,13 @@ La Feature 2 repose sur la complémentarité entre un moteur de décision et un 
 
 ---
 
-## 3. GitHub Actions et CI/CD
+## 3. Tests effectués
 
-GreenDesk contient cinq workflows dans `.github/workflows`.
-
-### 3.1 Workflow `gradle.yml`
-
-Le workflow **Java CI with Gradle** s'exécute lors des pushes sur `main`, `master`, `develop` et `feature/**`, ainsi que lors des pull requests vers `main`, `master` ou `develop`.
-
-Il :
-
-1. récupère le code ;
-2. installe Temurin JDK 21 ;
-3. active le cache Gradle ;
-4. exécute `./gradlew clean test jacocoTestReport --no-daemon` ;
-5. archive les rapports de tests ;
-6. archive le rapport JaCoCo.
-
-### 3.2 Workflow `docs-pages.yml`
-
-Ce workflow publie le dossier `docs` sur GitHub Pages lors d'un push sur `main` ou `master`, ou après un lancement manuel. Il utilise les permissions `pages: write` et `id-token: write`, prépare l'artefact Pages puis déploie la documentation.
-
-### 3.3 Workflow `update-uml.yml`
-
-Ce workflow réagit aux changements dans `src/main/java/**` et `build.gradle`. Il installe Java 21, vérifie si la tâche Gradle `buildClassDiagram` existe, l'exécute si possible, puis utilise `git-auto-commit-action` pour versionner les fichiers `.puml` générés.
-
-### 3.4 Workflow `release.yml`
-
-Le workflow **Release & Documentation PDF** est déclenché par un tag `v*`. Il :
-
-1. récupère le code ;
-2. installe JDK 21 ;
-3. exécute les tests, JaCoCo, l'assemblage et la Javadoc ;
-4. installe Pandoc et XeLaTeX ;
-5. génère `documentation.pdf` depuis le README ;
-6. génère `devops2-report.pdf` depuis ce rapport ;
-7. archive la Javadoc ;
-8. définit le titre et le corps de la release ;
-9. crée une GitHub Release ;
-10. publie les JAR, PDF et la Javadoc.
-
-Le workflow `devops-report.yml` permet également de générer le rapport PDF comme artefact, sans créer de tag.
-
-### 3.5 Diagramme de séquence - Pipeline de release GitHub Actions
-
-```mermaid
-sequenceDiagram
-    autonumber
-    actor D as Développeur
-    participant G as GitHub
-    participant A as GitHub Actions
-    participant B as Gradle
-    participant P as Pandoc / XeLaTeX
-    participant R as GitHub Release
-
-    D->>G: git push origin v2.0.0
-    G->>A: Déclencher release.yml
-    A->>A: Checkout et setup JDK 21
-    A->>B: clean test jacocoTestReport assemble javadoc
-    B-->>A: Tests, JAR, JaCoCo et Javadoc
-    A->>P: Convertir README.md
-    P-->>A: documentation.pdf
-    A->>P: Convertir le rapport DevOps 2
-    P-->>A: devops2-report.pdf
-    A->>R: Créer la release
-    A->>R: Publier JAR, PDF et javadoc.zip
-    R-->>D: Release disponible
-```
-
-Ce pipeline garantit qu'une release regroupe les artefacts exécutables et documentaires produits à partir du même état du dépôt.
-
----
-
-## 4. Tests effectués
-
-### 4.1 Objectif des tests
+### 3.1 Objectif des tests
 
 La stratégie de tests vise à garantir la fiabilité métier, éviter les régressions, sécuriser les endpoints, valider la génération des tâches, vérifier le traitement météo et assurer la compatibilité avec la CI/CD.
 
-### 4.2 Tests météo
+### 3.2 Tests météo
 
 | Test présent | Type | Objectif | Résultat attendu |
 |---|---|---|---|
@@ -746,7 +683,7 @@ La stratégie de tests vise à garantir la fiabilité métier, éviter les régr
 
 Le projet ne contient pas de tests nommés `TomorrowWebhookVerifierTest` ou `WeatherAlertConfigServiceTest`.
 
-### 4.3 Tests calendrier de soins
+### 3.3 Tests calendrier de soins
 
 | Test présent | Type | Objectif | Résultat attendu |
 |---|---|---|---|
@@ -759,7 +696,7 @@ Le projet ne contient pas de tests nommés `TomorrowWebhookVerifierTest` ou `Wea
 
 Le projet ne contient pas de tests nommés `CareTaskControllerTest`, `CarePlanControllerTest`, `CareReschedulingServiceTest` ou `CareCalendarSmokeTest`.
 
-### 4.4 Tests contrôleurs
+### 3.4 Tests contrôleurs
 
 Les tests de contrôleurs vérifient les contrats HTTP, les codes de réponse et la délégation vers les services. Les tests suivants sont réellement présents dans `src/test/java/org/example/controllers` :
 
@@ -774,7 +711,7 @@ Les tests de contrôleurs vérifient les contrats HTTP, les codes de réponse et
 
 Les contrôleurs `CareTaskController` et `CarePlanController` sont couverts indirectement par les tests de services et d'intégration, mais ne disposent pas encore de classes de test dédiées.
 
-### 4.5 Tests CI/CD
+### 3.5 Tests CI/CD
 
 GitHub Actions exécute les tests avec Gradle et archive systématiquement :
 
@@ -784,7 +721,7 @@ GitHub Actions exécute les tests avec Gradle et archive systématiquement :
 
 Le workflow de release exécute également les tests avant publication. La CI principale génère JaCoCo, mais n'exécute pas `clean check` : le seuil configuré dans `jacocoTestCoverageVerification` n'est donc pas bloquant dans cette CI.
 
-### 4.6 Couverture JaCoCo
+### 3.6 Couverture JaCoCo
 
 Mesures issues du rapport JaCoCo local vérifié le 13 juin 2026 :
 
@@ -801,7 +738,7 @@ Ces résultats confirment la stabilité de la livraison actuelle. La couverture 
 
 ---
 
-## 5. Matrice de responsabilités et réalisations
+## 4. Matrice de responsabilités et réalisations
 
 La matrice suivante synthétise les responsabilités observées dans la documentation et l'historique Git. Elle doit être validée par l'équipe avant livraison officielle.
 
@@ -817,9 +754,9 @@ La matrice suivante synthétise les responsabilités observées dans la document
 
 ---
 
-## 6. Guide d'installation et déploiement
+## 5. Guide d'installation et déploiement
 
-### 6.1 Prérequis
+### 5.1 Prérequis
 
 - Git ;
 - Java 21 ;
@@ -829,7 +766,7 @@ La matrice suivante synthétise les responsabilités observées dans la document
 - variables d'environnement météo et MongoDB ;
 - éventuellement une clé Tomorrow.io et des identifiants Google Calendar.
 
-### 6.2 Lancement local
+### 5.2 Lancement local
 
 ```bash
 git clone https://github.com/MisasoaRobison/GreenDesk.git
@@ -850,7 +787,7 @@ WEATHER_WEBHOOK_SECRET=un-secret-long-et-aleatoire
 SPRING_DATA_MONGODB_URI=mongodb://localhost:27017/greendesk
 ```
 
-### 6.3 Lancement avec Docker
+### 5.3 Lancement avec Docker
 
 ```bash
 docker compose up --build
@@ -858,7 +795,7 @@ docker compose up --build
 
 Le projet expose notamment GreenDesk sur `http://localhost:8081`, Mongo Express sur `http://localhost:8082` et MongoDB sur le port `27017`.
 
-### 6.4 Vérifications rapides
+### 5.4 Vérifications rapides
 
 ```bash
 docker compose ps
@@ -875,7 +812,7 @@ Vérifier également :
 - la connexion MongoDB ;
 - les logs applicatifs.
 
-### 6.5 Dépannage
+### 5.5 Dépannage
 
 | Problème | Cause possible | Solution |
 |---|---|---|
@@ -888,69 +825,9 @@ Vérifier également :
 
 ---
 
-## 7. Guide de release DevOps 2
+## 6. Annexe API REST
 
-### 7.1 Modifier le rapport
-
-Le document source est :
-
-```text
-docs/reports/devops-2-github-actions-report.md
-```
-
-### 7.2 Commit et push
-
-```bash
-git add .github/workflows/release.yml docs/reports/devops-2-github-actions-report.md docs/index.md
-git commit -m "docs: add DevOps 2 report to documentation"
-git push origin master
-```
-
-### 7.3 Créer ou recréer le tag `v2.0.0`
-
-Si le tag `v2.0.0` n'existe pas encore :
-
-```bash
-git tag -a v2.0.0 -m "DevOps 2 - GreenDesk"
-git push origin v2.0.0
-```
-
-Si la livraison impose explicitement de recréer `v2.0.0`, supprimer d'abord le tag local et distant, puis le recréer :
-
-```bash
-git tag -d v2.0.0
-git push origin --delete v2.0.0
-git tag -a v2.0.0 -m "DevOps 2 - GreenDesk"
-git push origin v2.0.0
-```
-
-La recréation d'un tag publié modifie sa traçabilité. Elle doit uniquement être utilisée lorsque la procédure de livraison l'exige.
-
-### 7.4 Vérifier GitHub Actions
-
-Dans GitHub :
-
-1. ouvrir **Actions** ;
-2. sélectionner **Release & Documentation PDF** ;
-3. attendre la fin du workflow ;
-4. vérifier que toutes les étapes sont vertes.
-
-Le workflow **Generate DevOps Report PDF** peut être lancé manuellement pour valider uniquement le rapport.
-
-### 7.5 Télécharger le PDF
-
-Dans GitHub :
-
-1. ouvrir **Releases** ;
-2. sélectionner la version publiée ;
-3. ouvrir **Assets** ;
-4. télécharger `devops2-report.pdf`.
-
----
-
-## 8. Annexe API REST
-
-### 8.1 API météo et notifications
+### 6.1 API météo et notifications
 
 | Méthode | Endpoint | Rôle | Entrée | Sortie | Erreurs |
 |---|---|---|---|---|---|
@@ -963,7 +840,7 @@ Dans GitHub :
 | `POST` | `/api/weather/notifications/{id}/read` | Marquer comme lue | ID | Message | `500` |
 | `POST` | `/api/weather/notifications/read-all` | Tout marquer comme lu | Aucune | Message | `500` |
 
-### 8.2 API CareTask
+### 6.2 API CareTask
 
 | Méthode | Endpoint | Rôle | Entrée | Sortie | Erreurs |
 |---|---|---|---|---|---|
@@ -976,14 +853,14 @@ Dans GitHub :
 | `POST` | `/api/care-tasks/{id}/done` | Terminer | ID | Tâche | Statut invalide |
 | `DELETE` | `/api/care-tasks/{id}` | Annuler | ID | `204` | Statut invalide |
 
-### 8.3 API CarePlan
+### 6.3 API CarePlan
 
 | Méthode | Endpoint | Rôle | Entrée | Sortie | Erreurs |
 |---|---|---|---|---|---|
 | `GET` | `/api/care-plan/{plantId}` | Lire ou créer le plan | ID plante | Plan et tâches | Erreur serveur |
 | `POST` | `/api/care-plan/recompute` | Recalculer les tâches | `forestId`, `plantId` | `200 OK` | Autorisation, erreur serveur |
 
-### 8.4 Exemples JSON
+### 6.4 Exemples JSON
 
 **Génération de tâches**
 
@@ -1025,7 +902,7 @@ Dans GitHub :
 
 ---
 
-## 9. Conclusion
+## 7. Conclusion
 
 GreenDesk associe deux fonctionnalités métier complémentaires à une chaîne DevOps complète. Le jumeau numérique météo reçoit les alertes, calcule leurs impacts et met à jour les plantes. Le calendrier de soins transforme ces informations et les besoins biologiques en tâches priorisées, suivies et éventuellement synchronisées avec Google Calendar.
 
