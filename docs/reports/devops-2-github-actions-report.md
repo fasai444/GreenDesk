@@ -381,14 +381,6 @@ Le système :
 - annule automatiquement les tâches expirées grâce à `CareTaskExpirationScheduler` ;
 - expose le score WNS et son détail dans `CareTaskResponseDto`.
 
-La Feature 2 repose ainsi sur deux blocs complémentaires reliés par `CareTaskService`.
-
-| Bloc | Responsable fonctionnel | Rôle |
-|---|---|---|
-| Bloc A - Moteur de tâches | Collègue | Création, persistance, cycle de vie et synchronisation Google Calendar |
-| Bloc B - Calcul WNS et priorisation | Lydia | Calcul du besoin, aide à la décision, justification et réponse API |
-| Connexion | Les deux | Le résultat WNS alimente `CareTaskService`, qui décide et génère les tâches |
-
 **Architecture générale de la Feature 2**
 
 ```mermaid
