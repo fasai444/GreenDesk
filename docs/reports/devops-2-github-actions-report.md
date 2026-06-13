@@ -419,67 +419,356 @@ Le diagramme représente l'architecture complète de la Feature 2. `WnsCalculato
 
 Le bloc de décision intervient avant la création effective d'une tâche. Le bloc d'exécution prend ensuite en charge sa persistance, son association à un plan et son suivi opérationnel.
 
-#### 2.2.3 Bloc A - Moteur de tâches de soins et synchronisation Google Calendar
+#### 2.2.3 Classes utilisées et structure des données
 
-Le bloc A constitue le moteur d'exécution de la Feature 2. Son composant central, `CareTaskService`, orchestre la génération automatique, la création manuelle, la validation, l'annulation et le déplacement des tâches flexibles.
+L'implémentation logicielle du moteur de tâches suit une architecture modulaire et découplée. Elle s'appuie sur des énumérations métier, des documents MongoDB, des repositories, des services d'orchestration et un adaptateur vers Google Calendar.
 
-**Modèle métier et persistance**
+##### 2.2.3.1 Énumérations du domaine métier
 
-- `CareTask` est le document central de la collection `care_tasks`. Il contient notamment le type, la description, la priorité, le score WNS, les dates, le statut, la dépendance météo et l'identifiant du calendrier externe.
-- `CareTaskRepository` persiste les tâches, applique les filtres du tableau de bord, recherche les tâches expirées et assure l'idempotence en détectant une tâche identique au statut `PENDING`.
-- `CarePlan` regroupe les identifiants des tâches d'une plante et conserve la date du dernier recalcul.
-- `CarePlanService` crée ou récupère le plan, ajoute les tâches et déclenche un recalcul global.
+**CareTaskType**
 
-**Types et cycle de vie**
+Spécifie la nature de l'action agronomique requise :
 
-| Élément | Valeurs réelles |
+- `WATERING` : arrosage ;
+- `FERTILIZATION` : fertilisation ;
+- `PRUNING` : taille ;
+- `HEATING_ADJUSTMENT` : ajustement du chauffage.
+
+**TaskPriority**
+
+Détermine la sévérité et l'ordre d'affichage de la tâche :
+
+- `LOW` ;
+- `MEDIUM` ;
+- `HIGH` ;
+- `CRITICAL`.
+
+**TaskStatus**
+
+Pilote le cycle de vie de la tâche :
+
+- `PENDING` : tâche active ;
+- `DONE` : tâche clôturée avec succès ;
+- `CANCELED` : tâche annulée ou expirée.
+
+**WeatherDependency**
+
+Qualifie la dépendance d'une tâche aux conditions météorologiques :
+
+- `NONE` ;
+- `RAIN_AVOIDED` ;
+- `HEAT_ALERT` ;
+- `FROST_ALERT`.
+
+##### 2.2.3.2 Entités métier et persistance MongoDB
+
+**CareTask**
+
+`CareTask` est le document central stocké dans la collection `care_tasks`. Il porte l'index composé suivant :
+
+```java
+@CompoundIndex(
+    name = "plant_type_schedule_idx",
+    def = "{'plantId':1, 'type':1, 'scheduledAt':1}"
+)
+```
+
+Ses attributs clés sont :
+
+- `id`, `plantId`, `forestId` ;
+- `type`, `description`, `priority`, `wnsScore` ;
+- `isFlexible`, `scheduledAt`, `dueAt` ;
+- `status`, `weatherDependency`, `externalId` ;
+- `createdAt`, `closedAt`.
+
+`CareTaskRepository` assure la persistance, le tri, la recherche des tâches expirées et l'idempotence par recherche d'une tâche du même type au statut `PENDING`.
+
+**CarePlan**
+
+`CarePlan` est stocké dans la collection `care_plans`. Il contient :
+
+- `id` ;
+- `plantId` ;
+- `taskIds` de type `List<String>` ;
+- `lastRecalculationDate` de type `Instant`.
+
+Ses méthodes métier sont `addTask()`, `removeTask()` et `touchRecalculation()`.
+
+##### 2.2.3.3 Couche service et architecture d'infrastructure
+
+| Composant | Méthodes ou responsabilités principales |
 |---|---|
-| `CareTaskType` | `WATERING`, `FERTILIZATION`, `PRUNING`, `HEATING_ADJUSTMENT` |
-| `TaskPriority` | `LOW`, `MEDIUM`, `HIGH`, `CRITICAL` |
-| `TaskStatus` | `PENDING`, `DONE`, `CANCELED` |
-| `WeatherDependency` | `NONE`, `RAIN_AVOIDED`, `HEAT_ALERT`, `FROST_ALERT` |
+| `CarePlanService` | `getOrCreatePlan(plantId)`, `addTaskToPlan(plantId, taskId)`, `recomputeGlobalPlan(forestId, plantId)` |
+| `CareTaskService` | `generateTask(plant)`, `createManualTask(request)`, `markAsDone(taskId)`, `cancelTask(taskId)`, `getAllTasks()` |
+| `ExternalCalendarService` | Contrat `push`, `update`, `remove` |
+| `GoogleCalendarAdapter` | Implémentation de la synchronisation Google Calendar |
+| `CareTaskExpirationScheduler` | Annulation périodique des tâches expirées |
 
-Une tâche nouvellement créée est `PENDING`. Sa validation la fait passer à `DONE`. Une annulation manuelle ou une expiration automatique la fait passer à `CANCELED`. Seules les tâches `PENDING` peuvent être déplacées, validées ou annulées.
+`GoogleCalendarAdapter` utilise les classes Google `Calendar`, `Event`, `EventDateTime` et `GoogleCredentials`. Il est configuré avec :
 
-**Synchronisation Google Calendar**
+```properties
+google.calendar.id
+google.api.credentials-path
+```
 
-`ExternalCalendarService` définit les opérations `push`, `update` et `remove`. `GoogleCalendarAdapter` implémente ce contrat avec l'API Google Calendar. Il utilise les propriétés `google.calendar.id` et `google.api.credentials-path`. Lorsque les identifiants Google ne sont pas disponibles en CI ou en test, l'adaptateur retourne un identifiant simulé commençant par `mock-google-`.
+Lorsque les identifiants Google ne sont pas disponibles en CI ou en test, l'adaptateur retourne un identifiant simulé commençant par `mock-google-`.
 
-**Expiration automatique**
+##### 2.2.3.4 Explication des algorithmes
 
-`CareTaskExpirationScheduler` exécute périodiquement `cleanupExpiredTasks()`. Il recherche les tâches `PENDING` dont `dueAt` est dépassé, passe leur statut à `CANCELED`, renseigne `closedAt`, les sauvegarde et supprime leur événement externe lorsqu'un `externalId` existe. Un `try/catch` par tâche empêche une erreur isolée d'interrompre tout le traitement.
+**Génération automatique et idempotence**
 
-#### 2.2.4 Bloc B - Module WNS, priorisation et recommandation
+`CareTaskService.generateTask(plant)` calcule le WNS, arrête le traitement si le score est inférieur ou égal à `0.8`, détermine le type de tâche, puis vérifie avec `CareTaskRepository` si une tâche identique au statut `PENDING` existe déjà. Si elle existe, elle est réutilisée. Sinon, une nouvelle tâche est synchronisée avec Google Calendar, sauvegardée, puis ajoutée au `CarePlan`.
 
-Le bloc B intervient avant la création effective de la tâche. Il détermine si le besoin justifie une intervention et fournit une justification exploitable par le backend et le frontend.
+**Nettoyage automatique par scheduler**
 
-`WnsCalculator` calcule le score WNS à partir de quatre facteurs normalisés :
+Le scheduler exécute :
+
+```java
+cleanupExpiredTasks()
+```
+
+Il collecte les tâches expirées avec :
+
+```java
+findByStatusAndDueAtBefore(
+    TaskStatus.PENDING,
+    Instant.now()
+)
+```
+
+Chaque tâche trouvée passe au statut :
+
+```java
+status = TaskStatus.CANCELED
+```
+
+La tolérance aux pannes repose sur un `try/catch` par tâche. Une erreur isolée n'interrompt donc pas le reste du batch.
+
+##### 2.2.3.5 Tests du moteur de tâches
+
+| Test présent | Vérifications principales |
+|---|---|
+| `CarePlanServiceTest` | Plan existant, création automatique et cas limites |
+| `CareTaskServiceTest` | Statuts, synchronisation calendrier, génération et exceptions |
+| `CareTaskExpirationSchedulerTest` | Absence de tâches expirées, erreurs repository et continuité du batch |
+| `TaskLifecycleIntegrationTest` | Cycle de vie, idempotence et régénération |
+| `CareIntegrationFlowTest` | Création, validation, expiration et flux global |
+
+#### 2.2.4 Module WNS, priorisation et recommandation des tâches
+
+Cette section complète le moteur de tâches de soins présenté précédemment. Alors que `CareTaskService` prend en charge la création, la persistance, la synchronisation externe et le cycle de vie des tâches, le module WNS intervient en amont pour déterminer si une intervention est réellement nécessaire.
+
+La priorité métier est ensuite attribuée dans `CareTaskService` à partir du dernier score SPS disponible. Il n'existe pas de service de priorisation séparé dans le projet.
+
+##### 2.2.4.1 Objectif du module WNS
+
+Le module WNS a pour objectif d'évaluer le besoin d'intervention d'une plante à partir de plusieurs facteurs métier.
+
+Il permet notamment de :
+
+- analyser l'état courant d'une plante ;
+- prendre en compte son niveau de stress ;
+- prendre en compte son stade de croissance ;
+- intégrer la taille de la plante ;
+- intégrer la pluie prévue ;
+- calculer un score de besoin ;
+- déterminer si une tâche doit être générée ;
+- contribuer à la décision et à la priorisation de la tâche ;
+- enrichir la réponse API avec des informations compréhensibles.
+
+L'objectif est d'éviter une génération arbitraire des tâches. Une intervention automatique n'est créée que si les données métier montrent qu'elle est pertinente et si le score dépasse le seuil configuré.
+
+##### 2.2.4.2 Rôle de `WnsCalculator`
+
+La classe `WnsCalculator` est responsable du calcul du score WNS. Le WNS peut être compris comme un **Watering Need Score**, c'est-à-dire un score de besoin d'intervention ou d'arrosage. Il estime si une plante a besoin d'un soin à partir de son état et du contexte environnemental.
+
+Le calcul repose principalement sur les éléments suivants :
+
+| Facteur | Rôle dans le calcul |
+|---|---|
+| Taille de la plante | Une plante plus développée peut avoir des besoins plus importants |
+| Stade de croissance | Certaines phases biologiques nécessitent davantage d'attention |
+| Stress de la plante | Un stress élevé augmente l'urgence d'intervention |
+| Pluie prévue | Une pluie proche peut réduire ou bloquer le besoin d'arrosage |
+
+La formule implémentée est :
 
 ```text
 WNS = (0,3 x Taille) + (0,2 x Stade) + (0,15 x Stress) - (0,25 x Pluie prévue)
 ```
 
-- la **taille** est calculée à partir de la hauteur de la plante et de la hauteur maximale de son espèce ;
-- le **stade de croissance** applique un facteur selon `SEEDLING`, `VEGETATIVE`, `FLOWERING`, `FRUITING` ou `MATURE` ;
-- le **stress** retient le maximum entre le stress biologique de la plante et le dernier ISR météo ;
-- la **pluie prévue** est normalisée par `WeatherForecastService` et peut diminuer le score ou bloquer un arrosage.
+Le résultat du calcul n'est pas uniquement un nombre. Il sert de base à une décision métier : générer ou non une tâche, puis transmettre les informations nécessaires au moteur de planification. Cette partie constitue la couche de décision de la Feature 2.
 
-`WnsResult` retourne le score, le détail du calcul dans `breakdown`, la présence de pluie dans les six heures et la décision `skipWatering`. Son seuil de déclenchement réel est `WnsResult.THRESHOLD = 0.8`.
+##### 2.2.4.3 Rôle de `WnsResult`
 
-La logique de priorisation est intégrée au flux existant : `CareTaskService` utilise le dernier SPS météo pour attribuer `LOW`, `MEDIUM`, `HIGH` ou `CRITICAL`. Il n'existe pas de `TaskPrioritizationService` séparé.
+Le calcul du WNS retourne un résultat structuré représenté par `WnsResult`.
 
-`CareTaskResponseDto` expose au frontend le `wnsScore`, le `wnsBreakdown`, la priorité, le statut et les autres informations de la tâche.
+Ce résultat transporte :
 
-| Élément | Rôle dans le bloc de calcul et décision |
+- le score WNS final avec `score` ;
+- les détails du calcul avec `breakdown` ;
+- l'indication de pluie prévue dans les six heures avec `rainWithin6Hours` ;
+- l'information permettant de bloquer une tâche d'arrosage avec `skipWatering` ;
+- la méthode `requiresTask()`, qui indique si le score dépasse le seuil métier et si l'arrosage n'est pas bloqué.
+
+Le seuil réel est défini par `WnsResult.THRESHOLD = 0.8`. Cette structure rend la décision plus transparente. `CareTaskResponseDto` expose ensuite `wnsScore` et `wnsBreakdown`, afin que le frontend puisse afficher la tâche et la justification de sa génération.
+
+##### 2.2.4.4 Normalisation des données
+
+Les données utilisées par le calcul WNS ne sont pas toutes exprimées dans la même unité :
+
+- la taille est exprimée en centimètres ;
+- le stress peut être exprimé sous forme d'indice ou de pourcentage ;
+- le stade de croissance est une valeur métier ;
+- la pluie prévue est fournie sous forme d'intensité météo.
+
+Pour rendre ces valeurs comparables, `WnsCalculator` les transforme en facteurs normalisés :
+
+- le facteur de taille utilise `heightCm` et `Species.maxHeight` ;
+- le facteur de stade associe une valeur à chaque `GrowthStage` ;
+- le facteur de stress ramène les pourcentages sur une échelle décimale et retient le maximum entre le stress de la plante et le dernier ISR ;
+- la pluie est normalisée par `WeatherForecastService.RainForecast.normalizedIntensity()`, avec une intensité plafonnée à `1.0`.
+
+Le principe général est ensuite d'appliquer les coefficients de la formule WNS, de réduire davantage le score lorsqu'une pluie est prévue dans les six heures, puis de bloquer l'arrosage lorsque l'intensité normalisée atteint le seuil prévu. `CareTaskService` exploite enfin ce résultat pour décider de la création effective d'une `CareTask`.
+
+```mermaid
+flowchart TD
+    A[Plante à analyser] --> B[Taille]
+    A --> C[Stade de croissance]
+    A --> D[Stress]
+    A --> E[Pluie prévue]
+
+    B --> F[Normalisation]
+    C --> F
+    D --> F
+    E --> F
+
+    F --> G[Calcul du score WNS]
+    G --> H[WnsResult]
+```
+
+Le score obtenu devient ensuite exploitable par `CareTaskService`.
+
+##### 2.2.4.5 Seuil de déclenchement
+
+Une tâche ne doit pas être créée automatiquement pour chaque plante. Le système vérifie d'abord si le score WNS dépasse le seuil métier réel `WnsResult.THRESHOLD = 0.8`.
+
+Si le score est insuffisant, le moteur ne génère aucune tâche. Si le score dépasse le seuil et que la pluie ne bloque pas l'arrosage, la génération peut continuer.
+
+Ce mécanisme permet :
+
+- d'éviter les tâches inutiles ;
+- de limiter les doublons fonctionnels ;
+- de garder un calendrier lisible ;
+- de concentrer les interventions sur les plantes qui en ont réellement besoin.
+
+```mermaid
+flowchart TD
+    A[Calcul WNS terminé] --> B{Score WNS supérieur à 0.8 ?}
+    B -- Non --> C[Aucune tâche générée]
+    B -- Oui --> D{Arrosage bloqué par la pluie ?}
+    D -- Oui --> C
+    D -- Non --> E[Déterminer le type de soin]
+    E --> F[Attribuer la priorité selon SPS]
+    F --> G[Transmettre au CareTaskService]
+```
+
+##### 2.2.4.6 Priorisation des tâches
+
+Après le calcul du besoin, la tâche est classée selon son urgence. La priorité organise le calendrier et met en avant les interventions les plus importantes.
+
+| Priorité | Signification |
 |---|---|
-| `WnsCalculator` | Calcule le score de besoin |
-| `WnsResult` | Retourne le score et le détail du calcul |
-| Taille | Influence les besoins de la plante |
-| Stade de croissance | Ajuste le besoin selon la phase biologique |
-| Stress | Augmente l'urgence |
-| Pluie prévue | Peut réduire le score ou bloquer l'arrosage |
-| `TaskPriority` | Représente la priorité métier attribuée à partir du SPS |
-| `CareTaskResponseDto` | Expose les scores et la justification au frontend |
+| `LOW` | Intervention peu urgente |
+| `MEDIUM` | Intervention à surveiller |
+| `HIGH` | Intervention importante |
+| `CRITICAL` | Intervention prioritaire |
+
+Dans le code réel, `CareTaskService.determinePriority()` attribue la priorité à partir du dernier score SPS :
+
+| Score SPS | Priorité attribuée |
+|---:|---|
+| `>= 0.8` | `CRITICAL` |
+| `>= 0.6` | `HIGH` |
+| `>= 0.4` | `MEDIUM` |
+| `< 0.4` | `LOW` |
+
+Le WNS décide principalement si une tâche est nécessaire, tandis que le SPS détermine son urgence. Le système ne se contente donc pas de créer une tâche : il indique aussi son niveau d'importance.
+
+##### 2.2.4.7 Exposition des scores dans la réponse API
+
+La réponse API permet de comprendre pourquoi une tâche a été générée. `CareTaskResponseDto` expose notamment :
+
+- le type de tâche ;
+- la priorité ;
+- le score `wnsScore` ;
+- le détail du calcul `wnsBreakdown` ;
+- la dépendance météo ;
+- le statut de la tâche ;
+- la date prévue et la date d'échéance.
+
+Le DTO ne contient pas de champ SPS dédié. Toutefois, le dernier ISR et le dernier SPS peuvent apparaître dans `wnsBreakdown` lorsqu'ils sont fournis au calculateur. Cette exposition rend l'interface plus claire et justifie la recommandation affichée dans le calendrier de soins.
+
+##### 2.2.4.8 Connexion entre WNS et `CareTaskService`
+
+Le module WNS ne remplace pas `CareTaskService` : il lui fournit une information de décision. Le rôle de `CareTaskService` est de créer et gérer la tâche, tandis que `WnsCalculator` aide à décider si cette tâche doit exister.
+
+Le flux global est le suivant :
+
+1. `CareTaskService` récupère une plante et son historique d'impacts.
+2. `WnsCalculator` demande la pluie prévue à `WeatherForecastService`.
+3. `WnsCalculator` calcule le score WNS.
+4. `WnsResult` retourne le score et les détails.
+5. Le score est comparé au seuil métier.
+6. Si le seuil est dépassé, le type de tâche est déterminé.
+7. La priorité est attribuée à partir du dernier SPS.
+8. `CareTaskService` vérifie l'idempotence.
+9. La tâche est créée, synchronisée et sauvegardée.
+
+```mermaid
+sequenceDiagram
+    autonumber
+    participant CTS as CareTaskService
+    participant WNS as WnsCalculator
+    participant WF as WeatherForecastService
+    participant Repo as CareTaskRepository
+    participant Calendar as GoogleCalendarAdapter
+    participant Plan as CarePlanService
+
+    CTS->>WNS: calculate(plant, impactHistory)
+    WNS->>WF: getRainForecast(forestId)
+    WF-->>WNS: Prévision météo
+    WNS-->>CTS: WnsResult, score et détails
+
+    CTS->>CTS: Vérifier le seuil WNS
+    CTS->>CTS: Déterminer type et priorité SPS
+    CTS->>Repo: Vérifier une tâche PENDING existante
+    Repo-->>CTS: Tâche existante ou absente
+
+    alt Aucune tâche existante
+        CTS->>Calendar: push(task)
+        Calendar-->>CTS: externalId
+        CTS->>Repo: save(task)
+        CTS->>Plan: addTaskToPlan(plantId, taskId)
+    else Tâche déjà existante
+        CTS-->>CTS: Réutiliser la tâche existante
+    end
+```
+
+Ce diagramme montre la complémentarité entre la partie décisionnelle et la partie exécution.
+
+##### 2.2.4.9 Complémentarité avec le moteur de tâches
+
+| Composant | Responsabilité |
+|---|---|
+| Module WNS | Calcul du besoin, décision et justification |
+| `CareTaskService` | Création, persistance, cycle de vie et orchestration |
+| `CareTaskRepository` | Recherche et sauvegarde des tâches |
+| `CarePlanService` | Association des tâches à un plan de soins |
+| `GoogleCalendarAdapter` | Synchronisation avec Google Calendar |
+| `CareTaskExpirationScheduler` | Nettoyage automatique des tâches expirées |
+
+Cette séparation rend la fonctionnalité plus lisible. Le calcul du besoin est isolé de la persistance et du cycle de vie des tâches, tout en restant connecté au moteur d'exécution par `CareTaskService`.
 
 #### 2.2.5 Algorithme global de génération d'une tâche
 
