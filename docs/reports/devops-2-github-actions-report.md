@@ -359,65 +359,108 @@ Le diagramme reprend les noms réellement présents dans le code. La recherche d
 
 #### 2.2.1 Objectif fonctionnel
 
-Le calendrier de soins dynamique permet :
+La Feature 2 transforme l'état des plantes, leur historique météo et les prévisions de pluie en tâches de soins planifiées, priorisées et suivies. Elle permet de décider si une intervention est nécessaire, de créer la tâche correspondante, de la synchroniser avec Google Calendar et de gérer son cycle de vie jusqu'à sa validation, son annulation ou son expiration.
 
-- de générer automatiquement des tâches de soin ;
-- de prioriser les interventions avec les scores WNS et SPS ;
-- d'éviter les doublons de tâches actives ;
-- de prendre en compte les prévisions de pluie ;
-- de réagir aux alertes météo ;
-- de gérer le cycle de vie des tâches ;
-- de conserver un plan de soins par plante ;
-- de synchroniser les tâches avec Google Calendar.
+#### 2.2.2 Vue d'ensemble de la Feature 2
 
-#### 2.2.2 Concepts métiers
+La Feature 2 repose sur deux blocs complémentaires reliés par `CareTaskService`.
 
-**CareTask**
+| Bloc | Responsable fonctionnel | Rôle |
+|---|---|---|
+| Bloc A - Moteur de tâches | Collègue | Création, persistance, cycle de vie et synchronisation Google Calendar |
+| Bloc B - Calcul WNS et priorisation | Lydia | Calcul du besoin, aide à la décision, justification et réponse API |
+| Connexion | Les deux | Le résultat WNS alimente `CareTaskService`, qui décide et génère les tâches |
 
-Une tâche de soin liée à une plante et à sa forêt. L'entité contient notamment `plantId`, `forestId`, `type`, `description`, `wnsScore`, `priority`, `scheduledAt`, `dueAt`, `status`, `isFlexible`, `weatherDependency`, `externalId`, `createdAt` et `closedAt`.
+Le bloc de décision intervient avant la création effective d'une tâche. Le bloc d'exécution prend ensuite en charge sa persistance, son association à un plan et son suivi opérationnel.
 
-**CarePlan**
+#### 2.2.3 Bloc A - Moteur de tâches de soins et synchronisation Google Calendar
 
-Un plan de soins associé à une plante. Il conserve la liste des identifiants de tâches et la date du dernier recalcul.
+Le bloc A constitue le moteur d'exécution de la Feature 2. Son composant central, `CareTaskService`, orchestre la génération automatique, la création manuelle, la validation, l'annulation et le déplacement des tâches flexibles.
 
-**WNS**
+**Modèle métier et persistance**
 
-Le `WnsCalculator` combine la taille, le stade de croissance, le stress et la pluie prévue :
+- `CareTask` est le document central de la collection `care_tasks`. Il contient notamment le type, la description, la priorité, le score WNS, les dates, le statut, la dépendance météo et l'identifiant du calendrier externe.
+- `CareTaskRepository` persiste les tâches, applique les filtres du tableau de bord, recherche les tâches expirées et assure l'idempotence en détectant une tâche identique au statut `PENDING`.
+- `CarePlan` regroupe les identifiants des tâches d'une plante et conserve la date du dernier recalcul.
+- `CarePlanService` crée ou récupère le plan, ajoute les tâches et déclenche un recalcul global.
+
+**Types et cycle de vie**
+
+| Élément | Valeurs réelles |
+|---|---|
+| `CareTaskType` | `WATERING`, `FERTILIZATION`, `PRUNING`, `HEATING_ADJUSTMENT` |
+| `TaskPriority` | `LOW`, `MEDIUM`, `HIGH`, `CRITICAL` |
+| `TaskStatus` | `PENDING`, `DONE`, `CANCELED` |
+| `WeatherDependency` | `NONE`, `RAIN_AVOIDED`, `HEAT_ALERT`, `FROST_ALERT` |
+
+Une tâche nouvellement créée est `PENDING`. Sa validation la fait passer à `DONE`. Une annulation manuelle ou une expiration automatique la fait passer à `CANCELED`. Seules les tâches `PENDING` peuvent être déplacées, validées ou annulées.
+
+**Synchronisation Google Calendar**
+
+`ExternalCalendarService` définit les opérations `push`, `update` et `remove`. `GoogleCalendarAdapter` implémente ce contrat avec l'API Google Calendar. Il utilise les propriétés `google.calendar.id` et `google.api.credentials-path`. Lorsque les identifiants Google ne sont pas disponibles en CI ou en test, l'adaptateur retourne un identifiant simulé commençant par `mock-google-`.
+
+**Expiration automatique**
+
+`CareTaskExpirationScheduler` exécute périodiquement `cleanupExpiredTasks()`. Il recherche les tâches `PENDING` dont `dueAt` est dépassé, passe leur statut à `CANCELED`, renseigne `closedAt`, les sauvegarde et supprime leur événement externe lorsqu'un `externalId` existe. Un `try/catch` par tâche empêche une erreur isolée d'interrompre tout le traitement.
+
+#### 2.2.4 Bloc B - Module WNS, priorisation et recommandation
+
+Le bloc B intervient avant la création effective de la tâche. Il détermine si le besoin justifie une intervention et fournit une justification exploitable par le backend et le frontend.
+
+`WnsCalculator` calcule le score WNS à partir de quatre facteurs normalisés :
 
 ```text
 WNS = (0,3 x Taille) + (0,2 x Stade) + (0,15 x Stress) - (0,25 x Pluie prévue)
 ```
 
-Une tâche automatique est requise lorsque le score dépasse le seuil défini dans `WnsResult.THRESHOLD`. Une pluie prévue peut diminuer le score ou empêcher un arrosage.
+- la **taille** est calculée à partir de la hauteur de la plante et de la hauteur maximale de son espèce ;
+- le **stade de croissance** applique un facteur selon `SEEDLING`, `VEGETATIVE`, `FLOWERING`, `FRUITING` ou `MATURE` ;
+- le **stress** retient le maximum entre le stress biologique de la plante et le dernier ISR météo ;
+- la **pluie prévue** est normalisée par `WeatherForecastService` et peut diminuer le score ou bloquer un arrosage.
 
-**SPS**
+`WnsResult` retourne le score, le détail du calcul dans `breakdown`, la présence de pluie dans les six heures et la décision `skipWatering`. Son seuil de déclenchement réel est `WnsResult.THRESHOLD = 0.8`.
 
-Le SPS est issu du dernier impact météo. Il détermine la priorité de la tâche :
+La logique de priorisation est intégrée au flux existant : `CareTaskService` utilise le dernier SPS météo pour attribuer `LOW`, `MEDIUM`, `HIGH` ou `CRITICAL`. Il n'existe pas de `TaskPrioritizationService` séparé.
 
-| SPS | Priorité |
-|---:|---|
-| `>= 0,8` | `CRITICAL` |
-| `>= 0,6` | `HIGH` |
-| `>= 0,4` | `MEDIUM` |
-| `< 0,4` | `LOW` |
+`CareTaskResponseDto` expose au frontend le `wnsScore`, le `wnsBreakdown`, la priorité, le statut et les autres informations de la tâche.
 
-Les statuts possibles sont `PENDING`, `DONE` et `CANCELED`. Les types sont `WATERING`, `FERTILIZATION`, `PRUNING` et `HEATING_ADJUSTMENT`.
+| Élément | Rôle dans le bloc de calcul et décision |
+|---|---|
+| `WnsCalculator` | Calcule le score de besoin |
+| `WnsResult` | Retourne le score et le détail du calcul |
+| Taille | Influence les besoins de la plante |
+| Stade de croissance | Ajuste le besoin selon la phase biologique |
+| Stress | Augmente l'urgence |
+| Pluie prévue | Peut réduire le score ou bloquer l'arrosage |
+| `TaskPriority` | Représente la priorité métier attribuée à partir du SPS |
+| `CareTaskResponseDto` | Expose les scores et la justification au frontend |
 
-#### 2.2.3 Génération automatique des tâches
+#### 2.2.5 Algorithme global de génération d'une tâche
 
-1. Un utilisateur appelle `POST /api/care-tasks` pour une plante ou `POST /api/care-tasks/generate` pour une sélection.
-2. `CareTaskService` résout les plantes à partir de `plantId`, `forestId` ou de toutes les plantes.
-3. L'historique `PlantImpact` de chaque plante est chargé.
-4. `WnsCalculator` demande la prévision de pluie à `WeatherForecastService`.
-5. Le score WNS est calculé.
-6. Si le score est insuffisant ou si la pluie bloque l'arrosage, aucune tâche n'est créée.
-7. Le type et la priorité de tâche sont déterminés.
-8. Le repository recherche une tâche identique au statut `PENDING`.
-9. La tâche est envoyée à `ExternalCalendarService`.
-10. La tâche est sauvegardée dans MongoDB.
-11. Son identifiant est ajouté au `CarePlan`.
+```mermaid
+flowchart TD
+    A[Plante à analyser] --> B[Lecture des données plante]
+    B --> C[Historique météo et impacts]
+    C --> D[Prévision de pluie]
+    D --> E[WnsCalculator]
+    E --> F[WnsResult]
+    F --> G{Score WNS supérieur au seuil ?}
+    G -- Non --> H[Aucune tâche générée]
+    G -- Oui --> I[Détermination du type de tâche]
+    I --> J[Attribution de la priorité selon SPS]
+    J --> K[CareTaskService]
+    K --> L[Vérification idempotence]
+    L --> M{Tâche PENDING existante ?}
+    M -- Oui --> N[Réutiliser la tâche existante]
+    M -- Non --> O[Créer CareTask]
+    O --> P[Synchroniser Google Calendar]
+    P --> Q[Sauvegarder dans MongoDB]
+    Q --> R[Ajouter au CarePlan]
+```
 
-#### 2.2.4 Diagramme de séquence - Génération automatique d'une tâche
+Lydia intervient sur le calcul WNS, l'aide à la priorisation et la justification exposée par l'API. Le collègue intervient sur la création, la persistance, le cycle de vie et Google Calendar. Les deux contributions sont connectées par `CareTaskService`.
+
+#### 2.2.6 Diagramme de séquence complet - Connexion WNS et CareTask
 
 ```mermaid
 sequenceDiagram
@@ -430,60 +473,48 @@ sequenceDiagram
     participant WNS as WnsCalculator
     participant WFS as WeatherForecastService
     participant CTR as CareTaskRepository
-    participant CAL as ExternalCalendarService
+    participant GCA as GoogleCalendarAdapter
     participant CPS as CarePlanService
     participant DB as MongoDB
 
     U->>C: POST /api/care-tasks/generate
     C->>S: generateTasksForRequest(request)
-    S->>PR: resolvePlants(request)
-    PR->>DB: Rechercher les plantes
-    DB-->>PR: Plantes trouvées
+    S->>PR: Résoudre les plantes
+    PR->>DB: Lire les plantes
+    DB-->>PR: Plantes
     loop Pour chaque plante
         S->>PIR: findByPlantIdOrderByTimestampDesc()
-        PIR->>DB: Lire l'historique météo
+        PIR->>DB: Lire les impacts
+        DB-->>PIR: Historique météo
         S->>WNS: calculate(plant, history)
         WNS->>WFS: getRainForecast(forestId)
         WFS-->>WNS: Prévision de pluie
-        WNS-->>S: WnsResult
+        WNS-->>S: WnsResult et score
         alt Score insuffisant ou arrosage bloqué
-            S-->>S: Ne pas créer de tâche
-        else Tâche requise
+            S-->>S: Aucune tâche
+        else Tâche nécessaire
             S->>CTR: findByPlantIdAndTypeAndStatus(..., PENDING)
-            CTR->>DB: Vérifier un doublon actif
+            CTR->>DB: Vérifier le doublon
             alt Tâche absente
-                S->>CAL: push(task)
-                CAL-->>S: externalId
+                S->>GCA: push(task)
+                GCA-->>S: externalId
                 S->>CTR: save(task)
                 CTR->>DB: Persister CareTask
+                DB-->>CTR: Tâche sauvegardée
                 S->>CPS: addTaskToPlan(plantId, taskId)
-            else Tâche existante
-                CTR-->>S: Réutiliser la tâche existante
+                CPS->>DB: Mettre à jour CarePlan
+            else Tâche déjà PENDING
+                CTR-->>S: Tâche existante
             end
         end
     end
-    S-->>C: Liste des tâches
-    C-->>U: 201 Created + JSON
+    S-->>C: Tâches générées
+    C-->>U: 201 Created + CareTaskResponseDto
 ```
 
-Le service utilise l'historique météo et les prévisions de pluie pour éviter les actions inutiles. L'idempotence repose sur la recherche d'une tâche du même type déjà au statut `PENDING`.
+#### 2.2.7 Validation d'une tâche
 
-#### 2.2.5 Validation d'une tâche
-
-Lorsqu'une tâche est validée :
-
-1. le backend récupère la tâche ;
-2. il vérifie que son statut est `PENDING` ;
-3. le statut devient `DONE` et `closedAt` est renseigné ;
-4. la tâche est sauvegardée ;
-5. la plante associée est récupérée ;
-6. l'intervention modifie l'eau, le stress, la hauteur ou la température ;
-7. l'état de la plante est recalculé ;
-8. la plante est sauvegardée.
-
-Dans l'implémentation actuelle, la validation ne supprime pas l'événement du calendrier externe. La suppression est réalisée lors de l'annulation d'une tâche.
-
-#### 2.2.6 Diagramme de séquence - Validation d'une tâche
+Lorsqu'une tâche est validée, `CareTaskService` la récupère, vérifie qu'elle est `PENDING`, passe son statut à `DONE`, renseigne `closedAt` et la sauvegarde. Le service récupère ensuite la plante associée, applique l'intervention, recalcule son état et la sauvegarde.
 
 ```mermaid
 sequenceDiagram
@@ -500,27 +531,23 @@ sequenceDiagram
     S->>CTR: findById(taskId)
     CTR->>DB: Rechercher CareTask
     DB-->>CTR: CareTask
-    S->>S: Vérifier statut PENDING
-    S->>S: status = DONE, closedAt = now()
+    S->>S: Vérifier PENDING
+    S->>S: status = DONE et closedAt = now()
     S->>CTR: save(task)
-    CTR->>DB: Sauvegarder la tâche
     S->>PR: findById(plantId)
     PR->>DB: Rechercher la plante
-    DB-->>PR: Plante
     S->>S: updatePlantHealthAfterCare(task)
     S->>PR: save(plant)
     PR->>DB: Sauvegarder la plante
-    S-->>C: CareTask mise à jour
+    S-->>C: Tâche mise à jour
     C-->>U: 200 OK
 ```
 
-Les effets appliqués dépendent du type de tâche : l'arrosage augmente le niveau d'eau, la fertilisation réduit le stress, la taille réduit légèrement la hauteur et le chauffage augmente la température.
+La validation appartient au moteur de tâches. Dans l'implémentation actuelle, elle ne supprime pas l'événement Google Calendar ; cette suppression est réalisée lors de l'annulation ou de l'expiration.
 
-#### 2.2.7 Réordonnancement des tâches flexibles
+#### 2.2.8 Réordonnancement météo des tâches flexibles
 
-`CareTaskWeatherRescheduler` traite les alertes `heavy_rain`, `heatwave`, `frost` et `high_wind`. Il recherche les tâches `PENDING` des forêts impactées, conserve les tâches flexibles compatibles avec l'alerte, puis les reporte de 24 heures. La date d'échéance est replacée quatre heures après la nouvelle date et Google Calendar est mis à jour lorsque `externalId` existe.
-
-#### 2.2.8 Diagramme de séquence - Réordonnancement météo des tâches
+`CareTaskWeatherRescheduler` traite les alertes `heavy_rain`, `heatwave`, `frost` et `high_wind`. Il recherche les tâches `PENDING` des forêts impactées, filtre les tâches flexibles concernées, puis les reporte de 24 heures. La date d'échéance est replacée quatre heures après la nouvelle date et Google Calendar est mis à jour lorsque `externalId` existe.
 
 ```mermaid
 sequenceDiagram
@@ -528,55 +555,47 @@ sequenceDiagram
     participant WRS as WebhookReceiverService
     participant CTRS as CareTaskWeatherRescheduler
     participant CTR as CareTaskRepository
-    participant CAL as ExternalCalendarService
+    participant GCA as GoogleCalendarAdapter
     participant DB as MongoDB
 
     WRS->>CTRS: rescheduleForWeatherAlert(alert, forestIds)
     loop Pour chaque forêt impactée
         CTRS->>CTR: findByForestIdAndStatus(forestId, PENDING)
         CTR->>DB: Rechercher les tâches
-        DB-->>CTR: Liste CareTask
         loop Pour chaque tâche flexible
-            CTRS->>CTRS: shouldReschedule(task, alertType)
-            alt Tâche impactée
-                CTRS->>CTRS: Reporter de 24 h et modifier weatherDependency
-                CTRS->>CTR: save(task)
-                CTR->>DB: Sauvegarder la modification
-                alt externalId présent
-                    CTRS->>CAL: update(externalId, task)
-                    CAL-->>CTRS: Calendrier mis à jour
-                end
-            else Tâche non impactée
-                CTRS-->>CTRS: Aucun changement
+            CTRS->>CTRS: Vérifier le type et reporter de 24 h
+            CTRS->>CTR: save(task)
+            CTR->>DB: Sauvegarder
+            alt externalId présent
+                CTRS->>GCA: update(externalId, task)
             end
         end
     end
     CTRS-->>WRS: Nombre de tâches reportées
 ```
 
-Le report est automatique, ciblé par forêt et limité aux tâches dont le type est réellement affecté par l'alerte.
+#### 2.2.9 Interface utilisateur `care-calendar.html`
 
-#### 2.2.9 Interface utilisateur
-
-La page `care-calendar.html` fournit l'interface utilisateur du calendrier de soins. Elle permet de consulter les tâches, visualiser leur priorité et leur statut, filtrer les résultats, créer une tâche manuelle et déclencher les actions de validation, report ou annulation. Les opérations utilisent les endpoints `/api/care-tasks` et `/api/care-plan`.
+La page `care-calendar.html` permet de consulter les tâches, visualiser leur priorité et leur statut, filtrer les résultats, créer une tâche manuelle et déclencher les actions de validation, report ou annulation. Elle utilise les endpoints `/api/care-tasks` et `/api/care-plan`. Les champs `wnsScore` et `wnsBreakdown` du `CareTaskResponseDto` rendent la décision plus explicable côté frontend.
 
 #### 2.2.10 Classes impliquées dans la Feature 2
 
-| Classe | Rôle |
-|---|---|
-| `CareTaskController` | Expose les endpoints de gestion des tâches |
-| `CarePlanController` | Expose les endpoints du plan de soins |
-| `CareTaskService` | Porte la logique principale des tâches |
-| `CarePlanService` | Gère l'association des tâches aux plans |
-| `WnsCalculator` | Calcule le score de besoin |
-| `WeatherForecastService` | Fournit la prévision de pluie |
-| `CareTaskWeatherRescheduler` | Reporte les tâches flexibles |
-| `ExternalCalendarService` | Définit le contrat du calendrier externe |
-| `GoogleCalendarAdapter` | Implémente la synchronisation Google Calendar |
-| `CareTaskRepository` | Persiste et recherche les tâches |
-| `CarePlanRepository` | Persiste les plans de soins |
-| `CareTask` | Entité représentant une tâche |
-| `CarePlan` | Entité représentant un plan de soins |
+| Classe | Bloc | Rôle |
+|---|---|---|
+| `CareTaskController` | API | Expose les endpoints de gestion des tâches |
+| `CarePlanController` | API | Expose les endpoints du plan de soins |
+| `CareTaskService` | Moteur de tâches | Création, validation, annulation et orchestration |
+| `CareTaskRepository` | Moteur de tâches | Persistance, recherche et idempotence |
+| `CarePlan` | Moteur de tâches | Modèle du plan associé à une plante |
+| `CarePlanService` | Moteur de tâches | Association des tâches au plan |
+| `GoogleCalendarAdapter` | Moteur de tâches | Synchronisation avec Google Calendar |
+| `ExternalCalendarService` | Moteur de tâches | Contrat de synchronisation externe |
+| `CareTaskExpirationScheduler` | Moteur de tâches | Annulation automatique des tâches expirées |
+| `CareTaskWeatherRescheduler` | Moteur de tâches | Report des tâches flexibles selon la météo |
+| `WnsCalculator` | Calcul et décision | Calcul du score WNS |
+| `WnsResult` | Calcul et décision | Résultat détaillé du calcul |
+| `WeatherForecastService` | Calcul et décision | Prévision de pluie |
+| `CareTaskResponseDto` | Réponse API | Exposition des scores et informations métier |
 
 #### 2.2.11 Endpoints API de la Feature 2
 
@@ -592,6 +611,22 @@ La page `care-calendar.html` fournit l'interface utilisateur du calendrier de so
 | `POST` | `/api/care-tasks/manual` | Créer une tâche manuelle | DTO de création | Tâche créée | Plante absente, validation |
 | `GET` | `/api/care-plan/{plantId}` | Lire le plan d'une plante | Identifiant de plante | Plan et tâches | Erreur serveur |
 | `POST` | `/api/care-plan/recompute` | Recalculer un plan | `plantId` et/ou `forestId` | `200 OK` | Accès refusé, erreur serveur |
+
+#### 2.2.12 Tests associés à la Feature 2
+
+| Test présent | Bloc concerné | Objectif |
+|---|---|---|
+| `CareTaskServiceTest` | Moteur de tâches | Création, validation, annulation et report |
+| `CarePlanServiceTest` | Moteur de tâches | Association des tâches au plan |
+| `CareTaskExpirationSchedulerTest` | Moteur de tâches | Expiration automatique et continuité du batch |
+| `TaskLifecycleIntegrationTest` | Moteur de tâches | Cycle `PENDING`, `DONE`, `CANCELED` et idempotence |
+| `CareIntegrationFlowTest` | Connexion globale | Flux complet entre calcul, tâche et expiration |
+| `WnsCalculatorTest` | Calcul et décision | Score, seuil, stress et pluie |
+| Test dédié `CareTaskResponseDto` | Réponse API | À compléter : aucun test DTO dédié n'est présent |
+
+#### 2.2.13 Résumé de la Feature 2
+
+La Feature 2 repose sur la complémentarité entre un moteur de décision et un moteur d'exécution. Le moteur de décision, porté par le calcul WNS et la logique de priorisation, détermine si une intervention est nécessaire. Le moteur d'exécution, porté par `CareTaskService`, crée la tâche, la persiste, la synchronise avec Google Calendar et gère son cycle de vie. Cette séparation rend le calendrier de soins plus lisible, testable et évolutif.
 
 ---
 
