@@ -60,32 +60,161 @@ Cette séparation facilite les tests, la maintenance et l'évolution indépendan
 | Déploiement | Docker, Docker Compose | Exécution conteneurisée |
 | Services externes | Tomorrow.io, Open-Meteo, Google Calendar | Météo et calendrier externe |
 
-### 1.3 Diagramme d'architecture global
+### 1.3 Architecture applicative et transition de S1 vers S2
+
+#### 1.3.1 Diagramme d'architecture applicative
 
 ```mermaid
 flowchart LR
-    U[Utilisateur / Frontend] --> API[API REST Spring Boot]
-    API --> C[Controllers]
-    C --> S[Services métier]
-    S --> R[Repositories Spring Data]
+    U[Utilisateur] --> WEB[Frontend HTML / CSS / JavaScript]
+    WEB --> API[API REST Spring Boot]
+
+    API --> PC[Contrôleurs plantes et forêts]
+    API --> WC[WeatherWebhookController]
+    API --> CC[CareTaskController / CarePlanController]
+
+    PC --> PS[Services du socle S1]
+    WC --> WS[Services météo S2]
+    CC --> CS[Services de soins S2]
+
+    PS --> R[Repositories Spring Data]
+    WS --> R
+    CS --> R
     R --> DB[(MongoDB)]
 
-    S --> EXT[Services externes]
-    EXT --> WEATHER[Tomorrow.io / Open-Meteo]
-    EXT --> CAL[Google Calendar]
-
-    GH[GitHub Actions] --> BUILD[Build Gradle]
-    GH --> TESTS[Tests + JaCoCo]
-    GH --> PDF[Génération PDF]
-    GH --> REL[GitHub Release]
-
-    REL --> A1[JAR]
-    REL --> A2[documentation.pdf]
-    REL --> A3[devops2-report.pdf]
-    REL --> A4[javadoc.zip]
+    WS --> WEATHER[Tomorrow.io / Open-Meteo]
+    CS --> CAL[Google Calendar]
+    WS --> CS
 ```
 
-L'utilisateur accède au frontend ou directement à l'API REST. Les contrôleurs transmettent les opérations aux services métier, qui utilisent les repositories pour lire et écrire dans MongoDB. Les services météo et calendrier communiquent avec des fournisseurs externes. En parallèle, GitHub Actions construit, teste, documente et publie l'application.
+Le socle applicatif S1 gère notamment les espèces, les plantes et les forêts. S2 étend ce socle sans le remplacer : les services météo analysent les événements externes et mettent à jour les plantes existantes, tandis que les services de soins utilisent leur état pour créer ou reporter des tâches. Toutes les données restent persistées dans MongoDB.
+
+#### 1.3.2 Diagramme de classes - Transition DevOps S1 vers DevOps S2
+
+```mermaid
+classDiagram
+    class Species {
+        <<S1>>
+        +String id
+        +String name
+        +double optimalWaterNeeds
+        +double optimalTemperature
+        +double optimalHumidity
+        +double optimalLuxNeeds
+    }
+
+    class Plant {
+        <<S1>>
+        +String id
+        +String name
+        +String forestId
+        +double waterLevel
+        +double stressIndex
+        +PlantState plantState
+        +GrowthStage growthStage
+    }
+
+    class Forest {
+        <<S1>>
+        +String id
+        +String name
+        +int width
+        +int height
+        +double[] coords
+    }
+
+    class WeatherAlert {
+        <<S2_Meteo>>
+        +String eventId
+        +String type
+        +double[] coords
+        +String severity
+        +boolean processed
+        +boolean acknowledged
+    }
+
+    class PlantImpact {
+        <<S2_Meteo>>
+        +String alertId
+        +String plantId
+        +double isr
+        +double sps
+        +double previousStress
+        +double newStress
+    }
+
+    class CareTask {
+        <<S2_Soins>>
+        +String plantId
+        +String forestId
+        +CareTaskType type
+        +double wnsScore
+        +TaskPriority priority
+        +TaskStatus status
+        +boolean isFlexible
+    }
+
+    class CarePlan {
+        <<S2_Soins>>
+        +String plantId
+        +List~String~ taskIds
+        +Instant lastRecalculationDate
+    }
+
+    class WebhookReceiverService {
+        <<Ajout S2>>
+        +processWebhook(payload)
+    }
+
+    class PlantImpactCalculator {
+        <<Ajout S2>>
+        +calculateISR(plant, alert)
+        +calculateSPS(plant, isr, history)
+    }
+
+    class WnsCalculator {
+        <<Ajout S2>>
+        +calculate(plant, impactHistory)
+    }
+
+    class CareTaskService {
+        <<Ajout S2>>
+        +generateTask(plant)
+        +validateTask(taskId)
+        +cancelTask(taskId)
+    }
+
+    Species "1" <-- "*" Plant : définit les besoins
+    Forest "1" o-- "*" Plant : regroupe
+
+    WeatherAlert "1" --> "*" PlantImpact : produit
+    Plant "1" --> "*" PlantImpact : subit
+    Plant "1" --> "1" CarePlan : possède
+    CarePlan "1" o-- "*" CareTask : référence
+    Plant "1" --> "*" CareTask : concerne
+
+    WebhookReceiverService --> WeatherAlert : persiste
+    WebhookReceiverService --> PlantImpactCalculator : utilise
+    PlantImpactCalculator --> PlantImpact : calcule
+    WnsCalculator --> Plant : analyse
+    WnsCalculator --> PlantImpact : utilise
+    CareTaskService --> WnsCalculator : utilise
+    CareTaskService --> CareTask : gère
+    CareTaskService --> CarePlan : alimente
+```
+
+La transition vers S2 conserve les objets fondamentaux de S1 et leur ajoute deux chaînes métier :
+
+- **Feature météo** : `WeatherAlert` décrit l'événement externe et `PlantImpact` conserve son effet ISR/SPS sur une `Plant` existante ;
+- **Calendrier de soins** : `WnsCalculator` exploite l'état de la plante et son historique d'impacts pour permettre à `CareTaskService` de créer des `CareTask` regroupées dans un `CarePlan`.
+
+Cette évolution relie directement la supervision météo aux décisions de soin tout en réutilisant les entités `Species`, `Plant` et `Forest` déjà présentes dans S1.
+
+| Périmètre | Classes principales | Évolution |
+|---|---|---|
+| Socle S1 conservé | `Species`, `Plant`, `Forest` | Gestion des besoins biologiques, de l'état des plantes et de leur organisation en forêts |
+| Ajout S2 - Météo | `WeatherAlert`, `PlantImpact`, `WebhookReceiverService`, `PlantImpactCalculator` | Réception des alertes, calcul ISR/SPS et mise à jour des plantes existantes |
+| Ajout S2 - Soins | `CareTask`, `CarePlan`, `WnsCalculator`, `CareTaskService` | Transformation de l'état des plantes et des impacts météo en tâches de soins |
 
 ### 1.4 Organisation du projet
 
@@ -113,83 +242,73 @@ Le périmètre DevOps 2 est organisé autour de deux fonctionnalités principale
 
 ### 2.1 Feature 1 - Jumeau numérique météo / Tomorrow.io
 
-#### 2.1.1 Objectif fonctionnel
+#### 2.1.1 Objectif de la fonctionnalité
 
-Cette fonctionnalité permet de :
+La première fonctionnalité importante de cette version concerne la gestion des alertes météo. L'objectif est de permettre à GreenDesk de recevoir des événements météo depuis un système externe, puis d'adapter l'état des plantes et les tâches de soins en conséquence.
 
-- recevoir des alertes météo par webhook ;
-- sécuriser la réception avec `X-Webhook-Secret` ;
-- détecter les forêts et plantes proches de l'alerte ;
-- calculer l'impact ISR et le score SPS ;
-- mettre à jour l'état et le stress des plantes ;
-- persister les alertes et les impacts météo ;
-- réordonnancer les tâches de soin flexibles.
+Cette fonctionnalité permet notamment de :
+
+- recevoir une alerte météo via un webhook ;
+- vérifier et valider le payload reçu ;
+- sauvegarder l'alerte dans la base de données ;
+- identifier les forêts et les plantes potentiellement impactées ;
+- calculer un impact météo pour chaque plante concernée ;
+- mettre à jour l'état des plantes ;
+- réordonnancer certaines tâches de soins si nécessaire.
+
+Cette logique permet à l'application de réagir automatiquement à des événements externes, comme une forte pluie, une vague de chaleur, du gel ou du vent important.
 
 #### 2.1.2 Logique métier
 
-Le traitement réel suit les étapes suivantes :
+Lorsqu'une alerte météo est reçue, le système suit un processus précis.
 
-1. Tomorrow.io ou un simulateur envoie une alerte météo.
-2. `WeatherWebhookController` vérifie le secret avec une comparaison constante.
-3. `WebhookReceiverService` valide le payload et recherche un doublon par `eventId`.
-4. L'alerte est sauvegardée dans `weather_alerts`.
-5. Les forêts situées dans un rayon de 10 km sont identifiées.
-6. Les plantes des forêts concernées sont récupérées.
-7. Les plantes non sensibles au type d'alerte sont ignorées.
-8. `PlantImpactCalculator` calcule ISR et SPS.
-9. `PlantStateUpdater` applique les ajustements et met à jour l'état de la plante.
-10. Un `PlantImpact` est sauvegardé pour chaque plante traitée.
-11. `CareTaskWeatherRescheduler` reporte les tâches flexibles concernées.
-12. L'alerte est marquée comme traitée.
+Le webhook météo envoie une requête HTTP vers l'API GreenDesk. Le contrôleur météo reçoit la requête, vérifie le secret et délègue le traitement au service métier. Le service valide le payload et vérifie d'abord que l'alerte n'a pas déjà été traitée.
+
+Si l'alerte est nouvelle, elle est sauvegardée dans la base de données. Ensuite, GreenDesk recherche les forêts proches de la zone concernée. À partir de ces forêts, le système récupère les plantes potentiellement impactées.
+
+Pour chaque plante sensible à l'événement, un calcul d'impact est réalisé. Ce calcul permet d'estimer le niveau de risque ou de stress provoqué par l'événement météo grâce aux scores ISR et SPS. L'état de la plante est ensuite mis à jour et l'impact est persisté.
+
+Enfin, le système peut déclencher un réordonnancement des tâches flexibles. Par exemple, une tâche d'arrosage peut être reportée si une forte pluie est prévue ou détectée.
 
 #### 2.1.3 Classes impliquées
 
+Les principales classes impliquées dans cette fonctionnalité sont :
+
 | Classe | Rôle |
 |---|---|
-| `WeatherWebhookController` | Reçoit le webhook, vérifie le secret et expose les endpoints météo |
-| `WebhookReceiverService` | Orchestre le traitement complet de l'alerte |
-| `WeatherAlert` | Entité représentant une alerte météo |
-| `WeatherAlertRepository` | Persiste et recherche les alertes |
-| `PlantImpact` | Entité représentant l'impact sur une plante |
-| `PlantImpactRepository` | Persiste et recherche les impacts |
-| `PlantImpactCalculator` | Calcule ISR et SPS |
-| `PlantStateUpdater` | Ajuste le stress et l'état de la plante |
-| `CareTaskWeatherRescheduler` | Reporte les tâches flexibles selon l'alerte |
-| `ForestRepository` | Fournit les forêts et leurs coordonnées |
-| `PlantRepository` | Fournit et sauvegarde les plantes |
+| `WeatherWebhookController` | Reçoit les alertes météo via l'API, vérifie le secret et valide la requête |
+| `WebhookReceiverService` | Contient la logique principale de traitement du webhook |
+| `WeatherAlert` | Représente une alerte météo |
+| `WeatherAlertRepository` | Persiste les alertes météo |
+| `PlantImpact` | Représente l'impact d'une alerte sur une plante |
+| `PlantImpactRepository` | Persiste les impacts calculés |
+| `PlantImpactCalculator` | Calcule les scores d'impact ISR et SPS |
+| `PlantStateUpdater` | Met à jour l'état de la plante |
+| `CareTaskWeatherRescheduler` | Réordonnance les tâches flexibles |
+| `ForestRepository` | Récupère les forêts concernées |
+| `PlantRepository` | Récupère les plantes impactées |
 
-Le projet ne contient pas de classe `TomorrowWebhookVerifier` : la vérification du secret est réalisée directement dans `WeatherWebhookController`.
+La vérification du secret webhook est réalisée directement dans `WeatherWebhookController`. Le projet ne contient pas de classe séparée nommée `TomorrowWebhookVerifier`. De même, le service réel de réordonnancement est `CareTaskWeatherRescheduler`.
 
-#### 2.1.4 Endpoints API
+#### 2.1.4 Exemple de scénario météo
 
-| Méthode | Endpoint | Rôle | Entrée | Sortie | Erreurs possibles |
-|---|---|---|---|---|---|
-| `POST` | `/api/weather/webhook` | Recevoir une alerte météo | Header secret + payload JSON | Statut `processed` | `401`, `500` |
-| `GET` | `/api/weather/alerts` | Lister et filtrer les alertes | `forestId`, `plantId`, `activeOnly` | Liste d'alertes | `500` |
-| `POST` | `/api/weather/alerts/{alertId}/ack` | Acquitter une alerte | Identifiant d'alerte | Message de confirmation | `404`, `500` |
-| `GET` | `/api/weather/impact/{plantId}` | Lire l'historique d'impact | Identifiant de plante | Liste d'impacts | `500` |
-| `POST` | `/api/weather/alert-config` | Configurer les seuils d'une forêt | `forestId`, `thresholds` | Résultat de configuration | `400`, `500` |
-| `GET` | `/api/weather/notifications` | Lister les notifications | `unreadOnly` | Liste de notifications | `500` |
-| `POST` | `/api/weather/notifications/{id}/read` | Marquer une notification comme lue | Identifiant | Message de confirmation | `500` |
-| `POST` | `/api/weather/notifications/read-all` | Marquer toutes les notifications comme lues | Aucune | Message de confirmation | `500` |
+Un exemple de scénario est le suivant :
 
-#### 2.1.5 Exemple de payload webhook
+1. Tomorrow.io envoie une alerte de forte pluie.
+2. GreenDesk reçoit l'alerte via le webhook.
+3. L'alerte est validée et sauvegardée.
+4. Le système identifie les forêts proches des coordonnées météo.
+5. Les plantes de ces forêts sont analysées.
+6. Le score d'impact est calculé pour chaque plante.
+7. L'état des plantes est mis à jour si nécessaire.
+8. Les tâches d'arrosage flexibles sont reportées.
+9. L'alerte est marquée comme traitée.
 
-```json
-{
-  "event_id": "evt-heavy-rain-001",
-  "type": "heavy_rain",
-  "coords": [48.8566, 2.3522],
-  "timestamp": "2026-06-12T10:00:00",
-  "severity": "CRITICAL",
-  "details": {
-    "rainfall": 22.5,
-    "windSpeed": 45
-  }
-}
-```
+Cette fonctionnalité donne à GreenDesk une capacité de réaction automatique face à des événements climatiques.
 
-Le header `X-Webhook-Secret` doit contenir la valeur configurée dans `WEATHER_WEBHOOK_SECRET`.
+#### 2.1.5 Résultat fonctionnel
+
+À la fin du traitement, l'alerte météo est tracée dans MongoDB, chaque impact calculé est associé à une plante et les tâches flexibles concernées sont mises à jour. Les utilisateurs disposent ainsi d'un état cohérent entre les conditions météo, la santé des plantes et le calendrier de soins.
 
 #### 2.1.6 Diagramme de séquence - Réception d'une alerte météo
 
