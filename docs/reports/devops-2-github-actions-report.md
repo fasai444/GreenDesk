@@ -429,9 +429,9 @@ L'authentification Spring Security de la Feature V6 protège l'utilisation gén�
 
 ##### 2.1.10.1 Contrôle d'accès à la Feature 1
 
-L'accès humain aux informations produites par la Feature 1 passe par le système d'authentification de GreenDesk. Avant de consulter le tableau de bord et les alertes météo, l'utilisateur doit ouvrir une session depuis `login.html`. Les identifiants sont transmis à `POST /api/auth/login`, puis Spring Security crée une session HTTP utilisée lors des requêtes suivantes.
+L'accès humain aux informations produites par la Feature 1 passe par le système d'authentification de GreenDesk. Avant de consulter le tableau de bord et les alertes météo, l'utilisateur doit ouvrir une session depuis `login.html`. Les identifiants sont transmis à `POST /api/auth/login`, puis Spring Security crée une session **HTTP** utilisée lors des requêtes suivantes.
 
-![Page de connexion GreenDesk](assets/images/feature1-auth-login.png)
+![Page de connexion GreenDesk](../assets/images/feature1-auth-login.png)
 
 La page de connexion présente également les comptes de démonstration `admin / admin123` et `demo / demo123`. Après authentification, `auth-guard.js` vérifie la session avec `GET /api/auth/me` et redirige vers `/login.html` toute personne non connectée qui tente d'accéder à une page protégée.
 
@@ -444,13 +444,13 @@ Deux niveaux d'accès sont distingués :
 
 L'écran **Gestion des comptes utilisateurs** est réservé au rôle `ADMIN`. Il centralise le nombre total de comptes, les administrateurs, les utilisateurs et les comptes actifs. Il permet également de rechercher, modifier, réinitialiser ou supprimer un compte.
 
-![Gestion des comptes utilisateurs](assets/images/feature1-admin-user-management.jpeg)
+![Gestion des comptes utilisateurs](../assets/images/feature1-admin-user-management.jpeg)
 
 Cette vue représente l'espace d'administration protégé par `/api/admin/**`. Les indicateurs donnent une vision immédiate du nombre de comptes et de leur répartition par rôle. La liste permet ensuite de contrôler le statut, la dernière connexion et les actions disponibles pour chaque utilisateur. Elle garantit que seuls les comptes autorisés peuvent accéder aux écrans protégés, notamment au tableau de bord météo de la Feature 1.
 
 Depuis le bouton **Nouveau compte**, l'administrateur ouvre une fenêtre de création. Il renseigne le nom d'utilisateur, l'adresse email et le mot de passe, puis attribue explicitement le rôle **Utilisateur** ou **Administrateur**. Cette séparation empêche un utilisateur standard de s'attribuer lui-même des droits élevés.
 
-![Création d'un compte et attribution du rôle](assets/images/feature1-admin-create-account.jpeg)
+![Création d'un compte et attribution du rôle](../assets/images/feature1-admin-create-account.jpeg)
 
 Cette fenêtre matérialise la gestion des rôles `USER` et `ADMIN`. L'administrateur choisit le niveau d'accès au moment de créer le compte. Un compte `USER` peut consulter les pages protégées autorisées, tandis qu'un compte `ADMIN` dispose également des fonctions de gestion des utilisateurs.
 
@@ -1029,7 +1029,7 @@ La page `care-calendar.html` permet de consulter les tâches, visualiser leur pr
 
 **Vue d'ensemble et création manuelle**
 
-![Vue d'ensemble du calendrier de soins](assets/images/feature2-care-dashboard-overview.png)
+![Vue d'ensemble du calendrier de soins](../assets/images/feature2-care-dashboard-overview.png)
 
 Cette première vue représente le tableau de pilotage de la Feature 2. Elle fournit une synthèse immédiate du calendrier grâce aux compteurs du nombre total de tâches et de leur répartition entre les statuts `PENDING`, `DONE` et `CANCELED`.
 
@@ -1039,7 +1039,7 @@ Le formulaire **Création manuelle** permet à l'utilisateur de choisir une plan
 
 **Suivi du cycle de vie et synchronisation externe**
 
-![Suivi des tâches et de leur cycle de vie](assets/images/feature2-care-task-lifecycle.png)
+![Suivi des tâches et de leur cycle de vie](../assets/images/feature2-care-task-lifecycle.png)
 
 Cette seconde vue détaille chaque tâche sous forme de carte. Elle expose les informations nécessaires à la décision et au suivi :
 
