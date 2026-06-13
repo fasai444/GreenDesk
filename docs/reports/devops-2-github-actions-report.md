@@ -371,6 +371,31 @@ La Feature 2 repose sur deux blocs complémentaires reliés par `CareTaskService
 | Bloc B - Calcul WNS et priorisation | Lydia | Calcul du besoin, aide à la décision, justification et réponse API |
 | Connexion | Les deux | Le résultat WNS alimente `CareTaskService`, qui décide et génère les tâches |
 
+**Architecture générale de la Feature 2**
+
+```mermaid
+flowchart TD
+    A[Moteur de simulation / Utilisateur] -->|Déclenchement| B[CareTaskService]
+
+    B -->|1. Idempotence et persistance| C[(MongoDB : care_tasks)]
+    B -->|2. Agrégation du plan| D[(MongoDB : care_plans)]
+    B -->|3. Synchronisation externe| E[GoogleCalendarAdapter]
+
+    E -->|Requêtes HTTPS REST| F[Google Calendar API]
+
+    classDef trigger fill:#172033,stroke:#ffffff,color:#ffffff,stroke-width:1px;
+    classDef service fill:#0f172a,stroke:#ffffff,color:#ffffff,stroke-width:1px;
+    classDef database fill:#111827,stroke:#ffffff,color:#ffffff,stroke-width:1px;
+    classDef external fill:#172033,stroke:#ffffff,color:#ffffff,stroke-width:1px;
+
+    class A trigger;
+    class B service;
+    class C,D database;
+    class E,F external;
+```
+
+Le diagramme place `CareTaskService` au centre du moteur d'exécution. Le service contrôle l'idempotence et persiste les tâches dans `care_tasks`, associe les tâches aux plans stockés dans `care_plans`, puis délègue la synchronisation externe à `GoogleCalendarAdapter`.
+
 Le bloc de décision intervient avant la création effective d'une tâche. Le bloc d'exécution prend ensuite en charge sa persistance, son association à un plan et son suivi opérationnel.
 
 #### 2.2.3 Bloc A - Moteur de tâches de soins et synchronisation Google Calendar
