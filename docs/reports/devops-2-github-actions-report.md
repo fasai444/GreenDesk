@@ -361,7 +361,27 @@ La Feature 2 transforme l'état des plantes, leur historique météo et les pré
 
 #### 2.2.2 Vue d'ensemble de la Feature 2
 
-La Feature 2 repose sur deux blocs complémentaires reliés par `CareTaskService`.
+Cette section détaille les spécifications techniques de la fonctionnalité de gestion, de planification et de synchronisation externe des tâches de soins agronomiques. Elle est rédigée strictement à partir du code source de l'application et alignée sur le formalisme du dossier technique.
+
+La fonctionnalité assure l'automatisation du cycle de vie des soins appliqués aux plantes suivies par GreenDesk, ainsi que la création manuelle d'interventions par l'utilisateur.
+
+Le système :
+
+- évalue le besoin agronomique avec le score **WNS** ;
+- utilise le dernier score **SPS** pour attribuer la priorité métier ;
+- prend en compte l'état de la plante, son stade de croissance, son stress et la pluie prévue ;
+- génère automatiquement une tâche lorsque le score WNS dépasse le seuil ;
+- permet la création manuelle d'une intervention ;
+- planifie l'exécution et l'échéance des tâches ;
+- évite les doublons en recherchant une tâche identique au statut `PENDING` ;
+- gère le cycle de vie des tâches avec les statuts `PENDING`, `DONE` et `CANCELED` ;
+- associe les tâches au `CarePlan` de chaque plante ;
+- synchronise les interventions avec Google Calendar ;
+- reporte les tâches flexibles lors de certaines alertes météo ;
+- annule automatiquement les tâches expirées grâce à `CareTaskExpirationScheduler` ;
+- expose le score WNS et son détail dans `CareTaskResponseDto`.
+
+La Feature 2 repose ainsi sur deux blocs complémentaires reliés par `CareTaskService`.
 
 | Bloc | Responsable fonctionnel | Rôle |
 |---|---|---|
