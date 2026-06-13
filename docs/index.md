@@ -36,6 +36,14 @@
 <strong>Export PDF :</strong> le bouton <em>Exporter en PDF</em> en haut de page déclenche l'impression PDF (style A4 optimisé).
 </div>
 
+## Livraison DevOps 2 / S2
+
+La documentation de la livraison S1 reste disponible sur cette page. Le dossier complet de la livraison S2 est accessible séparément :
+
+- [Dossier Technique & Manuel Utilisateur - DevOps 2](reports/devops-2-github-actions-report.md)
+
+Ouvrir le rapport, puis utiliser le bouton **Exporter en PDF** ou `Ctrl+P` pour l'enregistrer au format PDF.
+
 ## Sommaire
 
 - **1. [Présentation Générale](#1-présentation-générale)**

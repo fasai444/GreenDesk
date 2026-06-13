@@ -580,7 +580,22 @@ Le projet ne contient pas de tests nommés `TomorrowWebhookVerifierTest` ou `Wea
 
 Le projet ne contient pas de tests nommés `CareTaskControllerTest`, `CarePlanControllerTest`, `CareReschedulingServiceTest` ou `CareCalendarSmokeTest`.
 
-### 4.4 Tests CI/CD
+### 4.4 Tests contrôleurs
+
+Les tests de contrôleurs vérifient les contrats HTTP, les codes de réponse et la délégation vers les services. Les tests suivants sont réellement présents dans `src/test/java/org/example/controllers` :
+
+| Test présent | Périmètre | Vérification principale |
+|---|---|---|
+| `WeatherWebhookControllerTest` | Météo DevOps 2 | Secret webhook, payload et réponses HTTP |
+| `PlantAlertControllerTest` | Alertes plante | Consultation et acquittement |
+| `PlantControllerTest` | Plantes | Opérations CRUD et état |
+| `ForestControllerTest` | Forêts | Gestion des forêts et associations |
+| `GreenhouseOpsControllerTest` | Pilotage | Paramètres, erreurs et indicateurs |
+| `EcosystemControllerTest` | Simulation | Appels de simulation et cellules |
+
+Les contrôleurs `CareTaskController` et `CarePlanController` sont couverts indirectement par les tests de services et d'intégration, mais ne disposent pas encore de classes de test dédiées.
+
+### 4.5 Tests CI/CD
 
 GitHub Actions exécute les tests avec Gradle et archive systématiquement :
 
@@ -590,7 +605,7 @@ GitHub Actions exécute les tests avec Gradle et archive systématiquement :
 
 Le workflow de release exécute également les tests avant publication. La CI principale génère JaCoCo, mais n'exécute pas `clean check` : le seuil configuré dans `jacocoTestCoverageVerification` n'est donc pas bloquant dans cette CI.
 
-### 4.5 Couverture JaCoCo
+### 4.6 Couverture JaCoCo
 
 Mesures issues du rapport JaCoCo local vérifié le 13 juin 2026 :
 
@@ -602,6 +617,8 @@ Mesures issues du rapport JaCoCo local vérifié le 13 juin 2026 :
 | METHOD | 65,87 % |
 
 La suite contient **374 tests réussis**, sans échec, erreur ni test ignoré.
+
+Ces résultats confirment la stabilité de la livraison actuelle. La couverture des branches reste cependant plus faible que celle des lignes : les scénarios conditionnels et les cas d'erreur constituent donc la priorité pour les prochains tests.
 
 ---
 
@@ -705,19 +722,30 @@ docs/reports/devops-2-github-actions-report.md
 ### 7.2 Commit et push
 
 ```bash
-git add .github/workflows/release.yml .github/workflows/devops-report.yml docs/reports/devops-2-github-actions-report.md
-git commit -m "docs: finalize DevOps 2 report and GitHub Actions"
+git add .github/workflows/release.yml docs/reports/devops-2-github-actions-report.md docs/index.md
+git commit -m "docs: add DevOps 2 report to documentation"
 git push origin master
 ```
 
-### 7.3 Créer un nouveau tag
+### 7.3 Créer ou recréer le tag `v2.0.0`
 
-Pour préserver la traçabilité, il est recommandé de créer un nouveau tag plutôt que de déplacer un tag déjà publié :
+Si le tag `v2.0.0` n'existe pas encore :
 
 ```bash
-git tag -a v2.0.2 -m "DevOps 2 - GreenDesk"
-git push origin v2.0.2
+git tag -a v2.0.0 -m "DevOps 2 - GreenDesk"
+git push origin v2.0.0
 ```
+
+Si la livraison impose explicitement de recréer `v2.0.0`, supprimer d'abord le tag local et distant, puis le recréer :
+
+```bash
+git tag -d v2.0.0
+git push origin --delete v2.0.0
+git tag -a v2.0.0 -m "DevOps 2 - GreenDesk"
+git push origin v2.0.0
+```
+
+La recréation d'un tag publié modifie sa traçabilité. Elle doit uniquement être utilisée lorsque la procédure de livraison l'exige.
 
 ### 7.4 Vérifier GitHub Actions
 
