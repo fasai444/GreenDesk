@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="600" viewBox="0 0 760 600">
+  <style>text { font-family: Arial, sans-serif; fill:#303030 }.muted{fill:#6b7280}</style>
+  <rect width="760" height="600" rx="18" fill="#fff" stroke="#e5e7eb"/>
+  <text x="22" y="48" font-size="28" font-weight="700">Prédictions à 7 jours</text>
+  <text x="22" y="82" font-size="18" class="muted">Évolution prévue du stress et de la hauteur</text>
+  <text x="22" y="126" font-size="17" font-weight="700">Sélectionner une plante</text>
+  <rect x="22" y="142" width="345" height="44" rx="6" fill="#fff" stroke="#cbd5e1"/>
+  <text x="36" y="170" font-size="17">Heat-Tomato-B · Tomato</text>
+  <text x="390" y="126" font-size="17" font-weight="700">Jours</text>
+  <rect x="390" y="142" width="220" height="44" rx="6" fill="#fff" stroke="#cbd5e1"/>
+  <text x="405" y="170" font-size="17">7 jours</text>
+  <rect x="630" y="126" width="105" height="60" rx="6" fill="#fff" stroke="#3b82f6"/>
+  <text x="651" y="163" font-size="17" fill="#3b82f6">Afficher</text>
+  <text x="250" y="235" font-size="18" font-weight="700" class="muted">Prédictions pour Heat-Tomato-B</text>
+  <line x1="110" y1="490" x2="670" y2="490" stroke="#9ca3af"/><line x1="110" y1="300" x2="110" y2="490" stroke="#9ca3af"/>
+  <g stroke="#e5e7eb"><line x1="110" y1="395" x2="670" y2="395"/><line x1="110" y1="300" x2="670" y2="300"/><line x1="250" y1="300" x2="250" y2="490"/><line x1="390" y1="300" x2="390" y2="490"/><line x1="530" y1="300" x2="530" y2="490"/></g>
+  <polyline points="110,372 190,375 270,368 350,379 430,365 510,371 590,355 670,366" fill="none" stroke="#ff6384" stroke-width="4" stroke-dasharray="8 7"/>
+  <polyline points="110,490 190,462 270,430 350,400 430,365 510,338 590,315 670,300" fill="rgba(75,192,192,.1)" stroke="#4bc0c0" stroke-width="4"/>
+  <g fill="#fff" stroke-width="3"><circle cx="110" cy="372" r="5" stroke="#ff6384"/><circle cx="350" cy="379" r="5" stroke="#ff6384"/><circle cx="590" cy="355" r="5" stroke="#ff6384"/><circle cx="110" cy="490" r="5" stroke="#4bc0c0"/><circle cx="350" cy="400" r="5" stroke="#4bc0c0"/><circle cx="590" cy="315" r="5" stroke="#4bc0c0"/><circle cx="670" cy="300" r="5" stroke="#4bc0c0"/></g>
+  <text x="42" y="495" class="muted">0%</text><text x="35" y="400" class="muted">50%</text><text x="28" y="305" class="muted">100%</text>
+  <text x="80" y="525" class="muted">Aujourd'hui</text><text x="240" y="525" class="muted">15/06</text><text x="380" y="525" class="muted">17/06</text><text x="520" y="525" class="muted">19/06</text><text x="650" y="525" class="muted">20/06</text>
+  <line x1="240" y1="270" x2="280" y2="270" stroke="#ff6384" stroke-width="4" stroke-dasharray="8 7"/><text x="290" y="276" class="muted">Stress (%)</text>
+  <line x1="410" y1="270" x2="450" y2="270" stroke="#4bc0c0" stroke-width="4"/><text x="460" y="276" class="muted">Hauteur (cm)</text>
+</svg>
