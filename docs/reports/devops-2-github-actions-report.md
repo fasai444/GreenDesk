@@ -1012,6 +1012,34 @@ La couche d'exposition rend le moteur de soins utilisable depuis le frontend et 
 
 La page `care-calendar.html` permet de consulter les tâches, visualiser leur priorité et leur statut, filtrer les résultats, créer une tâche manuelle et déclencher les actions de validation, report ou annulation. Elle utilise les endpoints `/api/care-tasks` et `/api/care-plan`. Les champs `wnsScore` et `wnsBreakdown` du `CareTaskResponseDto` rendent la décision plus explicable côté frontend.
 
+**Vue d'ensemble et création manuelle**
+
+![Vue d'ensemble du calendrier de soins](assets/images/feature2-care-dashboard-overview.png)
+
+Cette première vue représente le tableau de pilotage de la Feature 2. Elle fournit une synthèse immédiate du calendrier grâce aux compteurs du nombre total de tâches et de leur répartition entre les statuts `PENDING`, `DONE` et `CANCELED`.
+
+Les filtres permettent de sélectionner une priorité, un statut ou une plante. Ils facilitent ainsi l'identification des interventions urgentes ou encore en attente. Le bouton **Refresh** recharge les données retournées par `GET /api/care-tasks`.
+
+Le formulaire **Création manuelle** permet à l'utilisateur de choisir une plante, un type de soin et une priorité. La demande est transmise à `CareTaskService`, qui crée la tâche, la persiste dans MongoDB, l'associe au plan de soins et tente sa synchronisation avec Google Calendar. Cette création manuelle complète la génération automatique déclenchée par le score WNS.
+
+**Suivi du cycle de vie et synchronisation externe**
+
+![Suivi des tâches et de leur cycle de vie](assets/images/feature2-care-task-lifecycle.png)
+
+Cette seconde vue détaille chaque tâche sous forme de carte. Elle expose les informations nécessaires à la décision et au suivi :
+
+- le type de soin, par exemple `WATERING` ou `HEATING_ADJUSTMENT` ;
+- la plante concernée ;
+- le score WNS ayant contribué à la recommandation ;
+- la priorité métier ;
+- le statut courant ;
+- la date d'échéance ;
+- l'identifiant de synchronisation Google Calendar.
+
+Une tâche `PENDING` propose les actions **Done**, **Cancel** et **Reschedule**. L'action **Done** clôture l'intervention et peut mettre à jour la santé de la plante. **Cancel** passe la tâche au statut `CANCELED` et nettoie sa synchronisation externe. **Reschedule** déplace une tâche flexible et met à jour l'événement Google Calendar associé.
+
+Les tâches déjà `DONE` ou `CANCELED` sont affichées comme clôturées et ne proposent plus d'action incompatible. Cette interface rend donc visible le cycle de vie géré par `CareTaskService` et permet à l'utilisateur de comprendre l'état réel du calendrier de soins.
+
 ##### 2.2.6.2 Vue consolidée des composants impliqués
 
 | Classe | Bloc | Rôle |
@@ -1048,15 +1076,76 @@ La page `care-calendar.html` permet de consulter les tâches, visualiser leur pr
 
 #### 2.2.7 Validation et tests associés
 
-| Test présent | Bloc concerné | Objectif |
-|---|---|---|
-| `CareTaskServiceTest` | Moteur de tâches | Création, validation, annulation et report |
-| `CarePlanServiceTest` | Moteur de tâches | Association des tâches au plan |
-| `CareTaskExpirationSchedulerTest` | Moteur de tâches | Expiration automatique et continuité du batch |
-| `TaskLifecycleIntegrationTest` | Moteur de tâches | Cycle `PENDING`, `DONE`, `CANCELED` et idempotence |
-| `CareIntegrationFlowTest` | Connexion globale | Flux complet entre calcul, tâche et expiration |
-| `WnsCalculatorTest` | Calcul et décision | Score, seuil, stress et pluie |
-| Test dédié `CareTaskResponseDto` | Réponse API | À compléter : aucun test DTO dédié n'est présent |
+##### 2.2.7.1 Tests unitaires
+
+**`CarePlanServiceTest`**
+
+Cette classe vérifie la gestion du plan de soins :
+
+- retour d'un plan existant ;
+- création et sauvegarde automatiques lorsqu'aucun plan n'existe ;
+- ajout idempotent d'une tâche et accumulation de tâches distinctes ;
+- propagation d'une erreur de persistance ;
+- recalcul global pour une plante ou pour une forêt entière lorsque `plantId` est `null` ;
+- création du plan pendant un recalcul et gestion des identifiants vides.
+
+**`CareTaskServiceTest`**
+
+Cette classe vérifie les règles du moteur de tâches :
+
+- génération d'une tâche lorsque le WNS dépasse `0.8` ;
+- absence de génération sous le seuil et blocage de l'arrosage lorsqu'une pluie est prévue ;
+- idempotence lors de la génération ;
+- passage au statut `DONE` et mise à jour de la santé de la plante ;
+- passage au statut `CANCELED` et suppression de l'événement du calendrier externe ;
+- rejet des transitions de statut invalides et des dates incohérentes ;
+- récupération des tâches dans l'ordre attendu pour le dashboard.
+
+**`CareTaskExpirationSchedulerTest`**
+
+Cette classe valide le nettoyage automatique :
+
+- absence d'action lorsqu'aucune tâche n'est expirée ;
+- passage de toutes les tâches périmées au statut `CANCELED` ;
+- simulation d'une panne MongoDB pendant une sauvegarde ;
+- continuité du batch malgré l'échec d'une tâche.
+
+**`WnsCalculatorTest`**
+
+Les tests du calculateur couvrent le score WNS, le seuil de déclenchement, le stress de la plante et la prise en compte de la pluie.
+
+##### 2.2.7.2 Tests d'intégration
+
+**`TaskLifecycleIntegrationTest`**
+
+Cette classe teste le cycle métier avec la persistance réelle :
+
+- génération d'une tâche `PENDING` pour une plante à besoin élevé, construite avec un `stressIndex` de `0.95` ;
+- contrôle strict de l'idempotence lors d'une seconde génération ;
+- passage de la tâche au statut `DONE` avec renseignement de `closedAt` ;
+- régénération d'une nouvelle tâche après la clôture ou l'annulation de la précédente ;
+- génération indépendante de tâches pour plusieurs plantes.
+
+**`CareIntegrationFlowTest`**
+
+Cette classe valide les flux transversaux :
+
+- validation manuelle d'une tâche au statut `DONE` ;
+- annulation manuelle et gestion des identifiants inconnus ;
+- annulation automatique des tâches dont `dueAt` est dépassé ;
+- conservation des tâches expirées déjà clôturées ;
+- tri des tâches retournées au dashboard.
+
+Le tri est implémenté par `CareTaskRepository.findAllByOrderByPriorityDescDueAtAsc()` et validé par les tests :
+
+```text
+TaskPriority DESC
+puis dueAt ASC
+```
+
+Les tâches sont donc regroupées par priorité décroissante. Pour une même priorité, l'échéance la plus proche est affichée en premier.
+
+Un test dédié à `CareTaskResponseDto` reste à compléter : aucun test spécifique à ce DTO n'est actuellement présent.
 
 #### 2.2.8 Synthèse de la Feature 2
 
