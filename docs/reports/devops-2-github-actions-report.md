@@ -5,14 +5,6 @@
 
 **Dépôt GitHub :** `MisasoaRobison/GreenDesk`
 
-**Branche principale :** `master`
-
-**Version actuelle :** `v2.0.1`
-
-**Commit audité :** `92baa43`
-
-> Note de version : les tags `v2.0.0` et `v2.0.1` pointent actuellement sur le même commit. Pour conserver une traçabilité claire, chaque prochaine version devra pointer sur un commit distinct.
-
 ---
 
 ## 1. Présentation générale
@@ -85,48 +77,9 @@ flowchart LR
 
 ---
 
-## 2. Concurrence
+## 2. Architecture technique
 
-### 2.1 Étude de la concurrence
-
-GreenDesk se positionne entre les outils simples de suivi et les plateformes agronomiques spécialisées.
-
-| Solution | Forces | Limites | Réponse GreenDesk |
-|---|---|---|---|
-| Tableur ou script local | Rapide à démarrer | Données dispersées, peu de traçabilité | API centralisée et données MongoDB |
-| Agenda classique | Bonne planification manuelle | Aucun calcul agronomique | Génération automatique par WNS |
-| Plateforme IoT | Collecte de données temps réel | Logique métier parfois limitée | Capteurs, météo, état plante et soins |
-| Simulateur spécialisé | Modèles scientifiques avancés | Coût et complexité élevés | Solution légère, pédagogique et API-first |
-
-La valeur différenciante de GreenDesk est l'enchaînement complet :
-
-```text
-Météo -> Impact plante -> Priorité -> Besoin de soin -> Tâche -> Validation
-```
-
-### 2.2 Utilisabilité & design
-
-L'interface vise à rendre les décisions immédiatement compréhensibles :
-
-- cartes de tâches lisibles ;
-- badges de priorité et de statut ;
-- filtres par priorité, état et recherche ;
-- indicateurs de tâches en attente, terminées et annulées ;
-- création manuelle d'une tâche ;
-- actions rapides pour terminer, reporter ou annuler ;
-- navigation protégée par authentification.
-
-Les pages statiques utilisent HTML, CSS, JavaScript et Bootstrap. La page principale de la Feature 2 est :
-
-```text
-http://localhost:8081/care-calendar.html
-```
-
----
-
-## 3. Architecture technique
-
-### 3.1 Stack technologique
+### 2.1 Stack technologique
 
 | Couche | Technologie |
 |---|---|
@@ -144,7 +97,7 @@ http://localhost:8081/care-calendar.html
 | Conteneurs | Docker, Docker Compose |
 | Intégrations | Tomorrow.io, Open-Meteo, Google Calendar |
 
-### 3.2 Architecture globale
+### 2.2 Architecture globale
 
 GreenDesk utilise une architecture en couches.
 
@@ -168,7 +121,7 @@ Responsabilités :
 - **Entities / DTO** : données persistées et contrats API ;
 - **Static resources** : interface utilisateur.
 
-### 3.3 Modélisation UML
+### 2.3 Modélisation UML
 
 ```mermaid
 classDiagram
@@ -217,7 +170,7 @@ classDiagram
     CarePlan "1" --> "*" CareTask
 ```
 
-### 3.4 Structure du projet
+### 2.4 Structure du projet
 
 ```text
 GreenDesk/
@@ -238,7 +191,7 @@ GreenDesk/
 `-- docker-compose.yml
 ```
 
-### 3.5 Base de données MongoDB
+### 2.5 Base de données MongoDB
 
 Les principales collections liées au périmètre DevOps 2 sont :
 
@@ -256,9 +209,9 @@ Un index composé est défini pour les tâches sur `plantId`, `type` et `schedul
 
 ---
 
-## 4. Fonctionnalités détaillées
+## 3. Fonctionnalités détaillées
 
-### 4.1 Feature 1 - Jumeau numérique météo
+### 3.1 Feature 1 - Jumeau numérique météo
 
 Le jumeau numérique météo reçoit des alertes, détecte les plantes concernées et calcule leur impact.
 
@@ -296,7 +249,7 @@ Les indicateurs produits sont :
 - changement de `stressIndex` ;
 - changement éventuel de l'état de la plante.
 
-### 4.2 Feature 2 - Calendrier de soins dynamique
+### 3.2 Feature 2 - Calendrier de soins dynamique
 
 La Feature 2 transforme les besoins biologiques et météorologiques en tâches actionnables.
 
@@ -312,7 +265,7 @@ Fonctions principales :
 - synchroniser les tâches avec Google Calendar ;
 - annuler automatiquement les tâches expirées.
 
-### 4.3 WNS - Weighted Need Score
+### 3.3 WNS - Weighted Need Score
 
 Dans le code, WNS représente le score de besoin utilisé par le moteur hybride.
 
@@ -335,7 +288,7 @@ Une tâche est requise lorsque :
 WNS > 0,8 et arrosage non bloqué par la pluie
 ```
 
-### 4.4 CareTask et cycle de vie des tâches
+### 3.4 CareTask et cycle de vie des tâches
 
 Types de tâches :
 
@@ -373,7 +326,7 @@ Lorsqu'une tâche est validée, la plante est mise à jour :
 | Taille | Baisse du stress et légère réduction de hauteur |
 | Chauffage | Hausse de température et baisse du stress |
 
-### 4.5 Interface Care Calendar
+### 3.5 Interface Care Calendar
 
 Le manuel utilisateur du calendrier est le suivant :
 
@@ -390,7 +343,7 @@ Les actions d'administration sont réservées au rôle `ADMIN` :
 - génération batch des tâches ;
 - recalcul global d'un plan.
 
-### 4.6 Intégration météo / Tomorrow.io
+### 3.6 Intégration météo / Tomorrow.io
 
 La récupération de pluie suit une stratégie de repli :
 
@@ -414,7 +367,7 @@ X-Webhook-Secret: <WEATHER_WEBHOOK_SECRET>
 
 Les alertes stockées sont filtrées selon leur proximité avec la forêt ciblée afin qu'une pluie éloignée ne bloque pas un arrosage local.
 
-### 4.7 Sécurité et authentification
+### 3.7 Sécurité et authentification
 
 GreenDesk utilise Spring Security avec :
 
@@ -438,9 +391,9 @@ Point de vigilance : CSRF est actuellement désactivé. Ce choix simplifie les a
 
 ---
 
-## 5. Matrice de responsabilités
+## 4. Matrice de responsabilités
 
-### 5.1 Répartition du travail
+### 4.1 Répartition du travail
 
 La matrice ci-dessous combine la documentation du projet et les sujets visibles dans l'historique Git.
 
@@ -458,7 +411,7 @@ Légende : `R` = contribution principale observée, `C` = contribution ou collab
 
 ![Matrice de responsabilité](../assets/images/martrice_responsabilite.png)
 
-### 5.2 Contributions individuelles
+### 4.2 Contributions individuelles
 
 | Contributeur | Contributions observées |
 |---|---|
@@ -470,7 +423,7 @@ Légende : `R` = contribution principale observée, `C` = contribution ou collab
 
 Ces attributions sont fondées sur les messages de commits et ne remplacent pas une validation formelle par l'équipe.
 
-### 5.3 Difficultés rencontrées
+### 4.3 Difficultés rencontrées
 
 Les principales difficultés techniques identifiées sont :
 
@@ -486,9 +439,9 @@ Les principales difficultés techniques identifiées sont :
 
 ---
 
-## 6. Tests effectués
+## 5. Tests effectués
 
-### 6.1 Tests unitaires
+### 5.1 Tests unitaires
 
 Les tests unitaires vérifient notamment :
 
@@ -513,7 +466,7 @@ WeatherForecastServiceTest.java
 WebhookReceiverServiceTest.java
 ```
 
-### 6.2 Tests d’intégration
+### 5.2 Tests d’intégration
 
 Les tests d'intégration utilisent Spring Boot et MongoDB embarqué.
 
@@ -534,7 +487,7 @@ TaskLifecycleIntegrationTest.java
 WeatherAlertIntegrationTest.java
 ```
 
-### 6.3 Résultats des tests
+### 5.3 Résultats des tests
 
 Commande exécutée :
 
@@ -550,7 +503,7 @@ Commande exécutée :
 | Erreurs | 0 |
 | Ignorés | 0 |
 
-### 6.4 Couverture JaCoCo
+### 5.4 Couverture JaCoCo
 
 | Métrique | Couverture mesurée |
 |---|---:|
@@ -567,7 +520,7 @@ La commande suivante exécute les tests et la vérification de couverture :
 
 Elle échoue actuellement sur `jacocoTestCoverageVerification`, car `build.gradle` impose **80 % de lignes pour chaque package**. Les tests passent, mais plusieurs packages restent sous ce seuil.
 
-### 6.5 Captures qualité
+### 5.5 Captures qualité
 
 ![Rapport JaCoCo](../assets/images/site-jacoco-coverage.png)
 
@@ -579,13 +532,14 @@ Elle échoue actuellement sur `jacocoTestCoverageVerification`, car `build.gradl
 
 ---
 
-## 7. CI/CD et GitHub Actions
+## 6. CI/CD et GitHub Actions
 
-### 7.1 Workflows existants
+### 6.1 Workflows existants
 
 | Workflow | Déclencheur | Fonction |
 |---|---|---|
 | `gradle.yml` | Push / pull request | Build, tests et rapports |
+| `devops-report.yml` | Modification du rapport / lancement manuel | Génération et archivage du rapport PDF |
 | `docs-pages.yml` | Push `main`/`master` | Déploiement GitHub Pages |
 | `update-uml.yml` | Changements Java/Gradle | Génération UML et commit |
 | `release.yml` | Tag `v*` | JAR, Javadoc, PDF et release |
@@ -597,7 +551,7 @@ Le workflow CI principal produit deux artefacts :
 
 Point d'amélioration : il exécute `clean test jacocoTestReport`, mais pas `clean check`. La vérification des seuils JaCoCo n'est donc pas bloquante dans GitHub Actions.
 
-### 7.2 Build Gradle
+### 6.2 Build Gradle
 
 Commandes principales :
 
@@ -610,7 +564,7 @@ Commandes principales :
 
 Le wrapper fixe Gradle à la version `9.2.0`, ce qui rend le build reproductible sur les postes et dans GitHub Actions.
 
-### 7.3 Génération automatique du PDF
+### 6.3 Génération automatique du PDF
 
 Le workflow `release.yml` installe Pandoc et XeLaTeX, puis génère :
 
@@ -625,7 +579,9 @@ Le rapport DevOps 2 est produit depuis :
 docs/reports/devops-2-github-actions-report.md
 ```
 
-### 7.4 Release automatique par tag
+Le workflow `devops-report.yml` permet aussi de générer le PDF sans créer de tag. Il s'exécute automatiquement lorsque le rapport ou ses images changent, et peut être lancé manuellement depuis l'onglet **Actions** avec `workflow_dispatch`. Le fichier obtenu est archivé dans l'artefact `devops2-report-pdf`.
+
+### 6.4 Release automatique par tag
 
 Une release est déclenchée lors d'un push de tag correspondant à :
 
@@ -643,7 +599,7 @@ git push origin v2.0.2
 
 La release `v2.0.0` reçoit un titre spécifique DevOps 2. Les autres tags utilisent le titre générique GreenDesk. Les releases sont actuellement marquées comme préversions avec `prerelease: true`.
 
-### 7.5 Assets publiés
+### 6.5 Assets publiés
 
 La release publie :
 
@@ -654,13 +610,13 @@ La release publie :
 | `documentation.pdf` | Documentation générale |
 | `devops2-report.pdf` | Dossier technique DevOps 2 |
 
-Recommandation : ajouter les tests au workflow de release avant publication et produire un checksum des artefacts.
+Le workflow de release exécute les tests et génère le rapport JaCoCo avant publication. Une amélioration restante consiste à produire un checksum des artefacts.
 
 ---
 
-## 8. Guide d’installation et de déploiement
+## 7. Guide d’installation et de déploiement
 
-### 8.1 Prérequis
+### 7.1 Prérequis
 
 - Git ;
 - Java 21 ;
@@ -669,7 +625,7 @@ Recommandation : ajouter les tests au workflow de release avant publication et p
 - un secret webhook long et aléatoire ;
 - facultativement une clé Tomorrow.io et des credentials Google Calendar.
 
-### 8.2 Lancement local
+### 7.2 Lancement local
 
 ```bash
 git clone https://github.com/MisasoaRobison/GreenDesk.git
@@ -695,7 +651,7 @@ Accès :
 - calendrier : `http://localhost:8080/care-calendar.html` ;
 - Swagger : `http://localhost:8080/swagger-ui/index.html`.
 
-### 8.3 Lancement Docker
+### 7.3 Lancement Docker
 
 Créer le fichier `.env` :
 
@@ -725,7 +681,7 @@ Services exposés :
 | Mongo Express | `http://localhost:8082` |
 | MongoDB | `localhost:27017` |
 
-### 8.4 Vérifications rapides
+### 7.4 Vérifications rapides
 
 ```bash
 docker compose ps
@@ -741,7 +697,7 @@ export WEATHER_WEBHOOK_SECRET="un-secret-long-et-aleatoire"
 ./test-weather.sh
 ```
 
-### 8.5 Dépannage
+### 7.5 Dépannage
 
 | Problème | Vérification |
 |---|---|
@@ -755,9 +711,9 @@ export WEATHER_WEBHOOK_SECRET="un-secret-long-et-aleatoire"
 
 ---
 
-## 9. Annexe API REST
+## 8. Annexe API REST
 
-### 9.1 Endpoints météo
+### 8.1 Endpoints météo
 
 | Méthode | Endpoint | Description |
 |---|---|---|
@@ -768,7 +724,7 @@ export WEATHER_WEBHOOK_SECRET="un-secret-long-et-aleatoire"
 | `POST` | `/api/weather/alert-config` | Configurer les seuils |
 | `GET` | `/api/weather/notifications` | Lister les notifications |
 
-### 9.2 Endpoints care-tasks
+### 8.2 Endpoints care-tasks
 
 | Méthode | Endpoint | Description |
 |---|---|---|
@@ -781,14 +737,14 @@ export WEATHER_WEBHOOK_SECRET="un-secret-long-et-aleatoire"
 | `POST` | `/api/care-tasks/{id}/done` | Marquer une tâche terminée |
 | `DELETE` | `/api/care-tasks/{id}` | Annuler une tâche |
 
-### 9.3 Endpoints care-plan
+### 8.3 Endpoints care-plan
 
 | Méthode | Endpoint | Description |
 |---|---|---|
 | `GET` | `/api/care-plan/{plantId}` | Lire le plan d'une plante |
 | `POST` | `/api/care-plan/recompute` | Recalculer un plan, rôle ADMIN |
 
-### 9.4 Exemples de payloads
+### 8.4 Exemples de payloads
 
 **Webhook météo**
 
@@ -854,7 +810,7 @@ curl -X POST http://localhost:8081/api/weather/webhook \
 
 ---
 
-## 10. Conclusion
+## 9. Conclusion
 
 GreenDesk répond au périmètre DevOps 2 en associant une application métier complète à une chaîne d'automatisation :
 
@@ -873,9 +829,8 @@ Les priorités restantes avant une qualification pleinement industrialisée sont
 
 1. rendre `jacocoTestCoverageVerification` bloquant dans la CI ;
 2. augmenter la couverture des packages sous le seuil ;
-3. exécuter les tests dans le workflow de release ;
-4. supprimer les identifiants de production codés en dur ;
-5. publier une image Docker versionnée et des checksums ;
-6. garantir qu'un tag de version correspond à un commit unique.
+3. supprimer les identifiants de production codés en dur ;
+4. publier une image Docker versionnée et des checksums ;
+5. conserver un tag distinct pour chaque version publiée.
 
 > Limite de vérification : l'état en ligne des runs GitHub Actions n'a pas pu être contrôlé directement, car l'authentification `gh` locale était invalide. Les workflows ont été audités depuis les fichiers versionnés et les résultats locaux.
