@@ -3,7 +3,6 @@
 
 | Information | Valeur |
 |---|---|
-| Version | `v2.0.0` |
 | Projet | GreenDesk |
 | Type | Dossier technique, manuel utilisateur et rapport DevOps 2 |
 | Dépôt GitHub | `MisasoaRobison/GreenDesk` |
@@ -1276,7 +1275,7 @@ La matrice suivante présente la répartition des responsabilités au sein de l'
 
 | Fonctionnalité / Tâche | Lydia AMROUCHE | Misasoa ROBISON | Hadi ISSA | Fatima SAIDI | Mamadou DIALLO |
 |---|---:|---:|---:|---:|---:|
-| Architecture backend générale | ✓ | ✓ | ✓ |  | ✓ |
+| Architecture backend générale | ✓ | ✓ | ✓ | ✓ | ✓ |
 | Feature 1 - Jumeau numérique météo / Tomorrow.io |  |  | ✓ |  | ✓ |
 | Webhook météo et traitement des alertes |  |  | ✓ |  | ✓ |
 | Calcul ISR / SPS et impact météo sur les plantes |  |  | ✓ |  | ✓ |
@@ -1292,8 +1291,8 @@ La matrice suivante présente la répartition des responsabilités au sein de l'
 | Interface `care-calendar.html` | ✓ | ✓ |  |  |  |
 | Tests Feature 1 |  |  | ✓ |  | ✓ |
 | Tests Feature 2 | ✓ | ✓ |  |  |  |
-| GitHub Actions et CI/CD | ✓ | ✓ | ✓ |  |  |
-| Documentation technique DevOps 2 | ✓ | ✓ | ✓ |  | ✓ |
+| GitHub Actions et CI/CD | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Documentation technique DevOps 2 | ✓ | ✓ | ✓ | ✓ | ✓ |
 
 ---
 
