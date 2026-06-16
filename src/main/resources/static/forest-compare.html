@@ -1,0 +1,409 @@
+﻿<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GreenDesk - Comparateur de Forêts</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="style.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        .compare-hero {
+            background: linear-gradient(135deg, #064e3b 0%, #065f46 50%, #047857 100%);
+            border-radius: 14px;
+            color: white;
+        }
+        .forest-card {
+            border-radius: 14px;
+            border: 2px solid transparent;
+            transition: border-color 0.2s;
+        }
+        .forest-card.forest-a { border-color: #3b82f6; }
+        .forest-card.forest-b { border-color: #f59e0b; }
+        .badge-a { background-color: #3b82f6; }
+        .badge-b { background-color: #f59e0b; }
+        .stat-block {
+            text-align: center;
+            padding: 0.75rem;
+            border-radius: 10px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+        }
+        .stat-value { font-size: 1.6rem; font-weight: 700; }
+        .stat-label { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.05em; color: #64748b; }
+        .winner-banner {
+            background: linear-gradient(90deg, #d1fae5, #a7f3d0);
+            border: 2px solid #10b981;
+            border-radius: 12px;
+        }
+        .vs-badge {
+            width: 48px; height: 48px;
+            border-radius: 50%;
+            background: #1e293b;
+            color: white;
+            font-weight: 900;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.1rem;
+            margin: 0 auto;
+        }
+        .progress-compare { height: 10px; border-radius: 5px; }
+        .bar-a { background-color: #3b82f6; }
+        .bar-b { background-color: #f59e0b; }
+        #chartContainer { max-width: 500px; margin: 0 auto; }
+    </style>
+</head>
+<body class="bg-light">
+
+<nav class="navbar navbar-expand-lg navbar-dark gd-navbar">
+    <div class="container">
+        <a class="navbar-brand fw-bold" href="home.html"><i class="fas fa-leaf"></i> GreenDesk</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item"><a class="nav-link" href="dashboard.html">Vue d'ensemble</a></li>
+                <li class="nav-item"><a class="nav-link" href="simulation.html">Simulation</a></li>
+                <li class="nav-item"><a class="nav-link" href="species.html">Espèces</a></li>
+                <li class="nav-item"><a class="nav-link" href="effects.html">Effets</a></li>
+                <li class="nav-item"><a class="nav-link" href="disease.html">Maladies</a></li>
+                <li class="nav-item"><a class="nav-link" href="care-calendar.html">Tâches</a></li>
+                <li class="nav-item"><a class="nav-link" href="recommendations.html">Recommandations</a></li>
+                <li class="nav-item"><a class="nav-link active fw-bold" href="forest-compare.html">Comparateur</a></li>
+                <li class="nav-item"><a class="nav-link" href="whatif.html">What-If</a></li>
+                <li class="nav-item"><a class="nav-link text-success" href="placement-optimizer.html">Optimizer</a></li>
+            </ul>
+            <ul class="navbar-nav ms-2" id="nav-auth-area"></ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container app-shell">
+
+    <!-- Hero -->
+    <div class="compare-hero p-4 mb-4">
+        <small class="d-block mb-1" style="opacity:0.7; text-transform:uppercase; letter-spacing:0.08em; font-size:0.7rem;">Analyse comparative</small>
+        <h1 class="h4 mb-1"><i class="fas fa-balance-scale me-2"></i>Comparateur de Forêts</h1>
+        <p class="mb-0" style="opacity:0.85;">Comparez deux forêts côte à côte : santé globale, taux de maladie, stress moyen et diversité des espèces.</p>
+    </div>
+
+    <!-- Sélecteurs -->
+    <div class="card soft-panel mb-4">
+        <div class="card-body">
+            <h5 class="fw-bold mb-3"><i class="fas fa-sliders-h me-2 text-success"></i>Sélectionner les forêts à comparer</h5>
+            <div class="row g-3 align-items-end">
+                <div class="col-md-5">
+                    <label class="form-label fw-semibold"><span class="badge badge-a me-1">A</span> Forêt 1</label>
+                    <select class="form-select" id="selectForest1">
+                        <option value="">-- Choisir une forêt --</option>
+                    </select>
+                </div>
+                <div class="col-md-2 text-center">
+                    <div class="vs-badge">VS</div>
+                </div>
+                <div class="col-md-5">
+                    <label class="form-label fw-semibold"><span class="badge badge-b me-1">B</span> Forêt 2</label>
+                    <select class="form-select" id="selectForest2">
+                        <option value="">-- Choisir une forêt --</option>
+                    </select>
+                </div>
+            </div>
+            <div class="mt-3 text-center">
+                <button class="btn btn-success px-4" id="btnCompare" onclick="compareForests()">
+                    <i class="fas fa-search me-2"></i>Lancer la comparaison
+                </button>
+            </div>
+            <div id="compareError" class="alert alert-danger mt-3 d-none"></div>
+        </div>
+    </div>
+
+    <!-- Résultats -->
+    <div id="results" class="d-none">
+
+        <!-- Bannière gagnant -->
+        <div class="winner-banner p-3 mb-4 d-flex align-items-center gap-3">
+            <i class="fas fa-trophy fa-2x text-success"></i>
+            <div>
+                <div class="fw-bold fs-5" id="winnerName"></div>
+                <div class="text-muted small" id="winnerReason"></div>
+            </div>
+        </div>
+
+        <!-- Cartes côte à côte -->
+        <div class="row g-3 mb-4">
+            <!-- Forêt A -->
+            <div class="col-md-6">
+                <div class="card forest-card forest-a shadow-sm h-100">
+                    <div class="card-header d-flex align-items-center gap-2 bg-white border-bottom-0 pt-3">
+                        <span class="badge badge-a fs-6">A</span>
+                        <h5 class="mb-0 fw-bold" id="nameA"></h5>
+                        <span class="ms-auto text-muted small" id="sizeA"></span>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-2 mb-3">
+                            <div class="col-6"><div class="stat-block"><div class="stat-value text-success" id="healthA">-</div><div class="stat-label">% Plantes saines</div></div></div>
+                            <div class="col-6"><div class="stat-block"><div class="stat-value text-danger" id="diseaseA">-</div><div class="stat-label">% Malades</div></div></div>
+                            <div class="col-6"><div class="stat-block"><div class="stat-value text-warning" id="stressA">-</div><div class="stat-label">Stress moyen</div></div></div>
+                            <div class="col-6"><div class="stat-block"><div class="stat-value text-primary" id="speciesA">-</div><div class="stat-label">Espèces distinctes</div></div></div>
+                        </div>
+                        <div class="mb-2">
+                            <div class="d-flex justify-content-between small mb-1"><span><i class="fas fa-circle text-success me-1"></i>Saines</span><span id="cntHealthyA">-</span></div>
+                            <div class="progress progress-compare mb-2"><div class="progress-bar bar-a" id="barHealthyA"></div></div>
+                            <div class="d-flex justify-content-between small mb-1"><span><i class="fas fa-circle text-warning me-1"></i>Stressées</span><span id="cntStressedA">-</span></div>
+                            <div class="progress progress-compare mb-2"><div class="progress-bar bg-warning" id="barStressedA"></div></div>
+                            <div class="d-flex justify-content-between small mb-1"><span><i class="fas fa-circle text-secondary me-1"></i>Dormantes</span><span id="cntDormantA">-</span></div>
+                            <div class="progress progress-compare mb-2"><div class="progress-bar bg-secondary" id="barDormantA"></div></div>
+                            <div class="d-flex justify-content-between small mb-1"><span><i class="fas fa-circle text-danger me-1"></i>Malades</span><span id="cntDiseasedA">-</span></div>
+                            <div class="progress progress-compare"><div class="progress-bar bg-danger" id="barDiseasedA"></div></div>
+                        </div>
+                        <div class="mt-3 text-muted small">
+                            <i class="fas fa-th-large me-1"></i>Occupation : <strong id="occupancyA">-</strong>% (<span id="totalA">-</span> plantes / <span id="gridA">-</span> cellules)
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Forêt B -->
+            <div class="col-md-6">
+                <div class="card forest-card forest-b shadow-sm h-100">
+                    <div class="card-header d-flex align-items-center gap-2 bg-white border-bottom-0 pt-3">
+                        <span class="badge badge-b fs-6">B</span>
+                        <h5 class="mb-0 fw-bold" id="nameB"></h5>
+                        <span class="ms-auto text-muted small" id="sizeB"></span>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-2 mb-3">
+                            <div class="col-6"><div class="stat-block"><div class="stat-value text-success" id="healthB">-</div><div class="stat-label">% Plantes saines</div></div></div>
+                            <div class="col-6"><div class="stat-block"><div class="stat-value text-danger" id="diseaseB">-</div><div class="stat-label">% Malades</div></div></div>
+                            <div class="col-6"><div class="stat-block"><div class="stat-value text-warning" id="stressB">-</div><div class="stat-label">Stress moyen</div></div></div>
+                            <div class="col-6"><div class="stat-block"><div class="stat-value text-primary" id="speciesB">-</div><div class="stat-label">Espèces distinctes</div></div></div>
+                        </div>
+                        <div class="mb-2">
+                            <div class="d-flex justify-content-between small mb-1"><span><i class="fas fa-circle text-success me-1"></i>Saines</span><span id="cntHealthyB">-</span></div>
+                            <div class="progress progress-compare mb-2"><div class="progress-bar bar-b" id="barHealthyB"></div></div>
+                            <div class="d-flex justify-content-between small mb-1"><span><i class="fas fa-circle text-warning me-1"></i>Stressées</span><span id="cntStressedB">-</span></div>
+                            <div class="progress progress-compare mb-2"><div class="progress-bar bg-warning" id="barStressedB"></div></div>
+                            <div class="d-flex justify-content-between small mb-1"><span><i class="fas fa-circle text-secondary me-1"></i>Dormantes</span><span id="cntDormantB">-</span></div>
+                            <div class="progress progress-compare mb-2"><div class="progress-bar bg-secondary" id="barDormantB"></div></div>
+                            <div class="d-flex justify-content-between small mb-1"><span><i class="fas fa-circle text-danger me-1"></i>Malades</span><span id="cntDiseasedB">-</span></div>
+                            <div class="progress progress-compare"><div class="progress-bar bg-danger" id="barDiseasedB"></div></div>
+                        </div>
+                        <div class="mt-3 text-muted small">
+                            <i class="fas fa-th-large me-1"></i>Occupation : <strong id="occupancyB">-</strong>% (<span id="totalB">-</span> plantes / <span id="gridB">-</span> cellules)
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Graphique radar -->
+        <div class="card soft-panel mb-4">
+            <div class="card-body">
+                <h5 class="fw-bold mb-3"><i class="fas fa-chart-bar me-2 text-success"></i>Comparaison visuelle</h5>
+                <div id="chartContainer">
+                    <canvas id="compareChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tableau récapitulatif -->
+        <div class="card soft-panel mb-4">
+            <div class="card-body">
+                <h5 class="fw-bold mb-3"><i class="fas fa-table me-2 text-success"></i>Tableau récapitulatif</h5>
+                <div class="table-responsive">
+                    <table class="table table-modern table-hover">
+                        <thead>
+                            <tr>
+                                <th>Métrique</th>
+                                <th class="text-center"><span class="badge badge-a">A</span> <span id="tblNameA"></span></th>
+                                <th class="text-center"><span class="badge badge-b">B</span> <span id="tblNameB"></span></th>
+                                <th class="text-center">Meilleure</th>
+                            </tr>
+                        </thead>
+                        <tbody id="comparisonTable"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="auth-guard.js"></script>
+<script>
+let compareChartInstance = null;
+
+async function loadForests() {
+    try {
+        const res = await fetch('/api/forests');
+        const forests = await res.json();
+        const s1 = document.getElementById('selectForest1');
+        const s2 = document.getElementById('selectForest2');
+        forests.forEach(f => {
+            s1.innerHTML += `<option value="${f.id}">${f.name} (${f.width}×${f.height})</option>`;
+            s2.innerHTML += `<option value="${f.id}">${f.name} (${f.width}×${f.height})</option>`;
+        });
+    } catch (e) {
+        console.error('Erreur chargement forêts', e);
+    }
+}
+
+async function compareForests() {
+    const id1 = document.getElementById('selectForest1').value;
+    const id2 = document.getElementById('selectForest2').value;
+    const errorEl = document.getElementById('compareError');
+    errorEl.classList.add('d-none');
+
+    if (!id1 || !id2) { showError('Veuillez sélectionner deux forêts.'); return; }
+    if (id1 === id2) { showError('Veuillez sélectionner deux forêts différentes.'); return; }
+
+    try {
+        const res = await fetch(`/api/forests/compare?forestId1=${id1}&forestId2=${id2}`);
+        const data = await res.json();
+        if (!res.ok) { showError(data.error || 'Erreur lors de la comparaison.'); return; }
+        renderResults(data);
+    } catch (e) {
+        showError('Erreur réseau : ' + e.message);
+    }
+}
+
+function showError(msg) {
+    const el = document.getElementById('compareError');
+    el.textContent = msg;
+    el.classList.remove('d-none');
+}
+
+function renderResults(data) {
+    const f1 = data.forest1;
+    const f2 = data.forest2;
+    const winner = data.winner;
+
+    document.getElementById('results').classList.remove('d-none');
+
+    // Winner
+    document.getElementById('winnerName').textContent = winner.name === 'Égalité'
+        ? '🤝 Égalité parfaite'
+        : '🏆 Gagnante : ' + winner.name;
+    document.getElementById('winnerReason').textContent = winner.reason;
+
+    // Forêt A
+    fillForest('A', f1);
+    fillForest('B', f2);
+
+    // Tableau
+    document.getElementById('tblNameA').textContent = f1.name;
+    document.getElementById('tblNameB').textContent = f2.name;
+    renderTable(f1, f2);
+
+    // Graphique
+    renderChart(f1, f2);
+
+    document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+}
+
+function fillForest(letter, f) {
+    const total = f.totalPlants || 0;
+    document.getElementById('name' + letter).textContent = f.name;
+    document.getElementById('size' + letter).textContent = f.width + '×' + f.height;
+    document.getElementById('health' + letter).textContent = f.healthRate + '%';
+    document.getElementById('disease' + letter).textContent = f.diseaseRate + '%';
+    document.getElementById('stress' + letter).textContent = f.avgStressIndex;
+    document.getElementById('species' + letter).textContent = f.speciesCount;
+    document.getElementById('occupancy' + letter).textContent = f.occupancyRate;
+    document.getElementById('total' + letter).textContent = f.totalPlants;
+    document.getElementById('grid' + letter).textContent = f.gridSize;
+
+    const states = ['Healthy', 'Stressed', 'Dormant', 'Diseased'];
+    const keys = ['healthyCount', 'stressedCount', 'dormantCount', 'diseasedCount'];
+    states.forEach((s, i) => {
+        const cnt = f[keys[i]];
+        document.getElementById('cnt' + s + letter).textContent = cnt;
+        const pct = total > 0 ? (cnt / total * 100) : 0;
+        document.getElementById('bar' + s + letter).style.width = pct + '%';
+    });
+}
+
+function renderTable(f1, f2) {
+    const rows = [
+        { label: 'Total plantes', v1: f1.totalPlants, v2: f2.totalPlants, higher: true },
+        { label: '% Plantes saines', v1: f1.healthRate + '%', v2: f2.healthRate + '%', higher: true, n1: f1.healthRate, n2: f2.healthRate },
+        { label: '% Malades', v1: f1.diseaseRate + '%', v2: f2.diseaseRate + '%', higher: false, n1: f1.diseaseRate, n2: f2.diseaseRate },
+        { label: 'Stress moyen', v1: f1.avgStressIndex, v2: f2.avgStressIndex, higher: false },
+        { label: 'Espèces distinctes', v1: f1.speciesCount, v2: f2.speciesCount, higher: true },
+        { label: 'Taux d\'occupation', v1: f1.occupancyRate + '%', v2: f2.occupancyRate + '%', higher: true, n1: f1.occupancyRate, n2: f2.occupancyRate },
+        { label: 'Plantes stressées', v1: f1.stressedCount, v2: f2.stressedCount, higher: false },
+        { label: 'Plantes dormantes', v1: f1.dormantCount, v2: f2.dormantCount, higher: false },
+    ];
+
+    const tbody = document.getElementById('comparisonTable');
+    tbody.innerHTML = '';
+    rows.forEach(row => {
+        const n1 = row.n1 !== undefined ? row.n1 : (typeof row.v1 === 'number' ? row.v1 : parseFloat(row.v1));
+        const n2 = row.n2 !== undefined ? row.n2 : (typeof row.v2 === 'number' ? row.v2 : parseFloat(row.v2));
+        let best = '';
+        if (n1 !== n2) {
+            const a_wins = row.higher ? n1 > n2 : n1 < n2;
+            best = a_wins
+                ? '<span class="badge badge-a">A</span>'
+                : '<span class="badge badge-b">B</span>';
+        } else {
+            best = '<span class="badge bg-secondary">Égal</span>';
+        }
+        tbody.innerHTML += `<tr>
+            <td class="fw-semibold">${row.label}</td>
+            <td class="text-center">${row.v1}</td>
+            <td class="text-center">${row.v2}</td>
+            <td class="text-center">${best}</td>
+        </tr>`;
+    });
+}
+
+function renderChart(f1, f2) {
+    if (compareChartInstance) compareChartInstance.destroy();
+    const ctx = document.getElementById('compareChart').getContext('2d');
+    compareChartInstance = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['% Saines', '% Malades', 'Stress ×100', 'Espèces', 'Occupation %'],
+            datasets: [
+                {
+                    label: f1.name,
+                    data: [f1.healthRate, f1.diseaseRate, Math.round(f1.avgStressIndex * 100), f1.speciesCount, f1.occupancyRate],
+                    backgroundColor: 'rgba(59,130,246,0.7)',
+                    borderColor: '#3b82f6',
+                    borderWidth: 2,
+                    borderRadius: 6,
+                },
+                {
+                    label: f2.name,
+                    data: [f2.healthRate, f2.diseaseRate, Math.round(f2.avgStressIndex * 100), f2.speciesCount, f2.occupancyRate],
+                    backgroundColor: 'rgba(245,158,11,0.7)',
+                    borderColor: '#f59e0b',
+                    borderWidth: 2,
+                    borderRadius: 6,
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { position: 'top' },
+                tooltip: { mode: 'index', intersect: false }
+            },
+            scales: {
+                y: { beginAtZero: true, grid: { color: '#f1f5f9' } },
+                x: { grid: { display: false } }
+            }
+        }
+    });
+}
+
+loadForests();
+</script>
+</body>
+</html>
+
+
+

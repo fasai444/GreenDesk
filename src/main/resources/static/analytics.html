@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GreenDesk - Tableau de bord analytique</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="style.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        .analytics-hero {
+            background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 50%, #1a4a3a 100%);
+            border-radius: 14px;
+            color: white;
+        }
+        .kpi-card {
+            border-radius: 14px;
+            border: none;
+            transition: transform 0.18s, box-shadow 0.18s;
+        }
+        .kpi-card:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,0.12); }
+        .kpi-icon {
+            width: 52px; height: 52px;
+            border-radius: 14px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.4rem;
+        }
+        .kpi-value { font-size: 2rem; font-weight: 800; line-height: 1.1; }
+        .kpi-label { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.07em; color: #64748b; }
+
+        .chart-card {
+            border-radius: 14px;
+            border: 1px solid #e2e8f0;
+            background: #ffffff;
+        }
+        .chart-card .card-header {
+            background: transparent;
+            border-bottom: 1px solid #f1f5f9;
+            font-weight: 600;
+            font-size: 0.9rem;
+            padding: 1rem 1.25rem 0.75rem;
+        }
+        .section-divider {
+            border: none;
+            border-top: 2px solid #f1f5f9;
+            margin: 2rem 0 1.5rem;
+        }
+
+        /* State chips */
+        .chip-HEALTHY  { background:#dcfce7; color:#166534; }
+        .chip-STRESSED { background:#fef3c7; color:#92400e; }
+        .chip-DORMANT  { background:#e0e7ff; color:#3730a3; }
+        .chip-DISEASED { background:#fee2e2; color:#991b1b; }
+        .chip-UNKNOWN  { background:#f1f5f9; color:#475569; }
+        .state-chip {
+            font-size: 0.68rem; font-weight: 600;
+            padding: 2px 10px; border-radius: 20px; display: inline-block;
+        }
+
+        .stress-bar-wrap { background: #f1f5f9; border-radius: 4px; height: 6px; }
+        .stress-bar-fill { height: 6px; border-radius: 4px; }
+
+        .rank-badge {
+            width: 28px; height: 28px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.75rem; font-weight: 700;
+        }
+        .rank-1 { background: #fef3c7; color: #92400e; }
+        .rank-2 { background: #f1f5f9; color: #475569; }
+        .rank-3 { background: #fff7ed; color: #c2410c; }
+        .rank-n { background: #f8fafc; color: #94a3b8; }
+
+        .export-btn { font-size: 0.8rem; }
+
+        #refreshBtn { transition: transform 0.3s; }
+        #refreshBtn.spinning { transform: rotate(360deg); }
+
+        .env-pill {
+            font-size: 0.72rem; padding: 3px 10px; border-radius: 20px;
+            background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0;
+            display: inline-flex; align-items: center; gap: 4px;
+        }
+        .loader-overlay {
+            position: fixed; inset: 0; background: rgba(255,255,255,0.7);
+            display: flex; align-items: center; justify-content: center;
+            z-index: 9999; transition: opacity 0.3s;
+        }
+        .loader-overlay.hidden { opacity: 0; pointer-events: none; }
+    </style>
+</head>
+<body class="bg-light">
+
+<!-- Loader -->
+<div class="loader-overlay" id="loaderOverlay">
+    <div class="text-center">
+        <div class="spinner-border text-success" style="width:3rem;height:3rem;"></div>
+        <div class="mt-3 fw-semibold text-muted">Chargement des analyses…</div>
+    </div>
+</div>
+
+<nav class="navbar navbar-expand-lg navbar-dark gd-navbar">
+    <div class="container">
+        <a class="navbar-brand fw-bold" href="home.html"><i class="fas fa-leaf"></i> GreenDesk</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item"><a class="nav-link" href="dashboard.html">Vue d'ensemble</a></li>
+                <li class="nav-item"><a class="nav-link" href="simulation.html">Simulation</a></li>
+                <li class="nav-item"><a class="nav-link" href="species.html">Espèces</a></li>
+                <li class="nav-item"><a class="nav-link" href="effects.html">Effets</a></li>
+                <li class="nav-item"><a class="nav-link" href="disease.html">Maladies</a></li>
+                <li class="nav-item"><a class="nav-link" href="care-calendar.html">Tâches</a></li>
+                <li class="nav-item"><a class="nav-link" href="recommendations.html">Recommandations</a></li>
+                <li class="nav-item"><a class="nav-link" href="forest-compare.html">Comparateur</a></li>
+                <li class="nav-item"><a class="nav-link" href="whatif.html">What-If</a></li>
+                <li class="nav-item"><a class="nav-link active fw-bold" href="analytics.html">Analytique</a></li>
+                <li class="nav-item"><a class="nav-link text-success" href="placement-optimizer.html">Optimizer</a></li>
+            </ul>
+            <ul class="navbar-nav ms-2" id="nav-auth-area"></ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container app-shell">
+
+    <!-- Hero -->
+    <div class="analytics-hero p-4 mb-4 d-flex align-items-center justify-content-between flex-wrap gap-3">
+        <div>
+            <small class="d-block mb-1" style="opacity:0.6; text-transform:uppercase; letter-spacing:0.08em; font-size:0.7rem;">Intelligence végétale</small>
+            <h1 class="h4 mb-1"><i class="fas fa-chart-line me-2"></i>Tableau de bord analytique</h1>
+            <p class="mb-0" style="opacity:0.8;">Vue globale en temps réel de la santé, des risques et des tendances de vos forêts.</p>
+        </div>
+        <button class="btn btn-outline-light btn-sm" id="refreshBtn" onclick="loadAll()">
+            <i class="fas fa-sync-alt me-1"></i>Actualiser
+        </button>
+    </div>
+
+    <!-- KPI Cards -->
+    <div class="row g-3 mb-4" id="kpiRow">
+        <div class="col-6 col-md-3">
+            <div class="card kpi-card h-100 p-3 shadow-sm">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="kpi-icon" style="background:#dcfce7"><i class="fas fa-seedling text-success"></i></div>
+                    <div>
+                        <div class="kpi-value text-success" id="kpi-total">–</div>
+                        <div class="kpi-label">Plantes totales</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card kpi-card h-100 p-3 shadow-sm">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="kpi-icon" style="background:#dbeafe"><i class="fas fa-tree text-primary"></i></div>
+                    <div>
+                        <div class="kpi-value text-primary" id="kpi-forests">–</div>
+                        <div class="kpi-label">Forêts actives</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card kpi-card h-100 p-3 shadow-sm">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="kpi-icon" style="background:#fef3c7"><i class="fas fa-heart-pulse" style="color:#d97706"></i></div>
+                    <div>
+                        <div class="kpi-value" style="color:#d97706" id="kpi-health">–</div>
+                        <div class="kpi-label">Taux de santé</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card kpi-card h-100 p-3 shadow-sm">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="kpi-icon" style="background:#fee2e2"><i class="fas fa-triangle-exclamation text-danger"></i></div>
+                    <div>
+                        <div class="kpi-value text-danger" id="kpi-stress">–</div>
+                        <div class="kpi-label">Stress moyen</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Row 1: Doughnut + Bar forêts -->
+    <div class="row g-3 mb-3">
+        <div class="col-md-5">
+            <div class="chart-card card h-100">
+                <div class="card-header d-flex align-items-center gap-2">
+                    <i class="fas fa-circle-half-stroke text-success"></i>
+                    Répartition des états
+                    <span class="ms-auto badge bg-light text-muted" id="badge-total-pie">0 plantes</span>
+                </div>
+                <div class="card-body d-flex align-items-center justify-content-center">
+                    <canvas id="chartDoughnut" style="max-height:260px;"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-7">
+            <div class="chart-card card h-100">
+                <div class="card-header d-flex align-items-center gap-2">
+                    <i class="fas fa-ranking-star text-warning"></i>
+                    Classement des forêts par santé
+                </div>
+                <div class="card-body">
+                    <canvas id="chartForestRanking" style="max-height:260px;"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Row 2: Species distribution + Radar env -->
+    <div class="row g-3 mb-3">
+        <div class="col-md-6">
+            <div class="chart-card card h-100">
+                <div class="card-header d-flex align-items-center gap-2">
+                    <i class="fas fa-dna text-info"></i>
+                    Distribution des espèces
+                </div>
+                <div class="card-body">
+                    <canvas id="chartSpecies" style="max-height:280px;"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="chart-card card h-100">
+                <div class="card-header d-flex align-items-center gap-2">
+                    <i class="fas fa-radar text-purple"></i>
+                    Conditions environnementales moyennes
+                    <select class="form-select form-select-sm ms-auto" style="max-width:160px;" id="forestEnvSelect" onchange="updateRadar()"></select>
+                </div>
+                <div class="card-body d-flex align-items-center justify-content-center">
+                    <canvas id="chartRadar" style="max-height:280px;"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <hr class="section-divider">
+
+    <!-- Top at-risk plants table -->
+    <div class="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-2">
+        <h5 class="mb-0"><i class="fas fa-fire text-danger me-2"></i>Plantes les plus à risque</h5>
+        <div class="d-flex gap-2 align-items-center">
+            <select class="form-select form-select-sm" style="width:auto" id="riskLimit" onchange="loadTopRisk()">
+                <option value="5">Top 5</option>
+                <option value="10" selected>Top 10</option>
+                <option value="20">Top 20</option>
+            </select>
+            <button class="btn btn-outline-success btn-sm export-btn" onclick="exportCSV()">
+                <i class="fas fa-file-csv me-1"></i>Exporter CSV
+            </button>
+        </div>
+    </div>
+
+    <div class="card chart-card mb-4">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0" id="riskTable">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="ps-3">#</th>
+                            <th>Plante</th>
+                            <th>Espèce</th>
+                            <th>État</th>
+                            <th>Stress</th>
+                            <th>Temp (°C)</th>
+                            <th>Eau (%)</th>
+                            <th>Humidité (%)</th>
+                            <th>Lux</th>
+                        </tr>
+                    </thead>
+                    <tbody id="riskTableBody">
+                        <tr><td colspan="9" class="text-center py-4 text-muted">Chargement…</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <hr class="section-divider">
+
+    <!-- Environmental averages cards -->
+    <h5 class="mb-3"><i class="fas fa-temperature-half text-info me-2"></i>Moyennes environnementales par forêt</h5>
+    <div class="row g-3 mb-4" id="envCards">
+        <div class="col-12 text-center text-muted py-3">Chargement…</div>
+    </div>
+
+    <hr class="section-divider">
+
+    <!-- Species health breakdown -->
+    <div class="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-2">
+        <h5 class="mb-0"><i class="fas fa-dna text-info me-2"></i>Santé par espèce</h5>
+        <button class="btn btn-outline-info btn-sm" onclick="loadSpeciesHealth()">
+            <i class="fas fa-sync-alt me-1"></i>Actualiser
+        </button>
+    </div>
+
+    <div class="card chart-card mb-4">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="ps-3">Espèce</th>
+                            <th class="text-center">Total</th>
+                            <th class="text-center text-success">Sains</th>
+                            <th class="text-center text-warning">Stressés</th>
+                            <th class="text-center" style="color:#6366f1">Dormants</th>
+                            <th class="text-center text-danger">Malades</th>
+                            <th>Taux santé</th>
+                            <th>Stress moy.</th>
+                            <th>Risque</th>
+                        </tr>
+                    </thead>
+                    <tbody id="speciesHealthBody">
+                        <tr><td colspan="9" class="text-center py-4 text-muted">Chargement…</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Species health stacked bar chart -->
+    <div class="card chart-card mb-5">
+        <div class="card-header d-flex align-items-center gap-2">
+            <i class="fas fa-chart-bar text-info"></i>
+            Répartition des états par espèce
+        </div>
+        <div class="card-body">
+            <canvas id="chartSpeciesHealth" style="max-height:320px;"></canvas>
+        </div>
+    </div>
+
+    <!-- Summary insight cards -->
+    <hr class="section-divider">
+    <h5 class="mb-3"><i class="fas fa-lightbulb text-warning me-2"></i>Synthèse et indicateurs clés</h5>
+    <div class="row g-3 mb-5" id="insightCards">
+        <div class="col-12 text-center text-muted py-3">Chargement…</div>
+    </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="auth-guard.js"></script>
+<script>
+let chartDoughnut, chartForestRanking, chartSpecies, chartRadar;
+let envData = [];
+let topRiskData = [];
+
+const STATE_COLORS = {
+    HEALTHY:  '#22c55e',
+    STRESSED: '#f59e0b',
+    DORMANT:  '#6366f1',
+    DISEASED: '#ef4444'
+};
+const STATE_LABELS = {
+    HEALTHY: 'En santé', STRESSED: 'Stressé', DORMANT: 'Dormant', DISEASED: 'Malade'
+};
+
+/* ── Init ── */
+async function loadAll() {
+    const btn = document.getElementById('refreshBtn');
+    btn.classList.add('spinning');
+    document.getElementById('loaderOverlay').classList.remove('hidden');
+    try {
+        await Promise.all([
+            loadGlobalStats(),
+            loadStressDistribution(),
+            loadForestRanking(),
+            loadSpeciesDistribution(),
+            loadEnvironmental(),
+            loadTopRisk()
+        ]);
+    } finally {
+        btn.classList.remove('spinning');
+        document.getElementById('loaderOverlay').classList.add('hidden');
+    }
+}
+
+/* ── KPIs ── */
+async function loadGlobalStats() {
+    const res = await fetch('/api/analytics/global');
+    const d = await res.json();
+    document.getElementById('kpi-total').textContent   = d.totalPlants;
+    document.getElementById('kpi-forests').textContent = d.totalForests;
+    document.getElementById('kpi-health').textContent  = d.healthRate + '%';
+    document.getElementById('kpi-stress').textContent  = (d.avgStressIndex * 100).toFixed(1) + '%';
+}
+
+/* ── Doughnut ── */
+async function loadStressDistribution() {
+    const res = await fetch('/api/analytics/stress-distribution');
+    const d = await res.json();
+    const labels = Object.keys(d).map(k => STATE_LABELS[k] || k);
+    const values = Object.values(d);
+    const total  = values.reduce((a, b) => a + b, 0);
+    document.getElementById('badge-total-pie').textContent = total + ' plantes';
+
+    const ctx = document.getElementById('chartDoughnut').getContext('2d');
+    if (chartDoughnut) chartDoughnut.destroy();
+    chartDoughnut = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels,
+            datasets: [{
+                data: values,
+                backgroundColor: Object.keys(d).map(k => STATE_COLORS[k] || '#94a3b8'),
+                borderWidth: 2,
+                borderColor: '#fff',
+                hoverOffset: 6
+            }]
+        },
+        options: {
+            cutout: '65%',
+            plugins: {
+                legend: { position: 'bottom', labels: { font: { size: 12 }, padding: 16 } },
+                tooltip: {
+                    callbacks: {
+                        label: ctx => ` ${ctx.label}: ${ctx.raw} (${total > 0 ? (ctx.raw / total * 100).toFixed(1) : 0}%)`
+                    }
+                }
+            }
+        }
+    });
+}
+
+/* ── Forest ranking bar ── */
+async function loadForestRanking() {
+    const res = await fetch('/api/analytics/forest-ranking');
+    const data = await res.json();
+    const labels = data.map(f => f.forestName);
+    const scores = data.map(f => f.healthRate);
+    const colors = scores.map(s => s >= 75 ? '#22c55e' : s >= 50 ? '#f59e0b' : '#ef4444');
+
+    const ctx = document.getElementById('chartForestRanking').getContext('2d');
+    if (chartForestRanking) chartForestRanking.destroy();
+    chartForestRanking = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels,
+            datasets: [{
+                label: 'Taux de santé (%)',
+                data: scores,
+                backgroundColor: colors,
+                borderRadius: 6,
+                borderSkipped: false
+            }]
+        },
+        options: {
+            indexAxis: 'y',
+            scales: {
+                x: { min: 0, max: 100, ticks: { callback: v => v + '%' }, grid: { color: '#f1f5f9' } },
+                y: { grid: { display: false } }
+            },
+            plugins: {
+                legend: { display: false },
+                tooltip: { callbacks: { label: ctx => ` Santé : ${ctx.raw}%` } }
+            }
+        }
+    });
+}
+
+/* ── Species distribution ── */
+async function loadSpeciesDistribution() {
+    const res = await fetch('/api/analytics/species-distribution');
+    const data = await res.json();
+    const labels = data.map(s => s.speciesName);
+    const values = data.map(s => s.count);
+    const palette = ['#22c55e','#3b82f6','#f59e0b','#ef4444','#6366f1','#14b8a6','#f97316','#84cc16','#ec4899','#06b6d4'];
+
+    const ctx = document.getElementById('chartSpecies').getContext('2d');
+    if (chartSpecies) chartSpecies.destroy();
+    chartSpecies = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels,
+            datasets: [{
+                label: 'Nombre de plantes',
+                data: values,
+                backgroundColor: labels.map((_, i) => palette[i % palette.length]),
+                borderRadius: 6,
+                borderSkipped: false
+            }]
+        },
+        options: {
+            scales: {
+                y: { beginAtZero: true, ticks: { stepSize: 1 }, grid: { color: '#f1f5f9' } },
+                x: { grid: { display: false } }
+            },
+            plugins: { legend: { display: false } }
+        }
+    });
+}
+
+/* ── Radar ── */
+async function loadEnvironmental() {
+    const res = await fetch('/api/analytics/environmental');
+    envData = await res.json();
+
+    const sel = document.getElementById('forestEnvSelect');
+    sel.innerHTML = '';
+    envData.forEach((f, i) => {
+        sel.innerHTML += `<option value="${i}">${f.forestName}</option>`;
+    });
+    updateRadar();
+    renderEnvCards();
+}
+
+function updateRadar() {
+    if (!envData.length) return;
+    const idx = parseInt(document.getElementById('forestEnvSelect').value) || 0;
+    const f = envData[idx];
+    if (!f) return;
+
+    const ctx = document.getElementById('chartRadar').getContext('2d');
+    if (chartRadar) chartRadar.destroy();
+    chartRadar = new Chart(ctx, {
+        type: 'radar',
+        data: {
+            labels: ['Température (°C)', 'Eau (%)', 'Humidité (%)', 'Luminosité (klux)'],
+            datasets: [{
+                label: f.forestName,
+                data: [f.avgTemp, f.avgWater, f.avgHumidity, f.avgLux / 1000],
+                backgroundColor: 'rgba(34,197,94,0.15)',
+                borderColor: '#22c55e',
+                borderWidth: 2,
+                pointBackgroundColor: '#22c55e',
+                pointRadius: 5
+            }]
+        },
+        options: {
+            scales: {
+                r: {
+                    beginAtZero: true,
+                    grid: { color: '#e2e8f0' },
+                    ticks: { font: { size: 10 } },
+                    pointLabels: { font: { size: 11 } }
+                }
+            },
+            plugins: { legend: { display: false } }
+        }
+    });
+}
+
+function renderEnvCards() {
+    const container = document.getElementById('envCards');
+    if (!envData.length) {
+        container.innerHTML = '<div class="col-12 text-center text-muted">Aucune donnée disponible.</div>';
+        return;
+    }
+    container.innerHTML = envData.map(f => `
+        <div class="col-sm-6 col-lg-4">
+            <div class="card chart-card p-3 h-100">
+                <div class="fw-semibold mb-2">
+                    <i class="fas fa-tree text-success me-1"></i>${f.forestName}
+                    <span class="badge bg-light text-muted ms-1" style="font-size:0.65rem;">${f.plantCount} plantes</span>
+                </div>
+                <div class="d-flex flex-wrap gap-2">
+                    <span class="env-pill"><i class="fas fa-temperature-half"></i>${f.avgTemp}°C</span>
+                    <span class="env-pill"><i class="fas fa-droplet"></i>${f.avgWater}%</span>
+                    <span class="env-pill"><i class="fas fa-wind"></i>${f.avgHumidity}%</span>
+                    <span class="env-pill"><i class="fas fa-sun"></i>${f.avgLux} lux</span>
+                </div>
+            </div>
+        </div>`).join('');
+}
+
+/* ── Top at-risk table ── */
+async function loadTopRisk() {
+    const limit = document.getElementById('riskLimit').value;
+    const res = await fetch(`/api/analytics/top-risk?limit=${limit}`);
+    topRiskData = await res.json();
+    renderRiskTable(topRiskData);
+}
+
+function renderRiskTable(data) {
+    const tbody = document.getElementById('riskTableBody');
+    if (!data.length) {
+        tbody.innerHTML = `<tr><td colspan="9" class="text-center py-4">
+            <i class="fas fa-check-circle text-success fa-2x mb-2 d-block"></i>
+            Toutes les plantes sont en bonne santé !
+        </td></tr>`;
+        return;
+    }
+    tbody.innerHTML = data.map((p, i) => {
+        const stressPercent = Math.round(p.stressIndex * 100);
+        const stressColor   = stressPercent > 80 ? '#ef4444' : stressPercent > 50 ? '#f59e0b' : '#22c55e';
+        const rankClass     = i === 0 ? 'rank-1' : i === 1 ? 'rank-2' : i === 2 ? 'rank-3' : 'rank-n';
+        return `<tr>
+            <td class="ps-3">
+                <div class="rank-badge ${rankClass}">${i + 1}</div>
+            </td>
+            <td><strong>${p.plantName}</strong></td>
+            <td class="text-muted small">${p.speciesName}</td>
+            <td><span class="state-chip chip-${p.state}">${p.state}</span></td>
+            <td>
+                <div class="d-flex align-items-center gap-2">
+                    <div class="stress-bar-wrap flex-grow-1" style="min-width:60px">
+                        <div class="stress-bar-fill" style="width:${stressPercent}%; background:${stressColor}"></div>
+                    </div>
+                    <small style="color:${stressColor}; font-weight:600; min-width:32px">${stressPercent}%</small>
+                </div>
+            </td>
+            <td class="text-center small">${p.temperature ?? '–'}</td>
+            <td class="text-center small">${p.waterLevel ?? '–'}</td>
+            <td class="text-center small">${p.humidity ?? '–'}</td>
+            <td class="text-center small">${p.luminosity ?? '–'}</td>
+        </tr>`;
+    }).join('');
+}
+
+/* ── Export CSV ── */
+function exportCSV() {
+    if (!topRiskData.length) { alert('Aucune donnée à exporter.'); return; }
+    const headers = ['Rang','Plante','Espèce','État','Stress (%)','Temp (°C)','Eau (%)','Humidité (%)','Lux'];
+    const rows = topRiskData.map((p, i) => [
+        i + 1,
+        `"${p.plantName}"`,
+        `"${p.speciesName}"`,
+        p.state,
+        Math.round(p.stressIndex * 100),
+        p.temperature ?? '',
+        p.waterLevel ?? '',
+        p.humidity ?? '',
+        p.luminosity ?? ''
+    ].join(','));
+    const csv = [headers.join(','), ...rows].join('\n');
+    const blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8;' });
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
+    a.href     = url;
+    a.download = `greendesk-top-risk-${new Date().toISOString().slice(0,10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+}
+
+/* ── Species health table + stacked bar ── */
+let chartSpeciesHealth;
+
+async function loadSpeciesHealth() {
+    const res = await fetch('/api/analytics/species-health');
+    const data = await res.json();
+    renderSpeciesHealthTable(data);
+    renderSpeciesHealthChart(data);
+    renderInsightCards(data);
+}
+
+function renderSpeciesHealthTable(data) {
+    const tbody = document.getElementById('speciesHealthBody');
+    if (!data.length) {
+        tbody.innerHTML = '<tr><td colspan="9" class="text-center py-4 text-muted">Aucune donnée.</td></tr>';
+        return;
+    }
+    const RISK_BADGE = {
+        'CRITIQUE': 'bg-danger',
+        'ÉLEVÉ':    'bg-warning text-dark',
+        'MODÉRÉ':   'bg-info text-dark',
+        'FAIBLE':   'bg-success'
+    };
+    tbody.innerHTML = data.map(s => {
+        const healthColor = s.healthRate >= 75 ? '#22c55e' : s.healthRate >= 50 ? '#f59e0b' : '#ef4444';
+        const stressPercent = Math.round(s.avgStress * 100);
+        const stressColor   = stressPercent > 60 ? '#ef4444' : stressPercent > 30 ? '#f59e0b' : '#22c55e';
+        return `<tr>
+            <td class="ps-3 fw-semibold">${s.speciesName}</td>
+            <td class="text-center">${s.total}</td>
+            <td class="text-center text-success fw-semibold">${s.healthy}</td>
+            <td class="text-center text-warning fw-semibold">${s.stressed}</td>
+            <td class="text-center fw-semibold" style="color:#6366f1">${s.dormant}</td>
+            <td class="text-center text-danger fw-semibold">${s.diseased}</td>
+            <td style="min-width:120px">
+                <div class="d-flex align-items-center gap-2">
+                    <div class="stress-bar-wrap flex-grow-1">
+                        <div class="stress-bar-fill" style="width:${s.healthRate}%; background:${healthColor}"></div>
+                    </div>
+                    <small style="color:${healthColor}; font-weight:600">${s.healthRate}%</small>
+                </div>
+            </td>
+            <td>
+                <span style="color:${stressColor}; font-weight:600">${stressPercent}%</span>
+            </td>
+            <td><span class="badge ${RISK_BADGE[s.riskLevel] || 'bg-secondary'}">${s.riskLevel}</span></td>
+        </tr>`;
+    }).join('');
+}
+
+function renderSpeciesHealthChart(data) {
+    if (!data.length) return;
+    const labels = data.map(s => s.speciesName);
+    const ctx = document.getElementById('chartSpeciesHealth').getContext('2d');
+    if (chartSpeciesHealth) chartSpeciesHealth.destroy();
+    chartSpeciesHealth = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels,
+            datasets: [
+                {
+                    label: 'En santé',
+                    data: data.map(s => s.healthy),
+                    backgroundColor: '#22c55e',
+                    borderRadius: 4,
+                    borderSkipped: false
+                },
+                {
+                    label: 'Stressé',
+                    data: data.map(s => s.stressed),
+                    backgroundColor: '#f59e0b',
+                    borderRadius: 4,
+                    borderSkipped: false
+                },
+                {
+                    label: 'Dormant',
+                    data: data.map(s => s.dormant),
+                    backgroundColor: '#6366f1',
+                    borderRadius: 4,
+                    borderSkipped: false
+                },
+                {
+                    label: 'Malade',
+                    data: data.map(s => s.diseased),
+                    backgroundColor: '#ef4444',
+                    borderRadius: 4,
+                    borderSkipped: false
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                x: { stacked: true, grid: { display: false } },
+                y: { stacked: true, beginAtZero: true, ticks: { stepSize: 1 }, grid: { color: '#f1f5f9' } }
+            },
+            plugins: {
+                legend: { position: 'bottom', labels: { font: { size: 12 }, padding: 16 } }
+            }
+        }
+    });
+}
+
+function renderInsightCards(speciesData) {
+    const container = document.getElementById('insightCards');
+    const mostAtRisk   = speciesData.length ? speciesData[0] : null;
+    const healthiest   = speciesData.length ? [...speciesData].sort((a,b) => b.healthRate - a.healthRate)[0] : null;
+    const mostDiverse  = speciesData.length ? [...speciesData].sort((a,b) => b.total - a.total)[0] : null;
+    const criticalCount= speciesData.filter(s => s.riskLevel === 'CRITIQUE').length;
+
+    container.innerHTML = `
+        <div class="col-sm-6 col-lg-3">
+            <div class="card chart-card p-3 h-100 border-danger border-opacity-25">
+                <div class="d-flex align-items-center gap-2 mb-2">
+                    <div class="kpi-icon" style="background:#fee2e2; width:38px; height:38px; font-size:1rem;">
+                        <i class="fas fa-skull-crossbones text-danger"></i>
+                    </div>
+                    <span class="fw-semibold small">Espèce la plus à risque</span>
+                </div>
+                <div class="fw-bold fs-6 text-danger">${mostAtRisk ? mostAtRisk.speciesName : '–'}</div>
+                <div class="text-muted small mt-1">${mostAtRisk ? `Stress moyen : ${Math.round(mostAtRisk.avgStress * 100)}%` : ''}</div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-lg-3">
+            <div class="card chart-card p-3 h-100 border-success border-opacity-25">
+                <div class="d-flex align-items-center gap-2 mb-2">
+                    <div class="kpi-icon" style="background:#dcfce7; width:38px; height:38px; font-size:1rem;">
+                        <i class="fas fa-trophy text-success"></i>
+                    </div>
+                    <span class="fw-semibold small">Espèce la plus saine</span>
+                </div>
+                <div class="fw-bold fs-6 text-success">${healthiest ? healthiest.speciesName : '–'}</div>
+                <div class="text-muted small mt-1">${healthiest ? `Taux de santé : ${healthiest.healthRate}%` : ''}</div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-lg-3">
+            <div class="card chart-card p-3 h-100 border-primary border-opacity-25">
+                <div class="d-flex align-items-center gap-2 mb-2">
+                    <div class="kpi-icon" style="background:#dbeafe; width:38px; height:38px; font-size:1rem;">
+                        <i class="fas fa-layer-group text-primary"></i>
+                    </div>
+                    <span class="fw-semibold small">Espèce la plus répandue</span>
+                </div>
+                <div class="fw-bold fs-6 text-primary">${mostDiverse ? mostDiverse.speciesName : '–'}</div>
+                <div class="text-muted small mt-1">${mostDiverse ? `${mostDiverse.total} plantes` : ''}</div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-lg-3">
+            <div class="card chart-card p-3 h-100 border-warning border-opacity-25">
+                <div class="d-flex align-items-center gap-2 mb-2">
+                    <div class="kpi-icon" style="background:#fef3c7; width:38px; height:38px; font-size:1rem;">
+                        <i class="fas fa-triangle-exclamation" style="color:#d97706"></i>
+                    </div>
+                    <span class="fw-semibold small">Espèces en état critique</span>
+                </div>
+                <div class="fw-bold fs-6" style="color:#d97706">${criticalCount} espèce${criticalCount > 1 ? 's' : ''}</div>
+                <div class="text-muted small mt-1">nécessitent une intervention</div>
+            </div>
+        </div>`;
+}
+
+/* ── loadAll with species health ── */
+async function loadAll() {
+    const btn = document.getElementById('refreshBtn');
+    btn.classList.add('spinning');
+    document.getElementById('loaderOverlay').classList.remove('hidden');
+    try {
+        await Promise.all([
+            loadGlobalStats(),
+            loadStressDistribution(),
+            loadForestRanking(),
+            loadSpeciesDistribution(),
+            loadEnvironmental(),
+            loadTopRisk(),
+            loadSpeciesHealth()
+        ]);
+    } finally {
+        btn.classList.remove('spinning');
+        document.getElementById('loaderOverlay').classList.add('hidden');
+    }
+}
+
+loadAll();
+</script>
+</body>
+</html>

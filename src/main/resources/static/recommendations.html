@@ -1,0 +1,315 @@
+﻿<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GreenDesk - Recommandations de soins</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="style.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .rec-hero {
+            background: linear-gradient(135deg, #14532d 0%, #166534 50%, #15803d 100%);
+            border-radius: 14px;
+            color: white;
+        }
+        .priority-CRITICAL { border-left: 5px solid #dc2626; background: #fef2f2; }
+        .priority-HIGH     { border-left: 5px solid #ea580c; background: #fff7ed; }
+        .priority-MEDIUM   { border-left: 5px solid #d97706; background: #fffbeb; }
+        .priority-LOW      { border-left: 5px solid #2563eb; background: #eff6ff; }
+
+        .badge-CRITICAL { background-color: #dc2626; }
+        .badge-HIGH     { background-color: #ea580c; }
+        .badge-MEDIUM   { background-color: #d97706; }
+        .badge-LOW      { background-color: #2563eb; }
+
+        .rec-card {
+            border-radius: 10px;
+            border: 1px solid #e2e8f0;
+            transition: box-shadow 0.15s;
+            margin-bottom: 0.75rem;
+        }
+        .rec-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.1); }
+
+        .rec-icon {
+            width: 42px; height: 42px;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.1rem;
+            flex-shrink: 0;
+        }
+        .icon-CRITICAL { background: #fee2e2; color: #dc2626; }
+        .icon-HIGH     { background: #ffedd5; color: #ea580c; }
+        .icon-MEDIUM   { background: #fef3c7; color: #d97706; }
+        .icon-LOW      { background: #dbeafe; color: #2563eb; }
+
+        .filter-bar { gap: 0.5rem; }
+        .stress-pill {
+            font-size: 0.7rem;
+            padding: 2px 8px;
+            border-radius: 20px;
+            background: #f1f5f9;
+            color: #475569;
+        }
+        #summary-bar .stat { text-align: center; }
+        #summary-bar .stat-n { font-size: 1.8rem; font-weight: 700; }
+        #summary-bar .stat-l { font-size: 0.7rem; text-transform: uppercase; color: #64748b; }
+    </style>
+</head>
+<body class="bg-light">
+
+<nav class="navbar navbar-expand-lg navbar-dark gd-navbar">
+    <div class="container">
+        <a class="navbar-brand fw-bold" href="home.html"><i class="fas fa-leaf"></i> GreenDesk</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item"><a class="nav-link" href="dashboard.html">Vue d'ensemble</a></li>
+                <li class="nav-item"><a class="nav-link" href="simulation.html">Simulation</a></li>
+                <li class="nav-item"><a class="nav-link" href="species.html">Espèces</a></li>
+                <li class="nav-item"><a class="nav-link" href="effects.html">Effets</a></li>
+                <li class="nav-item"><a class="nav-link" href="disease.html">Maladies</a></li>
+                <li class="nav-item"><a class="nav-link" href="care-calendar.html">Tâches</a></li>
+                <li class="nav-item"><a class="nav-link active fw-bold" href="recommendations.html">Recommandations</a></li>
+                <li class="nav-item"><a class="nav-link" href="forest-compare.html">Comparateur</a></li>
+                <li class="nav-item"><a class="nav-link" href="whatif.html">What-If</a></li>
+                <li class="nav-item"><a class="nav-link text-success" href="placement-optimizer.html">Optimizer</a></li>
+            </ul>
+            <ul class="navbar-nav ms-2" id="nav-auth-area"></ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container app-shell">
+
+    <!-- Hero -->
+    <div class="rec-hero p-4 mb-4">
+        <small class="d-block mb-1" style="opacity:0.7; text-transform:uppercase; letter-spacing:0.08em; font-size:0.7rem;">Intelligence de soin</small>
+        <h1 class="h4 mb-1"><i class="fas fa-clipboard-list me-2"></i>Recommandations automatiques de soins</h1>
+        <p class="mb-0" style="opacity:0.85;">Analyses en temps réel basées sur l'état de chaque plante et les conditions optimales de son espèce.</p>
+    </div>
+
+    <!-- Filtres -->
+    <div class="card soft-panel mb-4">
+        <div class="card-body">
+            <div class="row g-2 align-items-end">
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold small">Périmètre</label>
+                    <select class="form-select form-select-sm" id="scopeSelect" onchange="onScopeChange()">
+                        <option value="all">Toutes les plantes</option>
+                        <option value="forest">Par forêt</option>
+                        <option value="plant">Par plante</option>
+                    </select>
+                </div>
+                <div class="col-md-4 d-none" id="forestPickerCol">
+                    <label class="form-label fw-semibold small">Forêt</label>
+                    <select class="form-select form-select-sm" id="forestPicker"></select>
+                </div>
+                <div class="col-md-4 d-none" id="plantPickerCol">
+                    <label class="form-label fw-semibold small">Plante</label>
+                    <select class="form-select form-select-sm" id="plantPicker"></select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label fw-semibold small">Priorité min.</label>
+                    <select class="form-select form-select-sm" id="priorityFilter" onchange="applyFilter()">
+                        <option value="">Toutes</option>
+                        <option value="CRITICAL">Critical</option>
+                        <option value="HIGH">High</option>
+                        <option value="MEDIUM">Medium</option>
+                        <option value="LOW">Low</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <button class="btn btn-success btn-sm w-100" onclick="loadRecommendations()">
+                        <i class="fas fa-sync-alt me-1"></i>Analyser
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Résumé -->
+    <div id="summary-bar" class="card soft-panel mb-4 d-none">
+        <div class="card-body py-2">
+            <div class="row text-center">
+                <div class="col stat"><div class="stat-n" id="cnt-total">0</div><div class="stat-l">Total</div></div>
+                <div class="col stat"><div class="stat-n text-danger" id="cnt-critical">0</div><div class="stat-l">Critical</div></div>
+                <div class="col stat"><div class="stat-n text-warning" id="cnt-high">0</div><div class="stat-l">High</div></div>
+                <div class="col stat"><div class="stat-n" style="color:#d97706" id="cnt-medium">0</div><div class="stat-l">Medium</div></div>
+                <div class="col stat"><div class="stat-n text-primary" id="cnt-low">0</div><div class="stat-l">Low</div></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loader -->
+    <div id="loader" class="text-center py-5 d-none">
+        <div class="spinner-border text-success"></div>
+        <div class="mt-2 text-muted">Analyse en cours…</div>
+    </div>
+
+    <!-- Résultats vides -->
+    <div id="emptyState" class="text-center py-5 d-none">
+        <i class="fas fa-check-circle fa-3x text-success mb-3"></i>
+        <h5 class="text-success">Toutes les plantes sont en bonne santé !</h5>
+        <p class="text-muted">Aucune recommandation de soin nécessaire pour le périmètre sélectionné.</p>
+    </div>
+
+    <!-- Liste recommandations -->
+    <div id="recList"></div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="auth-guard.js"></script>
+<script>
+let allRecs = [];
+
+const PRIORITY_ORDER = ['CRITICAL', 'HIGH', 'MEDIUM', 'LOW'];
+const PRIORITY_LABELS = { CRITICAL: 'Critique', HIGH: 'Haute', MEDIUM: 'Moyenne', LOW: 'Faible' };
+const TYPE_LABELS = {
+    WATERING: 'Arrosage', DRAINAGE: 'Drainage', HEATING: 'Chauffage',
+    COOLING: 'Refroidissement', HUMIDITY: 'Humidité', VENTILATION: 'Ventilation',
+    LIGHTING: 'Éclairage', SHADING: 'Ombrage', TREATMENT: 'Traitement maladie',
+    INTERVENTION: 'Intervention urgente'
+};
+
+async function init() {
+    await Promise.all([loadForests(), loadPlants()]);
+    loadRecommendations();
+}
+
+async function loadForests() {
+    const res = await fetch('/api/forests');
+    const forests = await res.json();
+    const sel = document.getElementById('forestPicker');
+    forests.forEach(f => sel.innerHTML += `<option value="${f.id}">${f.name}</option>`);
+}
+
+async function loadPlants() {
+    const res = await fetch('/plants');
+    const plants = await res.json();
+    const sel = document.getElementById('plantPicker');
+    plants.forEach(p => sel.innerHTML += `<option value="${p.id}">${p.name}</option>`);
+}
+
+function onScopeChange() {
+    const scope = document.getElementById('scopeSelect').value;
+    document.getElementById('forestPickerCol').classList.toggle('d-none', scope !== 'forest');
+    document.getElementById('plantPickerCol').classList.toggle('d-none', scope !== 'plant');
+}
+
+async function loadRecommendations() {
+    const scope = document.getElementById('scopeSelect').value;
+    let url = '/api/recommendations';
+    if (scope === 'forest') {
+        const fid = document.getElementById('forestPicker').value;
+        if (fid) url = `/api/recommendations/forest/${fid}`;
+    } else if (scope === 'plant') {
+        const pid = document.getElementById('plantPicker').value;
+        if (pid) url = `/api/recommendations/plant/${pid}`;
+    }
+
+    document.getElementById('loader').classList.remove('d-none');
+    document.getElementById('recList').innerHTML = '';
+    document.getElementById('emptyState').classList.add('d-none');
+    document.getElementById('summary-bar').classList.add('d-none');
+
+    try {
+        const res = await fetch(url);
+        const data = await res.json();
+        allRecs = Array.isArray(data) ? data : [];
+        applyFilter();
+    } catch (e) {
+        document.getElementById('recList').innerHTML =
+            `<div class="alert alert-danger">Erreur : ${e.message}</div>`;
+    } finally {
+        document.getElementById('loader').classList.add('d-none');
+    }
+}
+
+function applyFilter() {
+    const minPriority = document.getElementById('priorityFilter').value;
+    const allowed = minPriority ? PRIORITY_ORDER.slice(0, PRIORITY_ORDER.indexOf(minPriority) + 1) : PRIORITY_ORDER;
+    const filtered = allRecs.filter(r => allowed.includes(r.priority));
+    renderRecs(filtered);
+}
+
+function renderRecs(recs) {
+    const container = document.getElementById('recList');
+    container.innerHTML = '';
+
+    // Summary
+    const bar = document.getElementById('summary-bar');
+    bar.classList.remove('d-none');
+    document.getElementById('cnt-total').textContent = recs.length;
+    ['CRITICAL','HIGH','MEDIUM','LOW'].forEach(p => {
+        document.getElementById('cnt-' + p.toLowerCase()).textContent =
+            recs.filter(r => r.priority === p).length;
+    });
+
+    if (recs.length === 0) {
+        document.getElementById('emptyState').classList.remove('d-none');
+        return;
+    }
+
+    // Grouper par priorité
+    PRIORITY_ORDER.forEach(priority => {
+        const group = recs.filter(r => r.priority === priority);
+        if (group.length === 0) return;
+
+        const header = document.createElement('div');
+        header.className = 'd-flex align-items-center gap-2 mb-2 mt-3';
+        header.innerHTML = `
+            <span class="badge badge-${priority} rounded-pill px-3">${PRIORITY_LABELS[priority]}</span>
+            <span class="text-muted small">${group.length} recommandation${group.length > 1 ? 's' : ''}</span>
+            <hr class="flex-grow-1 m-0">`;
+        container.appendChild(header);
+
+        group.forEach(rec => {
+            const card = document.createElement('div');
+            card.className = `rec-card priority-${rec.priority} p-3`;
+            const stressColor = rec.stressIndex > 0.8 ? 'text-danger' :
+                                rec.stressIndex > 0.5 ? 'text-warning' : 'text-success';
+            card.innerHTML = `
+                <div class="d-flex align-items-start gap-3">
+                    <div class="rec-icon icon-${rec.priority}">
+                        <i class="fas ${rec.icon}"></i>
+                    </div>
+                    <div class="flex-grow-1">
+                        <div class="d-flex align-items-center gap-2 flex-wrap mb-1">
+                            <strong>${rec.action}</strong>
+                            <span class="badge bg-secondary">${TYPE_LABELS[rec.type] || rec.type}</span>
+                        </div>
+                        <div class="text-muted small mb-2">${rec.reason}</div>
+                        <div class="d-flex gap-2 flex-wrap align-items-center">
+                            <span class="stress-pill">
+                                <i class="fas fa-seedling me-1"></i>${rec.plantName}
+                            </span>
+                            ${rec.speciesName ? `<span class="stress-pill"><i class="fas fa-dna me-1"></i>${rec.speciesName}</span>` : ''}
+                            ${rec.forestId ? `<span class="stress-pill"><i class="fas fa-tree me-1"></i>Forêt</span>` : ''}
+                            <span class="stress-pill ${stressColor}">
+                                Stress: ${(rec.stressIndex * 100).toFixed(0)}%
+                            </span>
+                            <span class="stress-pill">
+                                État: ${rec.plantState || '-'}
+                            </span>
+                        </div>
+                    </div>
+                    <div>
+                        <a href="/plants" class="btn btn-sm btn-outline-secondary" title="Voir la plante">
+                            <i class="fas fa-external-link-alt"></i>
+                        </a>
+                    </div>
+                </div>`;
+            container.appendChild(card);
+        });
+    });
+}
+
+init();
+</script>
+</body>
+</html>
+
