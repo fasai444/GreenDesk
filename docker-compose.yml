@@ -48,7 +48,7 @@ services:
       # Définir dans env.example ou exporter avant docker compose up
       TOMORROW_API_KEY: ${TOMORROW_API_KEY:-}
       TOMORROW_WEBHOOK_URL: ${TOMORROW_WEBHOOK_URL:-http://host.docker.internal:8081/api/weather/webhook}
-      WEATHER_WEBHOOK_SECRET: ${WEATHER_WEBHOOK_SECRET:-dev-secret-local}
+      WEATHER_WEBHOOK_SECRET: ${WEATHER_WEBHOOK_SECRET:?WEATHER_WEBHOOK_SECRET must be set}
     depends_on:
       - mongodb
     networks:

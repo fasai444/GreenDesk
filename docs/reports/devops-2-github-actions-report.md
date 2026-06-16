@@ -3,7 +3,6 @@
 
 | Information | Valeur |
 |---|---|
-| Version | `v2.0.0` |
 | Projet | GreenDesk |
 | Type | Dossier technique, manuel utilisateur et rapport DevOps 2 |
 | Dépôt GitHub | `MisasoaRobison/GreenDesk` |
@@ -1272,17 +1271,28 @@ Ces résultats confirment la stabilité de la livraison actuelle. La couverture 
 
 ## 4. Matrice de responsabilités et réalisations
 
-La matrice suivante synthétise les responsabilités observées dans la documentation et l'historique Git. Elle doit être validée par l'équipe avant livraison officielle.
+La matrice suivante présente la répartition des responsabilités au sein de l'équipe pour la livraison DevOps 2 du projet GreenDesk. Elle distingue les contributions principales, les contributions de support et les éléments à compléter avant validation finale.
 
-| Fonctionnalité | Lydia | Misasoa | Hadi | Fatima | Mamadou | Remarque |
-|---|---|---|---|---|---|---|
-| Architecture backend | Contribution | Contribution | Contribution | À compléter | Contribution | Validation équipe requise |
-| Feature météo | Contribution | À compléter | Contribution | À compléter | Contribution principale | Validation équipe requise |
-| Feature calendrier de soins | Contribution | Contribution principale | À compléter | À compléter | Contribution | Validation équipe requise |
-| GitHub Actions | Contribution principale | Contribution | Contribution principale | À compléter | À compléter | Workflows versionnés |
-| Documentation et PDF | Contribution principale | Contribution | Contribution | Contribution | Contribution | Rapport et captures |
-| Tests | Contribution | Contribution principale | Contribution | Contribution | Contribution | 374 tests réussis |
-| Docker et déploiement | Contribution | Contribution | Contribution principale | À compléter | À compléter | Docker Compose présent |
+| Fonctionnalité / Tâche | Lydia AMROUCHE | Misasoa ROBISON | Hadi ISSA | Fatima SAIDI | Mamadou DIALLO |
+|---|---:|---:|---:|---:|---:|
+| Architecture backend générale | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Feature 1 - Jumeau numérique météo / Tomorrow.io |  |  | ✓ |  | ✓ |
+| Webhook météo et traitement des alertes |  |  | ✓ |  | ✓ |
+| Calcul ISR / SPS et impact météo sur les plantes |  |  | ✓ |  | ✓ |
+| Réordonnancement météo des tâches flexibles |  | ✓ | ✓ |  | ✓ |
+| Feature 2 - Calendrier de soins dynamique | ✓ | ✓ |  |  |  |
+| Module WNS - Calcul du besoin d'intervention | ✓ |  |  |  |  |
+| Priorisation des tâches avec SPS | ✓ | ✓ |  |  |  |
+| DTO de réponse et justification API | ✓ |  |  |  |  |
+| Moteur de tâches `CareTaskService` |  | ✓ |  |  |  |
+| Persistance `CareTaskRepository` et `CarePlan` |  | ✓ |  |  |  |
+| Synchronisation Google Calendar |  | ✓ |  |  |  |
+| Expiration automatique des tâches |  | ✓ |  |  |  |
+| Interface `care-calendar.html` | ✓ | ✓ |  |  |  |
+| Tests Feature 1 |  |  | ✓ |  | ✓ |
+| Tests Feature 2 | ✓ | ✓ |  |  |  |
+| GitHub Actions et CI/CD | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Documentation technique DevOps 2 | ✓ | ✓ | ✓ | ✓ | ✓ |
 
 ---
 

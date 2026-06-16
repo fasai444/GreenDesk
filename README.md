@@ -24,6 +24,8 @@
 
 **Documentation en ligne (GitHub Pages)** : [https://misasoarobison.github.io/GreenDesk](https://misasoarobison.github.io/GreenDesk)
 
+**Documentation DevOps 2** : [https://misasoarobison.github.io/GreenDesk/#/reports/devops-2-github-actions-report.md](https://misasoarobison.github.io/GreenDesk/#/reports/devops-2-github-actions-report.md)
+
 **Cahier des charges** : [docs/cahier-des-charges.md](docs/cahier-des-charges.md)
 
 ## Description
