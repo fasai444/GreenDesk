@@ -1,0 +1,675 @@
+﻿<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GreenDesk - Optimiseur de placement</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="style.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        #forestCanvas {
+            border: 1px solid rgba(15, 23, 42, 0.12);
+            border-radius: 8px;
+            cursor: crosshair;
+            background: repeating-conic-gradient(#f0fdf4 0% 25%, #dcfce7 0% 50%) 0 0 / 20px 20px;
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+        .plant-list-scroll {
+            max-height: 220px;
+            overflow-y: auto;
+        }
+        .plant-list-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 8px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+        .plant-list-item:hover { background: #f0fdf4; }
+        .plant-list-item label { cursor: pointer; margin: 0; font-size: 0.875rem; }
+        .plant-list-item input[type="checkbox"] { flex-shrink: 0; }
+        .species-dot {
+            width: 10px; height: 10px;
+            border-radius: 50%;
+            flex-shrink: 0;
+            display: inline-block;
+        }
+        .legend-dot {
+            width: 14px; height: 14px;
+            border-radius: 3px;
+            display: inline-block;
+            flex-shrink: 0;
+        }
+    </style>
+</head>
+<body class="bg-light">
+
+<nav class="navbar navbar-expand-lg navbar-dark gd-navbar">
+    <div class="container">
+        <a class="navbar-brand fw-bold" href="dashboard.html"><i class="fas fa-leaf"></i> GreenDesk</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarOptimizer">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarOptimizer">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item"><a class="nav-link" href="dashboard.html">Vue d'ensemble</a></li>
+                <li class="nav-item"><a class="nav-link" href="simulation.html">Simulation</a></li>
+                <li class="nav-item"><a class="nav-link" href="species.html">Espèces</a></li>
+                <li class="nav-item"><a class="nav-link" href="effects.html">Effets</a></li>
+                <li class="nav-item"><a class="nav-link" href="disease.html">Maladies</a></li>
+                <li class="nav-item"><a class="nav-link" href="care-calendar.html">Tâches</a></li>
+                <li class="nav-item"><a class="nav-link" href="recommendations.html">Recommandations</a></li>
+                <li class="nav-item"><a class="nav-link" href="forest-compare.html">Comparateur</a></li>
+                <li class="nav-item"><a class="nav-link" href="whatif.html">What-If</a></li>
+                <li class="nav-item"><a class="nav-link active fw-bold" href="placement-optimizer.html">Optimizer</a></li>
+            </ul>
+            <ul class="navbar-nav ms-2" id="nav-auth-area"></ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container app-shell">
+
+    <!-- Hero -->
+    <div class="card border-0 shadow-sm mb-3 page-hero-card">
+        <div class="card-body py-3">
+            <small class="page-kicker d-block">Placement intelligent</small>
+            <h1 class="h4 mb-1"><i class="fas fa-map-marked-alt me-2 text-success"></i>Optimiseur de placement</h1>
+            <p class="text-muted mb-0">Placement optimal des plantes via algorithme génétique — compatibilité compagnons, espacement, ressources.</p>
+        </div>
+    </div>
+
+    <!-- Feedback -->
+    <div id="pageFeedback" class="alert d-none app-feedback mb-3" role="alert" aria-live="polite"></div>
+
+    <div class="row g-3">
+
+        <!-- ===== LEFT PANEL ===== -->
+        <div class="col-lg-4 d-flex flex-column gap-3">
+
+            <!-- Forest selection -->
+            <div class="card shadow-sm border-0 soft-panel">
+                <div class="card-body">
+                    <h6 class="fw-bold mb-3"><i class="fas fa-tree me-2 text-success"></i>Forêt cible</h6>
+                    <select id="forestSelect" class="form-select mb-2">
+                        <option value="">— Choisir une forêt —</option>
+                    </select>
+                    <button class="btn btn-outline-success btn-sm w-100" onclick="createNewForest()">
+                        <i class="fas fa-plus me-1"></i> Créer une forêt
+                    </button>
+                    <div id="forestInfo" class="d-none mt-2">
+                        <div class="d-flex gap-2 mt-1">
+                            <span class="badge bg-success-subtle text-success-emphasis border border-success-subtle">
+                                <i class="fas fa-expand me-1"></i><span id="gridSize">—</span>
+                            </span>
+                            <span class="badge bg-success-subtle text-success-emphasis border border-success-subtle">
+                                <i class="fas fa-seedling me-1"></i><span id="occupiedCells">0</span> plantes
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Plant selection -->
+            <div class="card shadow-sm border-0 soft-panel">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h6 class="fw-bold mb-0"><i class="fas fa-check-square me-2 text-success"></i>Plantes à optimiser</h6>
+                        <div class="d-flex gap-1">
+                            <button class="btn btn-outline-secondary btn-sm" onclick="selectAllPlants()" title="Tout sélectionner">
+                                <i class="fas fa-check-double"></i>
+                            </button>
+                            <button class="btn btn-outline-secondary btn-sm" onclick="deselectAllPlants()" title="Tout désélectionner">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div id="plantList" class="plant-list-scroll">
+                        <div class="text-muted small text-center py-3">
+                            <i class="fas fa-spinner fa-spin me-1"></i> Chargement des plantes…
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Optimization -->
+            <div class="card shadow-sm border-0 soft-panel">
+                <div class="card-body">
+                    <h6 class="fw-bold mb-3"><i class="fas fa-dna me-2 text-success"></i>Algorithme génétique</h6>
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-success" onclick="runOptimization()" id="optimizeBtn">
+                            <i class="fas fa-play me-2"></i>Lancer l'optimisation
+                        </button>
+                        <button class="btn btn-outline-success" onclick="applyOptimization()" id="applyBtn" disabled>
+                            <i class="fas fa-check me-2"></i>Appliquer à la forêt
+                        </button>
+                    </div>
+
+                    <!-- Stats panel -->
+                    <div id="statsPanel" class="d-none mt-3 p-3 rounded" style="background:#f0fdf4;border:1px solid #bbf7d0;">
+                        <div class="small fw-bold text-success mb-2"><i class="fas fa-chart-line me-1"></i>Résultats</div>
+                        <div class="d-flex justify-content-between small mb-1">
+                            <span class="text-muted">Score de fitness</span>
+                            <span class="fw-bold" id="fitnessScore">—</span>
+                        </div>
+                        <div class="d-flex justify-content-between small mb-1">
+                            <span class="text-muted">Plantes placées</span>
+                            <span class="fw-bold" id="plantsPlaced">—</span>
+                        </div>
+                        <div class="d-flex justify-content-between small">
+                            <span class="text-muted">Générations</span>
+                            <span class="fw-bold">200</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Heatmap -->
+            <div class="card shadow-sm border-0 soft-panel">
+                <div class="card-body">
+                    <h6 class="fw-bold mb-3"><i class="fas fa-fire me-2 text-warning"></i>Heatmap d'espèce</h6>
+                    <select id="heatmapSpecies" class="form-select form-select-sm mb-2">
+                        <option value="">— Choisir une espèce —</option>
+                    </select>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-warning btn-sm flex-fill" onclick="showHeatmap()">
+                            <i class="fas fa-fire me-1"></i>Afficher
+                        </button>
+                        <button id="clearHeatmapBtn" class="btn btn-outline-secondary btn-sm d-none" onclick="clearHeatmap()">
+                            <i class="fas fa-times me-1"></i>Effacer
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Suggest position -->
+            <div class="card shadow-sm border-0 soft-panel">
+                <div class="card-body">
+                    <h6 class="fw-bold mb-3"><i class="fas fa-crosshairs me-2 text-info"></i>Suggestion de position</h6>
+                    <select id="suggestSpecies" class="form-select form-select-sm mb-2">
+                        <option value="">— Choisir une espèce —</option>
+                    </select>
+                    <button class="btn btn-info btn-sm w-100 text-white" onclick="suggestPosition()">
+                        <i class="fas fa-map-pin me-1"></i>Trouver la meilleure position
+                    </button>
+                    <div id="suggestResult" class="small text-success fw-semibold mt-2 d-none">
+                        <i class="fas fa-location-dot me-1"></i><span id="suggestText"></span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- ===== RIGHT PANEL (canvas) ===== -->
+        <div class="col-lg-8 d-flex flex-column gap-3">
+
+            <!-- Canvas card -->
+            <div class="card shadow-sm border-0 soft-panel">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h6 class="fw-bold mb-0"><i class="fas fa-map me-2 text-success"></i>Vue de la forêt</h6>
+                        <div id="canvasActions" class="d-flex gap-2 d-none">
+                            <span class="badge bg-light text-dark border">
+                                Clic = aperçu · <i class="fas fa-square-dashed text-success"></i> = suggestion algo
+                            </span>
+                        </div>
+                    </div>
+
+                    <div id="canvasPlaceholder" class="text-center py-5 text-muted">
+                        <i class="fas fa-tree fa-3x mb-3 opacity-25"></i>
+                        <div>Sélectionnez une forêt pour afficher la vue</div>
+                    </div>
+
+                    <canvas id="forestCanvas" width="900" height="600" class="d-none"></canvas>
+                </div>
+            </div>
+
+            <!-- Legend -->
+            <div class="card shadow-sm border-0 soft-panel">
+                <div class="card-body">
+                    <h6 class="fw-bold mb-2"><i class="fas fa-palette me-2 text-success"></i>Légende</h6>
+                    <div id="legendContainer" class="d-flex flex-wrap gap-3">
+                        <span class="text-muted small">Chargement des espèces…</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- Create Forest Modal -->
+<div class="modal fade" id="createForestModal" tabindex="-1">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="fas fa-tree me-2"></i>Nouvelle forêt</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label class="form-label small fw-semibold">Nom</label>
+                    <input type="text" id="newForestName" class="form-control form-control-sm" placeholder="Ma forêt">
+                </div>
+                <div class="row g-2">
+                    <div class="col-6">
+                        <label class="form-label small fw-semibold">Largeur</label>
+                        <input type="number" id="newForestWidth" class="form-control form-control-sm" value="10" min="2" max="50">
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label small fw-semibold">Hauteur</label>
+                        <input type="number" id="newForestHeight" class="form-control form-control-sm" value="10" min="2" max="50">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Annuler</button>
+                <button class="btn btn-success btn-sm" onclick="submitCreateForest()">
+                    <i class="fas fa-plus me-1"></i>Créer
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="auth-guard.js"></script>
+<script>
+    const API_BASE = 'http://localhost:8080/api';
+    const canvas = document.getElementById('forestCanvas');
+    const ctx = canvas.getContext('2d');
+
+    let currentForest = null;
+    let allPlants = [];
+    let selectedPlantIds = [];
+    let optimizationResult = null;
+    let forestPlants = [];
+    let heatmapData = null;
+    let allSpecies = [];
+
+    const PALETTE = [
+        '#16a34a','#2563eb','#ea580c','#ca8a04','#dc2626',
+        '#7c3aed','#0891b2','#be185d','#0f766e','#92400e'
+    ];
+    let speciesColorMap = {};
+
+    function getSpeciesColor(speciesName) {
+        if (!speciesColorMap[speciesName]) {
+            const idx = Object.keys(speciesColorMap).length % PALETTE.length;
+            speciesColorMap[speciesName] = PALETTE[idx];
+        }
+        return speciesColorMap[speciesName];
+    }
+
+    // ── Init ────────────────────────────────────────────────────────────────────
+    async function init() {
+        if (!await AUTH.requireAuth()) return;
+        await loadForests();
+        await Promise.all([loadAllPlants(), loadSpeciesForHeatmap()]);
+    }
+
+    async function loadForests() {
+        try {
+            const forests = await fetch(`${API_BASE}/forests`, { credentials: 'include' }).then(r => r.json());
+            const select = document.getElementById('forestSelect');
+            forests.forEach(f => {
+                const opt = document.createElement('option');
+                opt.value = f.id;
+                opt.textContent = `${f.name} (${f.width}×${f.height})`;
+                select.appendChild(opt);
+            });
+            select.addEventListener('change', onForestSelected);
+        } catch (e) {
+            showFeedback('Erreur chargement forêts : ' + e.message, 'danger');
+        }
+    }
+
+    async function loadAllPlants() {
+        try {
+            allPlants = await fetch(`${API_BASE}/plants`, { credentials: 'include' }).then(r => r.json());
+            renderPlantList();
+        } catch (e) {
+            showFeedback('Erreur chargement plantes : ' + e.message, 'danger');
+        }
+    }
+
+    async function loadSpeciesForHeatmap() {
+    try {
+        allSpecies = await fetch(`${API_BASE}/species`, { credentials: 'include' }).then(r => r.json());
+        const heatSel = document.getElementById('heatmapSpecies');
+        const sugSel  = document.getElementById('suggestSpecies');
+        allSpecies.forEach(s => {
+            getSpeciesColor(s.name);
+            [heatSel, sugSel].forEach(sel => {
+                const opt = document.createElement('option');
+                opt.value = s.name;
+                opt.textContent = s.name;
+                sel.appendChild(opt);
+            });
+        });
+        renderLegend();
+    } catch (e) {
+        console.error('Erreur chargement espèces', e);
+    }
+}
+
+    // ── Legend ──────────────────────────────────────────────────────────────────
+    function renderLegend() {
+        const container = document.getElementById('legendContainer');
+        container.innerHTML = '';
+        Object.entries(speciesColorMap).forEach(([name, color]) => {
+            container.insertAdjacentHTML('beforeend', `
+                <div class="d-flex align-items-center gap-2">
+                    <span class="legend-dot" style="background:${color};"></span>
+                    <span class="small">${name}</span>
+                </div>`);
+        });
+        container.insertAdjacentHTML('beforeend', `
+            <div class="d-flex align-items-center gap-2">
+                <span class="legend-dot" style="background:linear-gradient(to right,#16a34a,#dc2626);"></span>
+                <span class="small">Heatmap (optimal → déconseillé)</span>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+                <span class="legend-dot" style="background:#fef08a;border:2px dashed #ca8a04;"></span>
+                <span class="small">Position suggérée</span>
+            </div>`);
+    }
+
+    // ── Plant list ──────────────────────────────────────────────────────────────
+    function renderPlantList() {
+        const container = document.getElementById('plantList');
+        container.innerHTML = '';
+        if (allPlants.length === 0) {
+            container.innerHTML = '<div class="text-muted small text-center py-3">Aucune plante disponible</div>';
+            return;
+        }
+        const unplaced = allPlants.filter(p => !p.forestId);
+        const placed   = allPlants.filter(p =>  p.forestId);
+        [...unplaced, ...placed].forEach(plant => {
+            const stateIcons = { HEALTHY:'✅', STRESSED:'⚠️', DORMANT:'😴', DISEASED:'🔴' };
+            const icon = stateIcons[plant.plantState] || '';
+            const muted = plant.forestId ? 'opacity-50' : '';
+            const tip   = plant.forestId ? 'title="Déjà assignée à une forêt"' : '';
+
+            const div = document.createElement('div');
+            div.className = `plant-list-item ${muted}`;
+            div.setAttribute('title', plant.forestId ? 'Déjà assignée à une forêt' : '');
+            div.innerHTML = `
+                <input class="form-check-input" type="checkbox" id="plant-${plant.id}" ${selectedPlantIds.includes(plant.id)?'checked':''}>
+                <span class="species-dot" style="background:${getSpeciesColor(plant.species.name)};"></span>
+                <label class="form-check-label flex-fill" for="plant-${plant.id}">
+                    ${plant.name}
+                    <span class="text-muted">(${plant.species.name})</span>
+                    ${icon}
+                </label>`;
+            div.querySelector('input').onchange = e => {
+                if (e.target.checked) selectedPlantIds.push(plant.id);
+                else selectedPlantIds = selectedPlantIds.filter(id => id !== plant.id);
+            };
+            container.appendChild(div);
+        });
+    }
+
+    function selectAllPlants() {
+        selectedPlantIds = allPlants.map(p => p.id);
+        document.querySelectorAll('#plantList input[type="checkbox"]').forEach(cb => cb.checked = true);
+    }
+
+    function deselectAllPlants() {
+        selectedPlantIds = [];
+        document.querySelectorAll('#plantList input[type="checkbox"]').forEach(cb => cb.checked = false);
+    }
+
+    // ── Forest selection ────────────────────────────────────────────────────────
+    async function onForestSelected(event) {
+        const forestId = event.target.value;
+        if (!forestId) return;
+        try {
+            currentForest = await fetch(`${API_BASE}/forests/${forestId}`).then(r => r.json());
+            const plants  = await fetch(`${API_BASE}/plants`).then(r => r.json());
+            forestPlants  = plants.filter(p => p.forestId === forestId);
+
+            heatmapData      = null;
+            optimizationResult = null;
+            document.getElementById('applyBtn').disabled = true;
+            document.getElementById('statsPanel').classList.add('d-none');
+            document.getElementById('clearHeatmapBtn').classList.add('d-none');
+            document.getElementById('suggestResult').classList.add('d-none');
+
+            // Show canvas
+            document.getElementById('canvasPlaceholder').classList.add('d-none');
+            document.getElementById('forestCanvas').classList.remove('d-none');
+            document.getElementById('canvasActions').classList.remove('d-none');
+            document.getElementById('forestInfo').classList.remove('d-none');
+
+            drawForest();
+            updateCanvasStats();
+        } catch (e) {
+            showFeedback('Erreur chargement forêt : ' + e.message, 'danger');
+        }
+    }
+
+    // ── Canvas drawing ──────────────────────────────────────────────────────────
+    function drawForest() {
+        if (!currentForest) return;
+        const W = currentForest.width;
+        const H = currentForest.height;
+        const cs = Math.min(canvas.width / W, canvas.height / H);
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // Grid
+        ctx.strokeStyle = 'rgba(15,23,42,0.08)';
+        ctx.lineWidth = 1;
+        for (let x = 0; x <= W; x++) {
+            ctx.beginPath(); ctx.moveTo(x*cs, 0); ctx.lineTo(x*cs, H*cs); ctx.stroke();
+        }
+        for (let y = 0; y <= H; y++) {
+            ctx.beginPath(); ctx.moveTo(0, y*cs); ctx.lineTo(W*cs, y*cs); ctx.stroke();
+        }
+
+        // Heatmap
+        if (heatmapData) {
+            heatmapData.forEach(cell => {
+                const r = Math.floor(220 * (1 - cell.score));
+                const g = Math.floor(220 * cell.score);
+                ctx.fillStyle = `rgba(${r},${g},0,0.55)`;
+                ctx.fillRect(cell.x*cs, cell.y*cs, cs, cs);
+            });
+        }
+
+        // Plants
+        forestPlants.forEach(plant => {
+            if (plant.x == null || plant.y == null) return;
+            const color = getSpeciesColor(plant.species.name);
+            ctx.fillStyle = color;
+            ctx.beginPath();
+            ctx.arc((plant.x+0.5)*cs, (plant.y+0.5)*cs, cs*0.35, 0, 2*Math.PI);
+            ctx.fill();
+            ctx.strokeStyle = 'rgba(15,23,42,0.4)';
+            ctx.lineWidth = 1.5;
+            ctx.stroke();
+
+            if (cs >= 20) {
+                ctx.fillStyle = '#fff';
+                ctx.font = `bold ${Math.max(9, cs*0.22)}px sans-serif`;
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(plant.species.name.substring(0,3), (plant.x+0.5)*cs, (plant.y+0.5)*cs);
+            }
+        });
+
+        // Optimization preview (dashed outlines)
+        if (optimizationResult && !document.getElementById('applyBtn').disabled) {
+            optimizationResult.placements.forEach(pos => {
+                const plant = allPlants.find(p => p.id === pos.plantId);
+                if (!plant) return;
+                ctx.strokeStyle = getSpeciesColor(plant.species.name);
+                ctx.lineWidth = 2.5;
+                ctx.setLineDash([5,4]);
+                ctx.strokeRect(pos.x*cs+2, pos.y*cs+2, cs-4, cs-4);
+                ctx.setLineDash([]);
+            });
+        }
+    }
+
+    // ── Optimization ────────────────────────────────────────────────────────────
+    async function runOptimization() {
+        if (!currentForest) { showFeedback('Veuillez sélectionner une forêt.', 'warning'); return; }
+        if (selectedPlantIds.length === 0) { showFeedback('Veuillez sélectionner au moins une plante.', 'warning'); return; }
+
+        const btn = document.getElementById('optimizeBtn');
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Optimisation en cours…';
+
+        try {
+            const data = await fetch(`${API_BASE}/placement/optimize`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+                body: JSON.stringify({ plantIds: selectedPlantIds, forestWidth: currentForest.width, forestHeight: currentForest.height })
+            }).then(r => r.json());
+
+            optimizationResult = data;
+            document.getElementById('fitnessScore').textContent = data.fitnessScore.toFixed(2);
+            document.getElementById('plantsPlaced').textContent  = data.placements.length;
+            document.getElementById('statsPanel').classList.remove('d-none');
+            document.getElementById('applyBtn').disabled = false;
+
+            showFeedback(`Optimisation réussie — ${data.placements.length} plantes positionnées.`, 'success');
+            drawForest();
+        } catch (e) {
+            showFeedback('Échec de l\'optimisation : ' + e.message, 'danger');
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-play me-2"></i>Lancer l\'optimisation';
+        }
+    }
+
+    async function applyOptimization() {
+        if (!optimizationResult || !currentForest) return;
+        const btn = document.getElementById('applyBtn');
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Application…';
+
+        try {
+            await fetch(`${API_BASE}/placement/optimize-and-apply/${currentForest.id}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+                body: JSON.stringify(selectedPlantIds)
+            });
+            showFeedback('Placement appliqué avec succès !', 'success');
+            await onForestSelected({ target: { value: currentForest.id } });
+            optimizationResult = null;
+        } catch (e) {
+            showFeedback('Échec de l\'application : ' + e.message, 'danger');
+            btn.disabled = false;
+        } finally {
+            btn.innerHTML = '<i class="fas fa-check me-2"></i>Appliquer à la forêt';
+        }
+    }
+
+    // ── Heatmap ─────────────────────────────────────────────────────────────────
+    async function showHeatmap() {
+        const species = document.getElementById('heatmapSpecies').value;
+        if (!species || !currentForest) { showFeedback('Veuillez sélectionner une forêt et une espèce.', 'warning'); return; }
+        try {
+            const data = await fetch(`${API_BASE}/placement/heatmap/${currentForest.id}?species=${encodeURIComponent(species)}`, { credentials: 'include' }).then(r => r.json());
+            heatmapData = data.heatmap;
+            document.getElementById('clearHeatmapBtn').classList.remove('d-none');
+            showFeedback(`Heatmap affichée pour ${species}.`, 'success');
+            drawForest();
+        } catch (e) {
+            showFeedback('Erreur heatmap : ' + e.message, 'danger');
+        }
+    }
+
+    function clearHeatmap() {
+        heatmapData = null;
+        document.getElementById('clearHeatmapBtn').classList.add('d-none');
+        drawForest();
+    }
+
+    // ── Suggest position ────────────────────────────────────────────────────────
+    async function suggestPosition() {
+        const species = document.getElementById('suggestSpecies').value;
+        if (!species || !currentForest) { showFeedback('Veuillez sélectionner une forêt et une espèce.', 'warning'); return; }
+        try {
+            const data = await fetch(`${API_BASE}/placement/suggest/${currentForest.id}?species=${encodeURIComponent(species)}`, { credentials: 'include' }).then(r => r.json());
+            if (data.message) { showFeedback(data.message, 'warning'); return; }
+
+            // Highlight on canvas
+            const cs = Math.min(canvas.width / currentForest.width, canvas.height / currentForest.height);
+            drawForest();
+            ctx.fillStyle = 'rgba(250,240,100,0.35)';
+            ctx.fillRect(data.x*cs+2, data.y*cs+2, cs-4, cs-4);
+            ctx.strokeStyle = '#ca8a04';
+            ctx.lineWidth = 3;
+            ctx.setLineDash([6,3]);
+            ctx.strokeRect(data.x*cs+2, data.y*cs+2, cs-4, cs-4);
+            ctx.setLineDash([]);
+
+            const resultEl = document.getElementById('suggestResult');
+            document.getElementById('suggestText').textContent =
+                `Meilleure position pour ${species} : (${data.x}, ${data.y}) — score ${(data.score*100).toFixed(1)}%`;
+            resultEl.classList.remove('d-none');
+        } catch (e) {
+            showFeedback('Erreur suggestion : ' + e.message, 'danger');
+        }
+    }
+
+    // ── Create forest ───────────────────────────────────────────────────────────
+    function createNewForest() {
+        new bootstrap.Modal(document.getElementById('createForestModal')).show();
+    }
+
+    async function submitCreateForest() {
+        const name   = document.getElementById('newForestName').value.trim();
+        const width  = parseInt(document.getElementById('newForestWidth').value);
+        const height = parseInt(document.getElementById('newForestHeight').value);
+        if (!name || !width || !height) { showFeedback('Veuillez remplir tous les champs.', 'warning'); return; }
+
+        try {
+            await fetch(`${API_BASE}/forests`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+                body: JSON.stringify({ name, width, height })
+            });
+            bootstrap.Modal.getInstance(document.getElementById('createForestModal')).hide();
+            showFeedback('Forêt créée ! Rechargement…', 'success');
+            setTimeout(() => location.reload(), 1000);
+        } catch (e) {
+            showFeedback('Échec de la création : ' + e.message, 'danger');
+        }
+    }
+
+    // ── Utils ───────────────────────────────────────────────────────────────────
+    function updateCanvasStats() {
+        if (!currentForest) return;
+        document.getElementById('gridSize').textContent     = `${currentForest.width}×${currentForest.height}`;
+        document.getElementById('occupiedCells').textContent = forestPlants.length;
+    }
+
+    function showFeedback(text, type) {
+        const el = document.getElementById('pageFeedback');
+        el.className = `alert alert-${type} app-feedback mb-3`;
+        el.textContent = text;
+        el.classList.remove('d-none');
+        setTimeout(() => el.classList.add('d-none'), 5000);
+    }
+
+    init();
+</script>
+</body>
+</html>
+
+
+
+

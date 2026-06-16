@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GreenDesk - Simulation What-If</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="style.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        .whatif-hero {
+            background: linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4338ca 100%);
+            border-radius: 14px; color: white;
+        }
+        .scenario-card {
+            border: 2px solid #e2e8f0; border-radius: 12px; cursor: pointer;
+            transition: all 0.18s; padding: 0.9rem; text-align: center;
+        }
+        .scenario-card:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.12); }
+        .scenario-card.selected { border-width: 3px; background: #f0f9ff; }
+        .scenario-icon { font-size: 1.6rem; margin-bottom: 0.3rem; }
+        .scenario-label { font-size: 0.8rem; font-weight: 600; }
+
+        .risk-CRITIQUE { background:#fef2f2; border:2px solid #dc2626; }
+        .risk-ÉLEVÉ    { background:#fff7ed; border:2px solid #ea580c; }
+        .risk-MODÉRÉ   { background:#fffbeb; border:2px solid #d97706; }
+        .risk-FAIBLE   { background:#f0fdf4; border:2px solid #16a34a; }
+
+        .risk-badge-CRITIQUE { background:#dc2626; }
+        .risk-badge-ÉLEVÉ    { background:#ea580c; }
+        .risk-badge-MODÉRÉ   { background:#d97706; }
+        .risk-badge-FAIBLE   { background:#16a34a; }
+
+        .impact-CRITICAL { color:#dc2626; font-weight:700; }
+        .impact-HIGH     { color:#ea580c; font-weight:600; }
+        .impact-MEDIUM   { color:#d97706; }
+        .impact-STABLE   { color:#6b7280; }
+        .impact-IMPROVED { color:#16a34a; font-weight:600; }
+
+        .arrow-up   { color:#dc2626; }
+        .arrow-down { color:#16a34a; }
+        .arrow-eq   { color:#94a3b8; }
+
+        .stat-big { font-size:2rem; font-weight:800; line-height:1; }
+        .stat-lbl { font-size:0.68rem; text-transform:uppercase; color:#64748b; letter-spacing:.05em; }
+
+        .slider-row label { min-width:140px; font-size:.85rem; font-weight:600; }
+        .slider-val { min-width:60px; text-align:right; font-weight:700; font-size:.9rem; }
+
+        .state-chip {
+            display:inline-block; padding:2px 9px; border-radius:20px;
+            font-size:.72rem; font-weight:600;
+        }
+        .state-HEALTHY  { background:#dcfce7; color:#15803d; }
+        .state-STRESSED { background:#fef9c3; color:#a16207; }
+        .state-DORMANT  { background:#f3f4f6; color:#374151; }
+        .state-DISEASED { background:#fee2e2; color:#b91c1c; }
+
+        .changed-row { background:#fff7ed !important; }
+        .progress-stress { height:6px; border-radius:3px; }
+
+        #chartWrap { max-width:560px; margin:0 auto; }
+    </style>
+</head>
+<body class="bg-light">
+
+<nav class="navbar navbar-expand-lg navbar-dark gd-navbar">
+    <div class="container">
+        <a class="navbar-brand fw-bold" href="home.html"><i class="fas fa-leaf"></i> GreenDesk</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="nav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item"><a class="nav-link" href="dashboard.html">Vue d'ensemble</a></li>
+                <li class="nav-item"><a class="nav-link" href="simulation.html">Simulation</a></li>
+                <li class="nav-item"><a class="nav-link" href="species.html">Espèces</a></li>
+                <li class="nav-item"><a class="nav-link" href="effects.html">Effets</a></li>
+                <li class="nav-item"><a class="nav-link" href="disease.html">Maladies</a></li>
+                <li class="nav-item"><a class="nav-link" href="care-calendar.html">Tâches</a></li>
+                <li class="nav-item"><a class="nav-link" href="recommendations.html">Recommandations</a></li>
+                <li class="nav-item"><a class="nav-link" href="forest-compare.html">Comparateur</a></li>
+                <li class="nav-item"><a class="nav-link active fw-bold" href="whatif.html">What-If</a></li>
+                <li class="nav-item"><a class="nav-link text-success" href="placement-optimizer.html">Optimizer</a></li>
+            </ul>
+            <ul class="navbar-nav ms-2" id="nav-auth-area"></ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container app-shell">
+
+    <!-- Hero -->
+    <div class="whatif-hero p-4 mb-4">
+        <small class="d-block mb-1" style="opacity:.65;text-transform:uppercase;letter-spacing:.08em;font-size:.7rem;">Analyse prédictive</small>
+        <h1 class="h4 mb-1"><i class="fas fa-flask me-2"></i>Simulation What-If</h1>
+        <p class="mb-0" style="opacity:.85;">Simulez l'impact d'un événement hypothétique sur votre forêt — sans modifier les données réelles. Comparez état avant/après plante par plante.</p>
+    </div>
+
+    <!-- Config -->
+    <div class="card soft-panel mb-4">
+        <div class="card-body">
+            <div class="row g-3 mb-4">
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">Forêt cible</label>
+                    <select class="form-select" id="forestSelect">
+                        <option value="">-- Sélectionner une forêt --</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label fw-semibold">Nombre de cycles <span class="text-muted small">(ticks)</span></label>
+                    <input type="number" class="form-control" id="ticksInput" value="1" min="1" max="20">
+                    <div class="form-text">1 tick ≈ 1 heure de simulation</div>
+                </div>
+            </div>
+
+            <!-- Scénarios prédéfinis -->
+            <h6 class="fw-bold mb-2"><i class="fas fa-bolt me-2 text-warning"></i>Scénarios prédéfinis</h6>
+            <div class="row g-2 mb-4" id="scenarioCards"></div>
+
+            <!-- Paramètres manuels -->
+            <div class="card border-0 bg-light p-3" id="customPanel">
+                <h6 class="fw-bold mb-3"><i class="fas fa-sliders-h me-2"></i>Paramètres du scénario</h6>
+                <div class="mb-3 slider-row d-flex align-items-center gap-3">
+                    <label><i class="fas fa-thermometer-half text-danger me-1"></i>Température</label>
+                    <input type="range" class="form-range flex-grow-1" id="sliderTemp" min="-20" max="20" step="0.5" value="0" oninput="updateVal('temp')">
+                    <span class="slider-val" id="valTemp">0°C</span>
+                </div>
+                <div class="mb-3 slider-row d-flex align-items-center gap-3">
+                    <label><i class="fas fa-tint text-primary me-1"></i>Niveau d'eau</label>
+                    <input type="range" class="form-range flex-grow-1" id="sliderWater" min="-100" max="100" step="5" value="0" oninput="updateVal('water')">
+                    <span class="slider-val" id="valWater">0 mL</span>
+                </div>
+                <div class="mb-3 slider-row d-flex align-items-center gap-3">
+                    <label><i class="fas fa-cloud text-info me-1"></i>Humidité</label>
+                    <input type="range" class="form-range flex-grow-1" id="sliderHumidity" min="-50" max="50" step="1" value="0" oninput="updateVal('humidity')">
+                    <span class="slider-val" id="valHumidity">0%</span>
+                </div>
+                <div class="mb-3 slider-row d-flex align-items-center gap-3">
+                    <label><i class="fas fa-sun text-warning me-1"></i>Luminosité</label>
+                    <input type="range" class="form-range flex-grow-1" id="sliderLux" min="-5000" max="5000" step="100" value="0" oninput="updateVal('lux')">
+                    <span class="slider-val" id="valLux">0 lx</span>
+                </div>
+            </div>
+
+            <div class="mt-3 text-center">
+                <button class="btn btn-primary px-5 py-2" onclick="runSimulation()">
+                    <i class="fas fa-play me-2"></i>Lancer la simulation
+                </button>
+            </div>
+            <div id="simError" class="alert alert-danger mt-3 d-none"></div>
+        </div>
+    </div>
+
+    <!-- Loader -->
+    <div id="loader" class="text-center py-5 d-none">
+        <div class="spinner-border text-primary"></div>
+        <div class="mt-2 text-muted">Simulation en cours…</div>
+    </div>
+
+    <!-- Résultats -->
+    <div id="results" class="d-none">
+
+        <!-- Jauge de risque global -->
+        <div class="p-4 mb-4 rounded-3 d-flex align-items-center gap-4" id="riskBanner">
+            <div class="text-center">
+                <div class="stat-big" id="riskLabel">-</div>
+                <div class="stat-lbl">Niveau de risque</div>
+            </div>
+            <div class="vr"></div>
+            <div class="row g-3 flex-grow-1 text-center">
+                <div class="col"><div class="stat-big text-danger" id="sumCritical">0</div><div class="stat-lbl">Critique</div></div>
+                <div class="col"><div class="stat-big" style="color:#ea580c" id="sumDegraded">0</div><div class="stat-lbl">Dégradées</div></div>
+                <div class="col"><div class="stat-big text-secondary" id="sumUnchanged">0</div><div class="stat-lbl">Stables</div></div>
+                <div class="col"><div class="stat-big text-success" id="sumImproved">0</div><div class="stat-lbl">Améliorées</div></div>
+            </div>
+        </div>
+
+        <!-- Graphique avant/après -->
+        <div class="card soft-panel mb-4">
+            <div class="card-body">
+                <h5 class="fw-bold mb-3"><i class="fas fa-chart-bar me-2 text-primary"></i>Distribution des états — Avant vs Après</h5>
+                <div id="chartWrap"><canvas id="stateChart"></canvas></div>
+            </div>
+        </div>
+
+        <!-- Tableau détaillé -->
+        <div class="card soft-panel mb-4">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="fw-bold mb-0"><i class="fas fa-table me-2 text-primary"></i>Détail par plante</h5>
+                    <div class="d-flex gap-2">
+                        <select class="form-select form-select-sm" id="filterImpact" onchange="filterTable()" style="width:auto">
+                            <option value="">Tous les impacts</option>
+                            <option value="CRITICAL">Critique</option>
+                            <option value="HIGH">Haut</option>
+                            <option value="MEDIUM">Moyen</option>
+                            <option value="STABLE">Stable</option>
+                            <option value="IMPROVED">Amélioré</option>
+                        </select>
+                        <label class="form-check-label d-flex align-items-center gap-1 small">
+                            <input type="checkbox" class="form-check-input" id="onlyChanged" onchange="filterTable()">
+                            Changements d'état seulement
+                        </label>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-modern table-hover" id="plantTable">
+                        <thead>
+                            <tr>
+                                <th>Plante</th>
+                                <th>Espèce</th>
+                                <th class="text-center">État avant</th>
+                                <th class="text-center">État après</th>
+                                <th class="text-center">Stress Δ</th>
+                                <th class="text-center">Impact</th>
+                            </tr>
+                        </thead>
+                        <tbody id="plantTbody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="auth-guard.js"></script>
+<script>
+let allPlantResults = [];
+let stateChartInstance = null;
+const IMPACT_LABELS = { CRITICAL:'Critique', HIGH:'Haut', MEDIUM:'Moyen', STABLE:'Stable', IMPROVED:'Amélioré' };
+const RISK_COLORS   = { CRITIQUE:'#fef2f2', ÉLEVÉ:'#fff7ed', MODÉRÉ:'#fffbeb', FAIBLE:'#f0fdf4' };
+const RISK_BORDER   = { CRITIQUE:'#dc2626', ÉLEVÉ:'#ea580c', MODÉRÉ:'#d97706', FAIBLE:'#16a34a' };
+
+async function init() {
+    await loadForests();
+    await loadScenarios();
+    updateVal('temp'); updateVal('water'); updateVal('humidity'); updateVal('lux');
+}
+
+async function loadForests() {
+    const res = await fetch('/api/forests');
+    const forests = await res.json();
+    const sel = document.getElementById('forestSelect');
+    forests.forEach(f => sel.innerHTML += `<option value="${f.id}">${f.name} (${f.width}×${f.height})</option>`);
+}
+
+async function loadScenarios() {
+    const res = await fetch('/api/whatif/scenarios');
+    const scenarios = await res.json();
+    const container = document.getElementById('scenarioCards');
+    scenarios.forEach(s => {
+        const col = document.createElement('div');
+        col.className = 'col-6 col-md-3 col-lg-2';
+        col.innerHTML = `
+            <div class="scenario-card" id="sc-${s.id}" onclick="selectScenario(${JSON.stringify(s).replace(/"/g,'&quot;')})"
+                 style="border-color:${s.color}20;">
+                <div class="scenario-icon" style="color:${s.color}"><i class="fas ${s.icon}"></i></div>
+                <div class="scenario-label">${s.label}</div>
+            </div>`;
+        container.appendChild(col);
+    });
+}
+
+function selectScenario(s) {
+    document.querySelectorAll('.scenario-card').forEach(c => c.classList.remove('selected'));
+    const card = document.getElementById('sc-' + s.id);
+    if (card) card.classList.add('selected');
+
+    setSlider('sliderTemp',     'temp',     s.tempDelta);
+    setSlider('sliderWater',    'water',    s.waterDelta);
+    setSlider('sliderHumidity', 'humidity', s.humidityDelta);
+    setSlider('sliderLux',      'lux',      s.luxDelta);
+    document.getElementById('ticksInput').value = s.defaultTicks;
+}
+
+function setSlider(sliderId, key, val) {
+    document.getElementById(sliderId).value = val;
+    updateVal(key);
+}
+
+function updateVal(key) {
+    const v = parseFloat(document.getElementById('slider' + cap(key)).value);
+    const el = document.getElementById('val' + cap(key));
+    const sign = v > 0 ? '+' : '';
+    if (key === 'temp')     el.textContent = sign + v + '°C';
+    else if (key === 'water')   el.textContent = sign + v + ' mL';
+    else if (key === 'humidity') el.textContent = sign + v + '%';
+    else if (key === 'lux') el.textContent = sign + v + ' lx';
+    el.style.color = v > 0 ? '#16a34a' : v < 0 ? '#dc2626' : '#64748b';
+}
+
+function cap(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
+
+async function runSimulation() {
+    const forestId = document.getElementById('forestSelect').value;
+    const errEl = document.getElementById('simError');
+    errEl.classList.add('d-none');
+
+    if (!forestId) { errEl.textContent = 'Veuillez sélectionner une forêt.'; errEl.classList.remove('d-none'); return; }
+
+    const body = {
+        forestId,
+        tempDelta:     parseFloat(document.getElementById('sliderTemp').value),
+        waterDelta:    parseFloat(document.getElementById('sliderWater').value),
+        humidityDelta: parseFloat(document.getElementById('sliderHumidity').value),
+        luxDelta:      parseFloat(document.getElementById('sliderLux').value),
+        ticks:         parseInt(document.getElementById('ticksInput').value) || 1
+    };
+
+    document.getElementById('loader').classList.remove('d-none');
+    document.getElementById('results').classList.add('d-none');
+
+    try {
+        const res = await fetch('/api/whatif/simulate', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(body)
+        });
+        const data = await res.json();
+        if (!res.ok) { errEl.textContent = data.error || 'Erreur.'; errEl.classList.remove('d-none'); return; }
+        renderResults(data);
+    } catch(e) {
+        errEl.textContent = 'Erreur réseau : ' + e.message; errEl.classList.remove('d-none');
+    } finally {
+        document.getElementById('loader').classList.add('d-none');
+    }
+}
+
+function renderResults(data) {
+    allPlantResults = data.plants;
+    const s = data.summary;
+    const risk = s.globalRisk;
+
+    // Bannière risque
+    const banner = document.getElementById('riskBanner');
+    banner.className = `p-4 mb-4 rounded-3 d-flex align-items-center gap-4 risk-${risk}`;
+    banner.style.border = `2px solid ${RISK_BORDER[risk]}`;
+    document.getElementById('riskLabel').textContent = risk;
+    document.getElementById('sumCritical').textContent = s.critical;
+    document.getElementById('sumDegraded').textContent = s.degraded;
+    document.getElementById('sumUnchanged').textContent = s.unchanged;
+    document.getElementById('sumImproved').textContent = s.improved;
+
+    // Graphique
+    renderChart(data.plants);
+
+    // Tableau
+    filterTable();
+
+    document.getElementById('results').classList.remove('d-none');
+    document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+}
+
+function renderChart(plants) {
+    const states = ['HEALTHY','STRESSED','DORMANT','DISEASED'];
+    const colors = ['#16a34a','#d97706','#6b7280','#dc2626'];
+    const before = states.map(st => plants.filter(p => p.stateBefore === st).length);
+    const after  = states.map(st => plants.filter(p => p.stateAfter  === st).length);
+
+    if (stateChartInstance) stateChartInstance.destroy();
+    const ctx = document.getElementById('stateChart').getContext('2d');
+    stateChartInstance = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['Saines', 'Stressées', 'Dormantes', 'Malades'],
+            datasets: [
+                {
+                    label: 'Avant',
+                    data: before,
+                    backgroundColor: colors.map(c => c + '55'),
+                    borderColor: colors, borderWidth: 2, borderRadius: 6,
+                },
+                {
+                    label: 'Après',
+                    data: after,
+                    backgroundColor: colors.map(c => c + 'bb'),
+                    borderColor: colors, borderWidth: 2, borderRadius: 6,
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            plugins: { legend: { position: 'top' }, tooltip: { mode: 'index', intersect: false } },
+            scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }
+        }
+    });
+}
+
+function filterTable() {
+    const impact = document.getElementById('filterImpact').value;
+    const onlyChanged = document.getElementById('onlyChanged').checked;
+
+    let filtered = allPlantResults;
+    if (impact) filtered = filtered.filter(p => p.impact === impact);
+    if (onlyChanged) filtered = filtered.filter(p => p.stateChanged);
+
+    const tbody = document.getElementById('plantTbody');
+    tbody.innerHTML = '';
+
+    if (filtered.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted py-3">Aucune plante ne correspond aux filtres.</td></tr>';
+        return;
+    }
+
+    filtered.forEach(p => {
+        const deltaSign = p.stressDelta > 0 ? '+' : '';
+        const deltaColor = p.stressDelta > 0.05 ? 'text-danger' : p.stressDelta < -0.02 ? 'text-success' : 'text-muted';
+        const arrow = p.stressDelta > 0.02 ? '↑' : p.stressDelta < -0.02 ? '↓' : '→';
+        const arrowClass = p.stressDelta > 0.02 ? 'arrow-up' : p.stressDelta < -0.02 ? 'arrow-down' : 'arrow-eq';
+        const rowClass = p.stateChanged ? 'changed-row' : '';
+        const changedBadge = p.stateChanged
+            ? '<span class="badge bg-warning text-dark ms-1" title="État modifié">!</span>' : '';
+
+        tbody.innerHTML += `<tr class="${rowClass}">
+            <td><strong>${p.plantName}</strong>${changedBadge}</td>
+            <td class="text-muted small">${p.speciesName || '-'}</td>
+            <td class="text-center"><span class="state-chip state-${p.stateBefore}">${p.stateBefore}</span></td>
+            <td class="text-center"><span class="state-chip state-${p.stateAfter}">${p.stateAfter}</span></td>
+            <td class="text-center ${deltaColor}">
+                <span class="${arrowClass}">${arrow}</span>
+                ${deltaSign}${(p.stressDelta * 100).toFixed(1)}%
+                <div class="progress progress-stress mt-1">
+                    <div class="progress-bar ${p.stressDelta > 0 ? 'bg-danger' : 'bg-success'}"
+                         style="width:${Math.min(100, Math.abs(p.stressDelta) * 200)}%"></div>
+                </div>
+            </td>
+            <td class="text-center impact-${p.impact}">${IMPACT_LABELS[p.impact] || p.impact}</td>
+        </tr>`;
+    });
+}
+
+init();
+</script>
+</body>
+</html>

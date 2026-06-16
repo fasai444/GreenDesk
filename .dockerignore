@@ -1,0 +1,26 @@
+# GreenDesk - Configuration Docker
+
+# Fichiers de build
+build/
+.gradle/
+gradle/
+gradlew
+gradlew.bat
+
+# Fichiers IDE
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+
+# Fichiers système
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Fichiers temporaires
+tmp/
+temp/

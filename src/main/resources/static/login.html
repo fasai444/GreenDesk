@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GreenDesk - Connexion</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="style.css" rel="stylesheet">
+    <style>
+        html, body {
+            height: 100%;
+        }
+
+        .login-page {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #0f766e 0%, #15803d 45%, #14532d 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+        }
+
+        .login-card {
+            width: 100%;
+            max-width: 420px;
+            background: #ffffff;
+            border-radius: 18px;
+            box-shadow: 0 24px 60px rgba(2, 44, 34, 0.30);
+            overflow: hidden;
+        }
+
+        .login-header {
+            background: linear-gradient(110deg, #0f766e 0%, #15803d 55%, #14532d 100%);
+            padding: 2rem 2rem 1.6rem;
+            text-align: center;
+            color: #fff;
+        }
+
+        .login-header .brand-icon {
+            width: 60px;
+            height: 60px;
+            background: rgba(255, 255, 255, 0.18);
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.6rem;
+            margin-bottom: 0.8rem;
+            border: 2px solid rgba(255,255,255,0.25);
+        }
+
+        .login-header h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 0;
+            letter-spacing: 0.01em;
+        }
+
+        .login-header p {
+            color: rgba(220, 252, 231, 0.88);
+            font-size: 0.85rem;
+            margin: 0.3rem 0 0;
+        }
+
+        .login-body {
+            padding: 2rem;
+        }
+
+        .login-body .form-label {
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: #475569;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.35rem;
+        }
+
+        .login-body .form-control {
+            border-color: rgba(15, 23, 42, 0.16);
+            border-radius: 10px;
+            padding: 0.6rem 0.85rem;
+            font-size: 0.95rem;
+            transition: border-color 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        .login-body .form-control:focus {
+            border-color: rgba(13, 148, 136, 0.55);
+            box-shadow: 0 0 0 0.18rem rgba(13, 148, 136, 0.16);
+        }
+
+        .login-body .input-group-text {
+            border-color: rgba(15, 23, 42, 0.16);
+            border-radius: 10px 0 0 10px;
+            background: #f8fbf9;
+            color: #0f766e;
+        }
+
+        .login-body .input-group .form-control {
+            border-radius: 0 10px 10px 0;
+        }
+
+        .btn-login {
+            background: linear-gradient(110deg, #0f766e 0%, #15803d 100%);
+            border: none;
+            border-radius: 10px;
+            color: #fff;
+            font-weight: 700;
+            font-size: 0.95rem;
+            padding: 0.65rem 1rem;
+            letter-spacing: 0.02em;
+            transition: opacity 0.15s ease, transform 0.12s ease;
+            box-shadow: 0 6px 18px rgba(21, 128, 61, 0.28);
+        }
+
+        .btn-login:hover {
+            opacity: 0.92;
+            color: #fff;
+            transform: translateY(-1px);
+        }
+
+        .btn-login:active {
+            transform: translateY(0);
+        }
+
+        .btn-login:disabled {
+            opacity: 0.65;
+            transform: none;
+        }
+
+        .login-footer {
+            background: #f8fbf9;
+            border-top: 1px solid rgba(15, 23, 42, 0.07);
+            padding: 1rem 2rem;
+            text-align: center;
+        }
+
+        .login-footer a {
+            color: #0f766e;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.87rem;
+        }
+
+        .login-footer a:hover {
+            text-decoration: underline;
+        }
+
+        .demo-box {
+            background: linear-gradient(135deg, #ecfdf5 0%, #f0fdf4 100%);
+            border: 1px solid #a7f3d0;
+            border-radius: 10px;
+            padding: 0.75rem 1rem;
+            font-size: 0.8rem;
+            color: #065f46;
+        }
+
+        .demo-box .demo-cred {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.15rem 0;
+        }
+
+        .demo-box .demo-cred span:first-child {
+            color: #047857;
+            font-weight: 600;
+        }
+
+        .demo-box .demo-cred code {
+            background: rgba(6, 95, 70, 0.1);
+            border-radius: 4px;
+            padding: 0 4px;
+            color: #065f46;
+            font-size: 0.78rem;
+        }
+
+        #loginError {
+            border-radius: 10px;
+            font-size: 0.87rem;
+        }
+    </style>
+</head>
+<body>
+
+<div class="login-page">
+    <div class="login-card">
+
+        <!-- En-tête -->
+        <div class="login-header">
+            <div class="brand-icon">
+                <i class="fas fa-leaf"></i>
+            </div>
+            <h1>GreenDesk</h1>
+            <p>Plateforme de simulation écologique</p>
+        </div>
+
+        <!-- Formulaire -->
+        <div class="login-body">
+            <div id="loginError" class="alert alert-danger d-none mb-3 py-2" role="alert">
+                <i class="fas fa-triangle-exclamation me-2"></i>
+                <span id="loginErrorMsg"></span>
+            </div>
+
+            <div id="loginSuccess" class="alert alert-success d-none mb-3 py-2" role="alert">
+                <i class="fas fa-circle-check me-2"></i>
+                Connexion réussie, redirection en cours…
+            </div>
+
+            <form id="loginForm" novalidate>
+                <div class="mb-3">
+                    <label class="form-label" for="username">Nom d'utilisateur</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-user fa-sm"></i></span>
+                        <input type="text" class="form-control" id="username"
+                               placeholder="Entrez votre identifiant" autocomplete="username" required>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label" for="password">Mot de passe</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-lock fa-sm"></i></span>
+                        <input type="password" class="form-control" id="password"
+                               placeholder="Entrez votre mot de passe" autocomplete="current-password" required>
+                        <button class="btn btn-outline-secondary" type="button" id="togglePwd"
+                                style="border-radius:0 10px 10px 0;border-color:rgba(15,23,42,0.16);">
+                            <i class="fas fa-eye fa-sm"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-login w-100" id="submitBtn">
+                    <i class="fas fa-right-to-bracket me-2"></i>Se connecter
+                </button>
+            </form>
+
+            <!-- Identifiants de démonstration -->
+            <div class="demo-box mt-4">
+                <div class="fw-semibold mb-1" style="color:#047857;font-size:0.78rem;">
+                    <i class="fas fa-circle-info me-1"></i>Comptes de démonstration
+                </div>
+                <div class="demo-cred">
+                    <span><i class="fas fa-shield-halved me-1"></i>Admin</span>
+                    <span><code>admin</code> / <code>admin123</code></span>
+                </div>
+                <div class="demo-cred">
+                    <span><i class="fas fa-user me-1"></i>Démo</span>
+                    <span><code>demo</code> / <code>demo123</code></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pied de page -->
+        <div class="login-footer">
+            Pas encore de compte ?
+            <a href="/register.html"><i class="fas fa-user-plus me-1"></i>S'inscrire</a>
+            &nbsp;&bull;&nbsp;
+            <a href="/home.html"><i class="fas fa-house me-1"></i>Accueil</a>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // Afficher/masquer le mot de passe
+    document.getElementById('togglePwd').addEventListener('click', () => {
+        const pwdField = document.getElementById('password');
+        const icon = document.querySelector('#togglePwd i');
+        if (pwdField.type === 'password') {
+            pwdField.type = 'text';
+            icon.className = 'fas fa-eye-slash fa-sm';
+        } else {
+            pwdField.type = 'password';
+            icon.className = 'fas fa-eye fa-sm';
+        }
+    });
+
+    // Si déjà connecté, rediriger
+    fetch('/api/auth/me', { credentials: 'include' })
+        .then(r => { if (r.ok) window.location.href = '/home.html'; })
+        .catch(() => {});
+
+    // Soumettre le formulaire
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const username = document.getElementById('username').value.trim();
+        const password = document.getElementById('password').value;
+        const submitBtn = document.getElementById('submitBtn');
+        const errorDiv = document.getElementById('loginError');
+        const errorMsg = document.getElementById('loginErrorMsg');
+        const successDiv = document.getElementById('loginSuccess');
+
+        if (!username || !password) {
+            errorMsg.textContent = 'Veuillez remplir tous les champs.';
+            errorDiv.classList.remove('d-none');
+            return;
+        }
+
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Connexion…';
+        errorDiv.classList.add('d-none');
+
+        try {
+            const res = await fetch('/api/auth/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+                body: JSON.stringify({ username, password })
+            });
+
+            const data = await res.json();
+
+            if (res.ok) {
+                successDiv.classList.remove('d-none');
+                const params = new URLSearchParams(window.location.search);
+                const redirect = params.get('redirect') || '/home.html';
+                setTimeout(() => window.location.href = redirect, 800);
+            } else {
+                errorMsg.textContent = data.error || 'Identifiants incorrects.';
+                errorDiv.classList.remove('d-none');
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fas fa-right-to-bracket me-2"></i>Se connecter';
+            }
+        } catch (_) {
+            errorMsg.textContent = 'Erreur de connexion au serveur. Veuillez réessayer.';
+            errorDiv.classList.remove('d-none');
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<i class="fas fa-right-to-bracket me-2"></i>Se connecter';
+        }
+    });
+</script>
+</body>
+</html>

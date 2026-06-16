@@ -1,0 +1,48 @@
+name: Generate DevOps Report PDF
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+      - master
+    paths:
+      - 'docs/reports/devops-2-github-actions-report.md'
+      - 'docs/assets/images/**'
+      - '.github/workflows/devops-report.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  generate-report:
+    name: Generate report PDF
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Pandoc and LaTeX
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y pandoc librsvg2-bin texlive-xetex texlive-fonts-recommended texlive-latex-recommended
+
+      - name: Generate DevOps report PDF
+        run: |
+          mkdir -p build/docs
+          pandoc docs/reports/devops-2-github-actions-report.md \
+            --from markdown \
+            --pdf-engine=xelatex \
+            --resource-path=docs/reports:docs \
+            --toc \
+            --number-sections \
+            -V geometry:margin=2.5cm \
+            -o build/docs/devops2-report.pdf
+
+      - name: Upload report
+        uses: actions/upload-artifact@v4
+        with:
+          name: devops2-report-pdf
+          path: build/docs/devops2-report.pdf
+          if-no-files-found: error

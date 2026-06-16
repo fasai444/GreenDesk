@@ -1,0 +1,1105 @@
+/* Fond général */
+body {
+    background-color: #f8f9fa;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.app-shell {
+  padding-top: 1.25rem;
+  padding-bottom: 2rem;
+}
+
+.gd-navbar {
+  background: linear-gradient(110deg, #0f766e 0%, #15803d 48%, #14532d 100%);
+  box-shadow: 0 8px 24px rgba(2, 44, 34, 0.18);
+}
+
+.gd-navbar .navbar-brand {
+  letter-spacing: 0.01em;
+}
+
+.gd-navbar .nav-link {
+  border-radius: 10px;
+  color: rgba(240, 253, 244, 0.88);
+  padding: 0.4rem 0.7rem;
+  transition: background-color 0.16s ease, color 0.16s ease;
+}
+
+.gd-navbar .nav-link:hover {
+  color: #ffffff;
+  background: rgba(15, 23, 42, 0.18);
+}
+
+.gd-navbar .nav-link.active {
+  color: #ffffff;
+  background: rgba(15, 23, 42, 0.28);
+  border-bottom: none;
+}
+
+.page-hero-card {
+  border: 1px solid #e5ece8;
+  border-radius: 14px;
+  background: linear-gradient(180deg, #ffffff 0%, #f8fbf9 100%);
+  box-shadow: 0 10px 22px rgba(15, 23, 42, 0.06);
+}
+
+.page-kicker {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.7rem;
+  color: #64748b;
+}
+
+.section-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.9rem;
+  margin-bottom: 1rem;
+}
+
+.soft-panel {
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  border-radius: 12px;
+  background: #ffffff;
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.05);
+}
+
+.table-modern th {
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #475569;
+}
+
+.table-modern td {
+  vertical-align: middle;
+}
+
+.app-feedback {
+  border: 1px solid transparent;
+  border-radius: 10px;
+}
+
+.quick-action-bar .btn {
+  border-radius: 10px;
+  font-weight: 600;
+}
+
+.table-modern tbody tr td {
+  border-color: rgba(15, 23, 42, 0.06);
+}
+
+.table-modern tbody tr:hover {
+  background: rgba(13, 148, 136, 0.04);
+}
+
+.effects-scope-select {
+  max-width: 190px;
+}
+
+.app-shell .input-group-text {
+  border-color: rgba(15, 23, 42, 0.15);
+}
+
+.app-shell .form-control,
+.app-shell .form-select {
+  border-color: rgba(15, 23, 42, 0.16);
+}
+
+.app-shell .form-control:focus,
+.app-shell .form-select:focus {
+  border-color: rgba(13, 148, 136, 0.52);
+  box-shadow: 0 0 0 0.18rem rgba(13, 148, 136, 0.16);
+}
+
+.journey-card {
+  border: 1px solid rgba(15, 23, 42, 0.09);
+  border-radius: 14px;
+  background: #ffffff;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
+  padding: 1rem;
+}
+
+.journey-badge {
+  display: inline-block;
+  padding: 0.22rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.69rem;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  font-weight: 700;
+  background: #ecfeff;
+  color: #0f766e;
+  border: 1px solid #99f6e4;
+}
+
+.sim-steps .badge {
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.sim-steps .badge.step-done {
+  background: #dcfce7 !important;
+  border-color: #86efac !important;
+  color: #166534 !important;
+}
+
+.sim-steps .badge.step-active {
+  background: #cffafe !important;
+  border-color: #67e8f9 !important;
+  color: #155e75 !important;
+}
+
+.simulation-page {
+  background: linear-gradient(180deg, #eef6ff 0%, #f8fafb 45%, #f7f7f3 100%);
+}
+
+.simulation-page .simulation-hero {
+  background: linear-gradient(120deg, #0f766e 0%, #14532d 45%, #1f2937 100%);
+  overflow: hidden;
+}
+
+.simulation-page .hero-kicker {
+  color: rgba(220, 252, 231, 0.95);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.73rem;
+}
+
+.simulation-page .hero-subtitle {
+  color: rgba(226, 232, 240, 0.92);
+  max-width: 78ch;
+  line-height: 1.45;
+}
+
+.simulation-page .nav-pills {
+  background: rgba(255, 255, 255, 0.75);
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  border-radius: 999px;
+  padding: 0.35rem;
+  backdrop-filter: blur(6px);
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
+  display: inline-flex;
+  gap: 0.3rem;
+}
+
+.simulation-page .nav-pills .nav-link {
+  border-radius: 999px;
+  color: #334155;
+  font-weight: 600;
+  padding: 0.48rem 0.9rem;
+}
+
+.simulation-page .nav-pills .nav-link.active {
+  background: linear-gradient(125deg, #15803d 0%, #0f766e 100%);
+  color: #fff;
+  box-shadow: 0 8px 16px rgba(21, 128, 61, 0.24);
+}
+
+.simulation-page .card {
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  border-radius: 16px;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+}
+
+.simulation-page .modal-content {
+  border: 1px solid rgba(15, 23, 42, 0.1);
+  border-radius: 16px;
+  box-shadow: 0 18px 40px rgba(2, 8, 23, 0.22);
+  overflow: hidden;
+}
+
+.simulation-page .modal-header {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.simulation-page .input-group .btn,
+.simulation-page .btn {
+  box-shadow: none;
+}
+
+.simulation-page .btn:focus-visible,
+.simulation-page .form-select:focus,
+.simulation-page .form-control:focus {
+  border-color: rgba(13, 148, 136, 0.52);
+  box-shadow: 0 0 0 0.2rem rgba(13, 148, 136, 0.18);
+}
+
+.sim-kpi-card {
+  background: #ffffff;
+  border: 1px solid #e6efe8;
+  border-radius: 14px;
+  padding: 0.8rem 0.95rem;
+  box-shadow: 0 6px 20px rgba(15, 23, 42, 0.06);
+}
+
+.sim-kpi-label {
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 0.69rem;
+}
+
+.sim-kpi-value {
+  color: #0f172a;
+  font-size: 1.35rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.season-control-panel {
+  padding: 0.6rem 0.7rem;
+  border: 1px solid #e4e8f2;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.06);
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.55rem;
+  flex-wrap: wrap;
+}
+
+.season-caption {
+  font-size: 0.65rem;
+  letter-spacing: 0.08em;
+}
+
+.forest-scene-shell {
+  background: linear-gradient(180deg, #dff2ff 0%, #c3e6d3 45%, #8ea66d 100%);
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  border-radius: 18px;
+  padding: 1rem;
+  min-height: 520px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.35), 0 14px 36px rgba(2, 8, 23, 0.12);
+  position: relative;
+  overflow: hidden;
+}
+
+.forest-scene-shell::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 18% 12%, rgba(255, 255, 255, 0.24) 0%, transparent 38%),
+    radial-gradient(circle at 82% 16%, rgba(255, 255, 255, 0.16) 0%, transparent 34%),
+    linear-gradient(180deg, rgba(255,255,255,0.12) 0%, transparent 48%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.forest-scene-shell::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 38%;
+  background: linear-gradient(180deg, transparent 0%, rgba(18, 56, 38, 0.16) 56%, rgba(4, 22, 15, 0.34) 100%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.forest-scene-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+  position: relative;
+  z-index: 3;
+}
+
+.scene-tools {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.weather-layer {
+  position: relative;
+  height: 0;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.weather-layer .weather-particle {
+  position: absolute;
+  left: var(--left);
+  top: 4px;
+  opacity: 0.65;
+  animation: weather-fall var(--duration) linear var(--delay) infinite;
+}
+
+.weather-spring .weather-particle,
+.weather-summer .weather-particle {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.78);
+}
+
+.weather-autumn .weather-particle {
+  width: 9px;
+  height: 6px;
+  border-radius: 60% 40% 60% 40%;
+  background: rgba(249, 168, 37, 0.85);
+}
+
+.weather-winter .weather-particle {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(248, 250, 252, 0.92);
+}
+
+@keyframes weather-fall {
+  0% {
+    transform: translateY(0) translateX(0) scale(0.9);
+    opacity: 0;
+  }
+  20% {
+    opacity: 0.75;
+  }
+  100% {
+    transform: translateY(320px) translateX(26px) scale(1.03);
+    opacity: 0;
+  }
+}
+
+.forest-scene-grid {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: auto;
+  padding: 0.5rem;
+  position: relative;
+  z-index: 2;
+}
+
+.sim-empty-state {
+  position: relative;
+  z-index: 2;
+  margin: 0.5rem auto;
+  max-width: 420px;
+  text-align: center;
+  background: rgba(255, 255, 255, 0.76);
+  border: 1px solid rgba(15, 23, 42, 0.1);
+  border-radius: 12px;
+  padding: 0.8rem;
+}
+
+.forest-scene-shell.season-winter {
+  background: linear-gradient(180deg, #d7ecff 0%, #c9dce8 48%, #b7c6d0 100%);
+}
+
+.forest-scene-shell.season-spring {
+  background: linear-gradient(180deg, #dff7ff 0%, #c5edcd 46%, #90b374 100%);
+}
+
+.forest-scene-shell.season-summer {
+  background: linear-gradient(180deg, #d8f1ff 0%, #bfe6b7 42%, #7ea65f 100%);
+}
+
+.forest-scene-shell.season-autumn {
+  background: linear-gradient(180deg, #f7ecd4 0%, #dfd0aa 44%, #9b8a61 100%);
+}
+
+/* Grille de la forêt */
+.forest-grid {
+    display: grid;
+  gap: 4px;
+  background:
+    radial-gradient(circle at 22% 16%, rgba(255, 255, 255, 0.07) 0%, transparent 30%),
+    radial-gradient(circle at 78% 84%, rgba(255, 255, 255, 0.04) 0%, transparent 34%),
+    linear-gradient(180deg, #593b29 0%, #462d1d 100%);
+  padding: 10px;
+  border-radius: 14px;
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.28), inset 0 0 0 1px rgba(255,255,255,0.08);
+  border: 2px solid #3c2518;
+  display: inline-grid;
+  width: min(100%, 980px);
+}
+
+/* Cellule individuelle */
+.forest-cell {
+  width: clamp(36px, 4.1vw, 58px);
+  aspect-ratio: 1 / 1;
+  background:
+    radial-gradient(circle at 28% 24%, rgba(221, 204, 186, 0.34) 0%, transparent 32%),
+    radial-gradient(circle at 70% 74%, rgba(67, 43, 26, 0.24) 0%, transparent 44%),
+    radial-gradient(circle at 30% 30%, #b79c85 0%, #8f725a 70%);
+  border-radius: 9px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  transition: transform 0.16s ease, box-shadow 0.16s ease, background 0.16s ease;
+  color: rgba(255,255,255,0.2);
+  border: 1px solid rgba(55, 30, 12, 0.15);
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.forest-cell:hover {
+  background:
+    radial-gradient(circle at 30% 30%, rgba(235, 222, 208, 0.34) 0%, transparent 34%),
+    radial-gradient(circle at 32% 28%, #ccb198 0%, #ad886d 72%);
+  transform: translateY(-1px) scale(1.01);
+    z-index: 10;
+  box-shadow: 0 8px 14px rgba(34, 20, 8, 0.2);
+}
+
+/* Cellule occupée par une plante */
+.forest-cell.occupied {
+  background:
+    radial-gradient(circle at 24% 22%, rgba(195, 255, 180, 0.18) 0%, transparent 36%),
+    radial-gradient(circle at 30% 25%, #90d286 0%, #4a8243 70%);
+  color: white;
+    border: 2px solid transparent;
+}
+
+/* États visuels des plantes */
+.forest-cell.occupied.status-HEALTHY {
+  background:
+    radial-gradient(circle at 24% 18%, rgba(206, 255, 201, 0.26) 0%, transparent 34%),
+    radial-gradient(circle at 30% 25%, #6bcb67 0%, #256a30 74%);
+    border-color: #1b5e20;
+}
+
+.forest-cell.occupied.status-STRESSED {
+  background:
+    radial-gradient(circle at 24% 18%, rgba(255, 250, 184, 0.38) 0%, transparent 34%),
+    radial-gradient(circle at 30% 25%, #ffd777 0%, #ec9708 74%);
+    border-color: #f57f17;
+}
+
+.forest-cell.occupied.status-DISEASED {
+  background:
+    radial-gradient(circle at 24% 18%, rgba(255, 210, 210, 0.32) 0%, transparent 34%),
+    radial-gradient(circle at 30% 25%, #ff7878 0%, #a7202a 74%);
+    border-color: #b71c1c;
+}
+
+.forest-cell.occupied.status-DORMANT {
+  background: radial-gradient(circle at 30% 25%, #a2afbb 0%, #5f6d79 74%);
+    filter: grayscale(80%);
+}
+
+.forest-cell .grass-tuft {
+  position: absolute;
+  bottom: 10%;
+  width: 44%;
+  height: 34%;
+  border-radius: 40% 60% 42% 58%;
+  background: linear-gradient(180deg, #5f8f4f 0%, #3f6a38 100%);
+  box-shadow: 0 -2px 0 rgba(255, 255, 255, 0.18) inset;
+  opacity: 0.82;
+}
+
+.forest-cell.cell-empty:hover .grass-tuft {
+  transform: scale(1.08);
+}
+
+.forest-cell.heatmap-enabled::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 50%, var(--stress-color), transparent 72%);
+  opacity: var(--stress-alpha, 0.22);
+  mix-blend-mode: screen;
+}
+
+.tree-visual {
+  position: relative;
+  width: 92%;
+  height: 92%;
+  display: block;
+  transform: scale(var(--tree-scale, 1));
+  transform-origin: center bottom;
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.24));
+}
+
+.tree-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.tree-shadow {
+  fill: rgba(8, 24, 13, 0.28);
+}
+
+.tree-trunk-shape {
+  stroke: rgba(47, 25, 11, 0.42);
+  stroke-width: 1.2;
+}
+
+.tree-branch {
+  fill: none;
+  stroke: rgba(68, 39, 22, 0.66);
+  stroke-linecap: round;
+  stroke-width: 2.1;
+}
+
+.tree-canopy-main,
+.tree-canopy-mid,
+.tree-canopy-top,
+.tree-highlight {
+  transition: transform 0.25s ease, opacity 0.25s ease;
+  transform-origin: center;
+}
+
+.tree-highlight {
+  fill: rgba(230, 255, 235, 0.24);
+}
+
+.forest-cell:hover .tree-canopy-main,
+.forest-cell:hover .tree-canopy-mid,
+.forest-cell:hover .tree-canopy-top {
+  transform: translateY(-1px);
+}
+
+.forest-cell:hover .tree-highlight {
+  opacity: 0.9;
+}
+
+.tree-stressed .tree-canopy-main,
+.tree-stressed .tree-canopy-mid,
+.tree-stressed .tree-canopy-top {
+  filter: saturate(0.78) brightness(1.04);
+}
+
+.tree-diseased .tree-canopy-main,
+.tree-diseased .tree-canopy-mid,
+.tree-diseased .tree-canopy-top {
+  filter: hue-rotate(-24deg) saturate(1.16) brightness(0.98);
+}
+
+.tree-dormant .tree-canopy-main,
+.tree-dormant .tree-canopy-mid,
+.tree-dormant .tree-canopy-top {
+  filter: saturate(0.18) brightness(0.92);
+}
+
+.tree-healthy .tree-canopy-main,
+.tree-healthy .tree-canopy-mid,
+.tree-healthy .tree-canopy-top {
+  animation: canopy-breathe 4.8s ease-in-out infinite;
+}
+
+@keyframes canopy-breathe {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-0.7px) scale(1.01); }
+}
+
+.tree-canopy {
+  position: absolute;
+  width: 64%;
+  height: 52%;
+  left: 18%;
+  top: 6%;
+  border-radius: 55% 45% 52% 48%;
+  background: hsl(calc(100 + var(--tree-hue, 0)), 48%, 42%);
+  box-shadow: inset -4px -6px 0 rgba(0, 0, 0, 0.16);
+}
+
+.tree-canopy-b {
+  width: 46%;
+  height: 40%;
+  left: 8%;
+  top: 18%;
+  background: hsl(calc(106 + var(--tree-hue, 0)), 44%, 36%);
+}
+
+.tree-trunk {
+  position: absolute;
+  width: 20%;
+  height: 36%;
+  left: 40%;
+  bottom: 4%;
+  border-radius: 6px;
+  background: linear-gradient(180deg, #7a5035 0%, #5d3a24 100%);
+}
+
+.tree-stressed .tree-canopy,
+.tree-stressed .tree-canopy-b {
+  filter: saturate(0.8) brightness(1.05);
+}
+
+.tree-diseased .tree-canopy,
+.tree-diseased .tree-canopy-b {
+  filter: hue-rotate(-35deg) saturate(1.1);
+}
+
+.tree-dormant .tree-canopy,
+.tree-dormant .tree-canopy-b {
+  filter: saturate(0.15) brightness(0.95);
+}
+
+.sim-legend,
+.cell-inspector-card {
+  backdrop-filter: blur(4px);
+}
+
+/* Petite animation pour les plantes stressées */
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(0.95); opacity: 0.8; }
+    100% { transform: scale(1); }
+}
+
+/* Style des cartes */
+.card {
+    border: none;
+    border-radius: 10px;
+}
+
+.cell-inspector-card {
+  background: #ffffff;
+  border: 1px solid #e5ebf2;
+  border-radius: 14px;
+  padding: 0.9rem;
+  min-height: 320px;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+}
+
+.sim-legend {
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  border-radius: 12px;
+  padding: 0.55rem 0.75rem;
+}
+
+#selectionHint {
+  background: rgba(255, 255, 255, 0.52);
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  border-radius: 10px;
+  padding: 0.35rem 0.55rem;
+  display: inline-block;
+}
+
+/* --- NOUVEAU STYLE DASHBOARD --- */
+
+.stat-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border: 1px solid rgba(0,0,0,0.05);
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.08) !important;
+}
+
+/* Badges modernes (fond transparent) */
+.bg-opacity-10 {
+    --bs-bg-opacity: 0.1;
+}
+
+/* Navbar active link style */
+.navbar-nav .nav-link.active {
+    border-bottom: 2px solid white;
+}
+
+.gd-navbar .navbar-nav .nav-link.active {
+  border-bottom: none;
+}
+
+/* Gradients de headers */
+.bg-gradient-primary {
+    background: linear-gradient(45deg, #4e73df 0%, #224abe 100%);
+}
+.bg-gradient-warning {
+    background: linear-gradient(45deg, #f6c23e 0%, #f4b619 100%);
+}
+
+/* Style des cartes */
+.card {
+    transition: transform 0.2s ease-in-out;
+    border-radius: 12px;
+}
+.card:hover {
+    transform: translateY(-5px);
+}
+
+.plant-card {
+    background: #f8f9fc;
+}
+
+/* Boutons avec micro-interactions */
+simulation-page .btn {
+  border-radius: 8px;
+  font-weight: 600;
+  transition: background 0.18s cubic-bezier(.4,1.6,.6,1), color 0.18s, box-shadow 0.18s;
+  box-shadow: 0 2px 8px rgba(13,148,136,0.06);
+  will-change: background, color, box-shadow, transform;
+}
+simulation-page .btn:hover:not(:disabled),
+simulation-page .btn:focus-visible {
+  background: linear-gradient(90deg, #0f766e 0%, #15803d 100%);
+  color: #fff;
+  box-shadow: 0 4px 16px rgba(21,128,61,0.13);
+  transform: translateY(-2px) scale(1.03);
+}
+
+/* Badges onboarding animées */
+.sim-steps .badge {
+  transition: background 0.22s cubic-bezier(.4,1.6,.6,1), color 0.22s, border-color 0.22s, transform 0.18s;
+  will-change: background, color, border-color, transform;
+}
+.sim-steps .badge.step-active {
+  animation: badge-pulse 1.2s cubic-bezier(.4,1.6,.6,1) infinite alternate;
+}
+@keyframes badge-pulse {
+  0% { box-shadow: 0 0 0 0 rgba(13,148,136,0.13); transform: scale(1); }
+  100% { box-shadow: 0 0 0 8px rgba(13,148,136,0.09); transform: scale(1.06); }
+}
+
+/* Onboarding panel apparition */
+#simOnboarding {
+  animation: fade-in-down 0.7s cubic-bezier(.4,1.6,.6,1);
+}
+@keyframes fade-in-down {
+  from { opacity: 0; transform: translateY(-24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Tableaux modernes animés */
+.table-modern tbody tr {
+  transition: background 0.18s, box-shadow 0.18s;
+}
+.table-modern tbody tr:hover {
+  background: rgba(13,148,136,0.09);
+  box-shadow: 0 2px 12px rgba(13,148,136,0.07);
+}
+
+/* Feedback contextuel animé */
+.app-feedback {
+  transition: background 0.22s, color 0.22s, box-shadow 0.22s, transform 0.18s;
+  animation: feedback-pop 0.7s cubic-bezier(.4,1.6,.6,1);
+}
+@keyframes feedback-pop {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+/* Empty state apparition */
+.sim-empty-state {
+  animation: fade-in-up 0.7s cubic-bezier(.4,1.6,.6,1);
+}
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Guided tour highlight */
+.gd-tour-highlight {
+  outline: 3px solid #0ea5e9;
+  box-shadow: 0 0 0 8px rgba(14,165,233,0.13);
+  border-radius: 12px !important;
+  z-index: 1002 !important;
+  position: relative;
+  transition: outline 0.22s, box-shadow 0.22s;
+}
+
+/* Reduce motion support */
+@media (prefers-reduced-motion: reduce) {
+  *, *:before, *:after {
+    transition: none !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Force la visibilité du texte dans le menu déroulant */
+#forestSelect {
+    color: #333 !important;      /* Texte gris foncé */
+    background-color: #fff !important; /* Fond blanc */
+}
+
+#forestSelect option {
+    color: #000 !important;      /* Force le texte des options en noir */
+    background-color: #fff !important;
+    padding: 10px;
+}
+/* ===================== */
+/* L4 – Monitoring styles */
+/* ===================== */
+.l4-card {
+  margin-top: 22px;
+  padding: 18px;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  background: #fff;
+}
+
+.l4-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.l4-header h2 {
+  margin: 0;
+  font-size: 26px;
+}
+
+.l4-subtitle {
+  margin: 6px 0 0;
+  color: #6b7280;
+}
+
+.l4-grid {
+  display: grid;
+  grid-template-columns: 1.05fr 1fr;
+  gap: 14px;
+  margin-top: 14px;
+}
+
+.l4-panel {
+  border: 1px solid #eef2f7;
+  border-radius: 12px;
+  padding: 14px;
+  background: #fafafa;
+}
+
+.l4-row {
+  display: flex;
+  gap: 12px;
+  align-items: flex-end;
+  margin-top: 10px;
+  flex-wrap: wrap;
+}
+
+.l4-row-4 {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(140px, 1fr));
+  gap: 10px;
+}
+
+.l4-row-between {
+  justify-content: space-between;
+  align-items: center;
+}
+
+.l4-field {
+  flex: 1;
+  min-width: 220px;
+}
+
+.l4-field label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.l4-input {
+  width: 100%;
+  padding: 10px 10px;
+  border: 1px solid #d1d5db;
+  border-radius: 10px;
+  outline: none;
+}
+
+.l4-input:focus {
+  border-color: #22c55e;
+  box-shadow: 0 0 0 3px rgba(34,197,94,0.15);
+}
+
+.l4-hint {
+  color: #6b7280;
+  display: block;
+  margin-top: 6px;
+}
+
+.l4-divider {
+  border: none;
+  border-top: 1px solid #e5e7eb;
+  margin: 14px 0;
+}
+
+.l4-two-cols {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.l4-list {
+  list-style: none;
+  padding-left: 0;
+  margin: 8px 0 0;
+}
+
+.l4-list li {
+  background: #fff;
+  border: 1px solid #eef2f7;
+  border-radius: 10px;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+.l4-error {
+  color: #b00020;
+  min-height: 18px;
+}
+
+.l4-btn {
+  padding: 10px 12px;
+  border-radius: 10px;
+  cursor: pointer;
+  border: 1px solid transparent;
+}
+
+.l4-btn-primary {
+  background: #16a34a;
+  color: #fff;
+}
+
+.l4-btn-primary:hover {
+  background: #15803d;
+}
+
+.l4-btn-outline {
+  background: transparent;
+  border-color: #d1d5db;
+}
+
+.l4-btn-outline:hover {
+  background: #f3f4f6;
+}
+
+.l4-actions {
+  display: flex;
+  gap: 8px;
+}
+
+@media (max-width: 1000px) {
+  .l4-grid { grid-template-columns: 1fr; }
+  .l4-row-4 { grid-template-columns: repeat(2, minmax(140px, 1fr)); }
+  .l4-two-cols { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 1200px) {
+  .forest-scene-shell {
+    min-height: 460px;
+  }
+}
+
+@media (max-width: 768px) {
+  .simulation-page .nav-pills {
+    width: 100%;
+    border-radius: 14px;
+  }
+
+  .simulation-page .nav-pills .nav-link {
+    width: 100%;
+    text-align: center;
+  }
+
+  .section-heading {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .season-control-panel {
+    justify-content: flex-start;
+  }
+
+  .forest-scene-shell {
+    min-height: 420px;
+  }
+}
+
+
+
+/* ------- page disease ------- */
+.grid {
+  display: grid;
+  gap: 6px;
+  justify-content: center;
+  margin: 4px auto 0;
+}
+
+.cell {
+    width: 42px;
+    height: 42px;
+    border-radius: 8px;
+    border: 1px solid rgba(255,255,255,0.15);
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.cell:hover {
+    transform: scale(1.15);
+    box-shadow: 0 0 12px rgba(0,255,200,0.7);
+}
+
+.cell.healthy {
+    background: linear-gradient(135deg, #2ecc71, #27ae60);
+}
+
+.cell.diseased {
+    background: linear-gradient(135deg, #ff4d4d, #c0392b);
+    box-shadow: 0 0 12px rgba(255,0,0,0.6);
+}
+
+.cell.empty {
+    background: #2c3e50;
+    opacity: 0.6;
+}
+
+.pulse {
+    animation: pulse 1.2s infinite alternate;
+}
+
+@keyframes pulse {
+    from { box-shadow: 0 0 6px rgba(255,0,0,0.4); }
+    to   { box-shadow: 0 0 16px rgba(255,0,0,0.9); }
+}
+
+#cellDetails {
+  background: #0f172a;
+  color: #a7f3d0;
+  border: 1px solid rgba(148, 163, 184, 0.24);
+  border-radius: 10px;
+  padding: 0.9rem;
+  white-space: pre-wrap;
+  margin: 0;
+}
+
+
+/* ==================== NOUVEAU : STYLES ALERTES MÉTÉO ==================== */
+
+.weather-alert-high {
+    background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+    color: white;
+    border-left: 4px solid #f87171;
+}
+
+.weather-alert-medium {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    color: white;
+    border-left: 4px solid #fbbf24;
+}
+
+.weather-alert-low {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    color: white;
+    border-left: 4px solid #60a5fa;
+}
+
+@keyframes alert-pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.7; }
+    100% { opacity: 1; }
+}
+
+.weather-alert-new {
+    animation: alert-pulse 1.5s ease-in-out infinite;
+}
