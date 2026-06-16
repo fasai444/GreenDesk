@@ -16,7 +16,7 @@ public class ForestComparisonController {
     private ForestComparisonService forestComparisonService;
 
     /**
-     * GET /api/forests/compare?forestId1=...&forestId2=...
+     * GET /api/forests/compare?forestId1=...&amp;forestId2=...
      * Compare deux forêts côte à côte.
      */
     @GetMapping("/compare")
